@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-body p-4">
+                <h3 class="mb-4">Neue Karte hinzufügen</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Typ</label>
+                        <select name="c_type" class="form-select">
+                            {% for key, label in content_types.items() %}
+                                <option value="{{ key }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3" id="order-number-wrapper" style="display: none;">
+                        <label class="form-label fw-bold">Reihenfolge auf der Indexseite</label>
+                        <input
+                            type="number"
+                            name="order_number"
+                            class="form-control"
+                            value="0"
+                            min="0"
+                        >
+                    </div>
+                    <div class="mb-3" id="col-size-wrapper" style="display: none;">
+                        <label class="form-label fw-bold">Kartenbreite auf der Indexseite</label>
+                        <select name="col_size" class="form-select">
+                            <option value="col-12 col-md-6 col-lg-4">Normale Breite</option>
+                            <option value="col-12 col-md-6 col-lg-8">Doppelte Breite</option>
+                            <option value="col-12">Volle Breite</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Titel</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kurzbeschreibung</label>
+                        <input
+                            type="text"
+                            name="description"
+                            class="form-control"
+                            maxlength="300"
+                            >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Inhalt</label>
+                        <textarea name="body" class="form-control" rows="5" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bild hochladen</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="image_orientation" class="form-label fw-bold">Bildformat</label>
+                        <select name="image_orientation" id="image_orientation" class="form-select">
+                            <option value="landscape" selected>Waagerecht</option>
+                            <option value="portrait">Hochkant</option>
+                        </select>
+                        <small class="text-muted">
+                            Waagerecht für kleine Karten, Hochkant für zweispaltige Karten.
+                        </small>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">In Datenbank speichern</button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-link text-muted">Abbrechen</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function toggleIndexFields() {
+        const typeSelect = document.querySelector('select[name="c_type"]');
+        const orderWrapper = document.getElementById('order-number-wrapper');
+        const colWrapper = document.getElementById('col-size-wrapper');
+
+        if (!typeSelect) return;
+
+        const show = typeSelect.value === 'index_card';
+
+        if (orderWrapper) {
+            orderWrapper.style.display = show ? 'block' : 'none';
+        }
+
+        if (colWrapper) {
+            colWrapper.style.display = show ? 'block' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const typeSelect = document.querySelector('select[name="c_type"]');
+        toggleIndexFields();
+
+        if (typeSelect) {
+            typeSelect.addEventListener('change', toggleIndexFields);
+        }
+    });
+</script>
+{% endblock %}

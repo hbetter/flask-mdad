@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:15
+    container_name: flask_mdad_db
+    environment:
+      POSTGRES_DB: flaskdb
+      POSTGRES_USER: flaskuser
+      POSTGRES_PASSWORD: flaskpass
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  web:
+    container_name: flask_mdad_web
+    build: .
+    image: flask-mdad:latest
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg2://flaskuser:flaskpass@db:5432/flaskdb
+    ports:
+      - "5001:5000"
+    command: python app.py

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <h1 class="card-title h2">Ein Text, viel Mehrwertversprechen</h1>
+                    <h2 class="card-subtitle text-secondary h5 ">
+                        <br />Hier reichern wir den Kernsatz um die Hauptaussagen der Wirkfaktoren an.
+                        Rumms klar, direkt und auf den Punkt. <br /><br />
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+                    </h2>
+
+                    <div class="row g-2 mt-3">
+                        <div class="col-sm-6">
+                            <a href="https://outlook.office365.com/owa/calendar/MENSCHDENKANDICHEINZELGESPRCHE@smeo-now.de/bookings/"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn btn-primary rounded-0 w-100 text-nowrap">
+                                Erstgespräch vereinbaren
+                            </a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="#" class="btn btn-primary rounded-0 w-100 text-nowrap">
+                                An einem Spiel teilnehmen
+                            </a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="#" class="btn btn-primary rounded-0 w-100 text-nowrap">
+                                Spielecoach werden
+                            </a>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="#" class="btn btn-primary rounded-0 w-100 text-nowrap">
+                                Spielecoach buchen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="d-flex flex-column align-items-center align-items-lg-end text-center text-lg-end">
+                        <img
+                            src="{{ url_for('static', filename='img/IPM_auf_Arm_gestuetzt.webp') }}"
+                            alt="Dr. Irene Preußner"
+                            class="img-fluid rounded hero-image"
+                        >
+                        <p class="mt-2 mb-0 text-secondary">
+                            Dr. Irene Preußner, Geschäftsführerin <br />und Spieleentwicklerin
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3">
+        {% for item in index_cards %}
+            <div class="{{ item.col_size }}">
+                <div
+                    class="card h-100 shadow-sm cursor-pointer"
+                    role="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#indexCardModal{{ item.id }}">
+                    {% if "col-lg-8" in item.col_size or item.col_size == "col-12" %}
+                        <div class="row g-0 h-100 align-items-stretch">
+                            <div class="{% if item.image_filename %}col-md-6{% else %}col-12{% endif %}">
+                                <div class="card-body d-flex flex-column h-100">
+                                    <h3 class="card-title h5">{{ item.title }}</h3>
+
+                                    {% if item.description %}
+                                    <h4 class="card-subtitle mb-2 text-secondary h6">
+                                        {{ item.description }}
+                                    </h4>
+                                    {% endif %}
+                                    {% set parts = item.body.split('##', 1) %}
+                                    <div class="card-text preserve-lines mb-0">
+                                        {{ parts[0]|safe }}
+                                    </div>
+                                    {% if parts|length > 1 %}
+                                    <div class="mt-2">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-primary btn-sm mt-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#indexCardModal{{ item.id }}">
+                                        Weiterlesen
+                                    </button>
+
+
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if item.image_filename %}
+                                <div class="col-md-6 d-flex align-items-stretch justify-content-center p-3">
+                                    <div class="w-100 d-flex justify-content-center align-items-center h-100">
+                                        <img
+                                            src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
+                                            class="img-fluid card-img-side {% if item.image_orientation == 'portrait' %}card-img-side-portrait{% endif %}"
+                                            alt="{{ item.title }}"
+                                        >
+                                    </div>
+                                </div>
+
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        {% if item.image_filename %}
+                        <img
+                            src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
+                            class="card-img-top"
+                            alt="{{ item.title }}"
+                        >
+                        {% endif %}
+
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title h5">{{ item.title }}</h3>
+                            {% if item.description %}
+                            <h4 class="card-subtitle mb-2 text-secondary h6">
+                                {{ item.description }}
+                            </h4>
+                            {% endif %}
+                            {% set parts = item.body.split('##', 1) %}
+                            <div class="card-text preserve-lines mb-0">
+                                {{ parts[0]|safe }}
+                            </div>
+                            {% if parts|length > 1 %}
+                            <div class="mt-2">
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary btn-sm mt-2"
+                                data-bs-toggle="modal"
+                                data-bs-target="#indexCardModal{{ item.id }}">
+                                Weiterlesen
+                            </button>
+
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="modal fade" id="indexCardModal{{ item.id }}" tabindex="-1" aria-labelledby="indexCardModalLabel{{ item.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div>
+                                <h4 class="modal-title mb-1" id="indexCardModalLabel{{ item.id }}">
+                                    {{ item.title }}
+                                </h4>
+                                {% if item.description %}
+                                <div class="text-secondary">
+                                    {{ item.description }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% set item_body = item.body.replace('##', '') %}
+                            <div class="card-text preserve-lines">{{ item_body|safe }}</div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                                Schließen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

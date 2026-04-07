@@ -1,0 +1,6 @@
+@app.route("/robots.txt")
+def robots():
+    return """User-agent: *
+Allow: /
+Sitemap: https://www.mensch-denk-an.dich.de/sitemap.xml
+""", 200, {"Content-Type": "text/plain"}

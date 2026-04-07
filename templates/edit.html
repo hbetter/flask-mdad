@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-body p-4">
+                <h3 class="mb-4">Karte bearbeiten</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Typ</label>
+                        <select name="c_type" class="form-select">
+                            {% for key, label in content_types.items() %}
+                                <option value="{{ key }}" {% if content.c_type == key %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3" id="order-number-wrapper" style="display: none;">
+                        <label class="form-label fw-bold">Reihenfolge auf der Indexseite</label>
+                        <input
+                            type="number"
+                            name="order_number"
+                            class="form-control"
+                            value="{{ content.order_number }}"
+                            min="0"
+                        >
+                    </div>
+                    <div class="mb-3" id="col-size-wrapper" style="display: none;">
+                        <label class="form-label fw-bold">Breite der Karte auf der Indexseite</label>
+                        <select name="col_size" class="form-select">
+                            <option value="col-12 col-md-6 col-lg-4" {% if content.col_size == "col-12 col-md-6 col-lg-4" %}selected{% endif %}>
+                                Normale Breite
+                            </option>
+                            <option value="col-12 col-md-6 col-lg-8" {% if content.col_size == "col-12 col-md-6 col-lg-8" %}selected{% endif %}>
+                                Doppelte Breite
+                            </option>
+                            <option value="col-12" {% if content.col_size == "col-12" %}selected{% endif %}>
+                                Volle Breite
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Titel</label>
+                        <input type="text" name="title" class="form-control" value="{{ content.title }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kurzbeschreibung</label>
+                        <input
+                            type="text"
+                            name="description"
+                            class="form-control"
+                            maxlength="300"
+                            value="{{ content.description or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Inhalt</label>
+                        <textarea name="body" class="form-control" rows="20" required>{{ content.body }}</textarea>
+                    </div>
+                    {% if content.image_filename %}
+                    <div class="mb-3">
+                        <p class="text-muted mb-2">Aktuelles Bild:</p>
+                        <img
+                            src="{{ url_for('static', filename='uploads/' ~ content.image_filename) }}"
+                            alt="Aktuelles Bild"
+                            class="img-fluid rounded border"
+                        >
+                    </div>
+                    <div class="form-check mb-3">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="delete_image"
+                            id="delete_image"
+                            value="1"
+                        >
+                        <label class="form-check-label" for="delete_image">
+                            Aktuelles Bild löschen
+                        </label>
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <label for="image" class="form-label fw-bold">Neues Bild hochladen</label>
+                        <input
+                            type="file"
+                            class="form-control"
+                            id="image"
+                            name="image"
+                            accept="image/*"
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label for="image_orientation" class="form-label fw-bold">Bildformat</label>
+                        <select name="image_orientation" id="image_orientation" class="form-select">
+                            <option value="landscape" selected>Waagerecht</option>
+                            <option value="portrait">Hochkant</option>
+                        </select>
+                        <small class="text-muted">
+                            Diese Auswahl wird verwendet, wenn ein neues Bild hochgeladen wird.
+                        </small>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Speichern</button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-link text-muted text-decoration-none">Abbrechen</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function toggleIndexFields() {
+        const typeSelect = document.querySelector('select[name="c_type"]');
+        const orderWrapper = document.getElementById('order-number-wrapper');
+        const colWrapper = document.getElementById('col-size-wrapper');
+
+        if (!typeSelect) return;
+
+        const show = typeSelect.value === 'index_card';
+
+        if (orderWrapper) {
+            orderWrapper.style.display = show ? 'block' : 'none';
+        }
+
+        if (colWrapper) {
+            colWrapper.style.display = show ? 'block' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const typeSelect = document.querySelector('select[name="c_type"]');
+        toggleIndexFields();
+
+        if (typeSelect) {
+            typeSelect.addEventListener('change', toggleIndexFields);
+        }
+    });
+</script>
+{% endblock %}

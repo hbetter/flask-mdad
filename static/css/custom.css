@@ -1,0 +1,180 @@
+/* =========================================================
+   Design-Tokens / Farben
+   ========================================================= */
+
+:root {
+    --brand-red: #e30613;
+    --brand-red-dark: #9C0E17;
+}
+
+
+/* =========================================================
+   Basis / globale Elemente
+   ========================================================= */
+
+body {
+    background-color: #fcfcfc;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #444;
+}
+
+.container {
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   Navigation
+   ========================================================= */
+
+.navbar-custom {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid var(--brand-red);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    top: 0;
+    z-index: 1020;
+}
+
+.navbar {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.logo {
+    height: 50px;
+    width: auto;
+    display: block;
+}
+
+.navbar-custom .nav-link {
+    color: #333 !important;
+    font-weight: 400;
+    font-size: 1rem;
+    padding: 0 1rem !important;
+}
+
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link.active {
+    color: var(--brand-red) !important;
+}
+
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+
+.rounded-0 {
+    border-radius: 0 !important;
+}
+
+.btn {
+    border-radius: 10px !important;
+}
+
+.btn-primary {
+    background-color: var(--brand-red-dark) !important;
+    border-color: var(--brand-red-dark) !important;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: var(--brand-red) !important;
+    border-color: var(--brand-red) !important;
+}
+
+.btn.text-nowrap {
+    font-size: 0.95rem;
+}
+
+
+/* =========================================================
+   Typografie
+   ========================================================= */
+
+.card-title,
+.modal-title {
+    color: var(--brand-red);
+}
+
+
+/* =========================================================
+   Cards / Content-Darstellung
+   ========================================================= */
+
+.preserve-lines {
+    white-space: pre-line;
+}
+
+.hero-image {
+    max-height: 360px;
+    width: auto;
+}
+
+.card-img-top {
+    aspect-ratio: 1280 / 715;
+    object-fit: cover;
+}
+
+.card-img-side {
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.card-img-side-portrait {
+    height: 100%;
+    max-height: 320px;
+    width: auto;
+    object-fit: contain;
+}
+
+.modal-dialog-top {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-dialog-scrollable .modal-content {
+    max-height: calc(100vh - 2rem);
+}
+
+.modal-dialog-scrollable .modal-body {
+    overflow-y: auto;
+}
+
+/* =========================================================
+   Interaktive Elemente
+   ========================================================= */
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   Footer
+   ========================================================= */
+
+.footer-custom a:hover {
+    color: var(--brand-red) !important;
+    transition: color 0.3s ease;
+}
+
+
+/* =========================================================
+   Ticker
+   ========================================================= */
+
+.ticker {
+    width: 100%;
+    overflow: hidden;
+    background: var(--brand-red-dark);
+    color: #fff;
+    white-space: nowrap;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 6px;
+}
+
+.ticker p {
+    display: inline-block;
+    margin: 0;
+}
