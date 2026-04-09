@@ -17,6 +17,17 @@
                 {% endwith %}
                 <form method="POST">
                     <div class="mb-3">
+                        <label for="username" class="form-label fw-bold">Nutzername</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="form-control"
+                            required
+                            autofocus
+                        >
+                    </div>
+                    <div class="mb-3">
                         <label for="password" class="form-label fw-bold">Passwort</label>
                         <input
                             type="password"
@@ -24,7 +35,6 @@
                             name="password"
                             class="form-control"
                             required
-                            autofocus
                         >
                     </div>
 

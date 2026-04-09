@@ -153,14 +153,15 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        username = (request.form.get("username", "") or "").strip()
         password = request.form.get("password", "")
-        user = User.query.filter_by(username="admin").first()
+        user = User.query.filter_by(username=username).first()
 
         if user and bcrypt.check_password_hash(user.password_hash, password):
             login_user(user)
             return redirect(url_for("dashboard"))
 
-        flash("Falsches Passwort.", "danger")
+        flash("Falscher Nutzername oder Passwort.", "danger")
 
     return render_template("login.html")
 
