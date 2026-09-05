@@ -5,6 +5,24 @@
 :root {
     --brand-red: #e30613;
     --brand-red-dark: #9C0E17;
+
+    /* Farbpalette von smeo-now.de, uebernommen aus der statischen
+       Playful-Future-Seite (playfulfuture-index-v20.html).
+       --sm-maroon / --sm-maroon-bright sind bewusst Aliase auf die
+       bereits vorhandenen --brand-red*-Variablen (identische
+       Hex-Werte), damit nicht zwei parallele Farbdefinitionen
+       gepflegt werden muessen. */
+    --sm-dark: #281351;
+    --sm-purple: #43367B;
+    --sm-maroon: var(--brand-red-dark);
+    --sm-maroon-bright: var(--brand-red);
+    --sm-pink: #CC3366;
+    --sm-bg: #F1F2F8;
+    --sm-bg-nested: #F7F7FB;
+    --sm-bg-soft: #FCFCFC;
+    --sm-ink: #33373D;
+    --sm-line: #DADFE8;
+    --sm-muted: #6b7078;
 }
 
 
@@ -13,9 +31,41 @@
    ========================================================= */
 
 body {
-    background-color: #fcfcfc;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    color: #444;
+    background-color: var(--sm-bg-soft);
+    font-family: 'Open Sans', sans-serif;
+    color: var(--sm-ink);
+}
+
+h1, h2, h3, .kicker {
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1, h2, h3 {
+    color: var(--sm-dark);
+    font-weight: 800;
+}
+
+.kicker {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--sm-maroon);
+}
+
+.text-purple {
+    color: var(--sm-purple);
+}
+
+/* Semantisches h3 fuer Platzhalter-Videotitel (Shorts-Sektion) ohne
+   optische Aenderung gegenueber dem vorherigen <p>-Tag: Bootstraps
+   h3-Schriftgroesse und die h1/h2/h3-Textfarbe (--sm-dark) werden
+   zurueckgesetzt, .fw-semibold (!important) uebernimmt weiterhin
+   das Schriftgewicht. */
+.video-title {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: inherit;
 }
 
 .container {
@@ -29,7 +79,7 @@ body {
 
 .navbar-custom {
     background-color: #ffffff !important;
-    border-bottom: 1px solid var(--brand-red);
+    border-bottom: 2px solid var(--sm-maroon);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     top: 0;
     z-index: 1020;
@@ -46,16 +96,94 @@ body {
     display: block;
 }
 
+.navbar-brand {
+    font-weight: 800;
+    letter-spacing: .01em;
+    color: var(--sm-dark) !important;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.navbar-logo {
+    height: 56px;
+    width: auto;
+}
+
+@media (min-width: 992px) {
+    .navbar-logo {
+        height: 70px;
+    }
+    .navbar > .container {
+        flex-wrap: nowrap;
+    }
+    .navbar .btn-toggle-group {
+        margin-left: 2rem;
+    }
+}
+
+.navbar .btn-toggle-group {
+    flex-shrink: 1;
+    min-width: 0;
+}
+
 .navbar-custom .nav-link {
-    color: #333 !important;
-    font-weight: 400;
+    color: var(--sm-dark) !important;
+    font-weight: 600;
     font-size: 1rem;
     padding: 0 1rem !important;
 }
 
 .navbar-custom .nav-link:hover,
 .navbar-custom .nav-link.active {
-    color: var(--brand-red) !important;
+    color: var(--sm-maroon) !important;
+}
+
+/* Aufklappmenue unterhalb 992px als rechtsbuendige Dropdown-Box statt
+   vollbreiter Zeile (Stand v20 der statischen Seite). Wirkt sichtbar,
+   sobald die zugehoerige Navbar-Markup-Struktur uebernommen ist. */
+@media (max-width: 991.98px) {
+    .navbar > .container {
+        position: relative;
+    }
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: auto;
+        width: auto;
+        min-width: 220px;
+        max-width: calc(100vw - 2rem);
+        margin-top: .5rem;
+        background: #fff;
+        border-radius: .6rem;
+        box-shadow: 0 8px 24px rgba(40, 19, 81, .15);
+        padding: .75rem 1rem;
+        z-index: 1030;
+    }
+    .navbar-collapse .navbar-nav {
+        margin-left: 0;
+        margin-right: 0;
+        align-items: flex-end;
+        text-align: right;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar .btn-toggle-group {
+        gap: .35rem !important;
+    }
+    .navbar .btn-maroon {
+        padding: .3rem .5rem;
+        font-size: .75rem;
+    }
+    .navbar-toggler {
+        padding: .1rem .3rem;
+    }
+    .navbar-toggler-icon {
+        width: 1.1em;
+        height: 1.1em;
+    }
 }
 
 
@@ -64,20 +192,35 @@ body {
    ========================================================= */
 
 .rounded-0 {
-    border-radius: 0 !important;
+    border-radius: 8px !important;
 }
 
 .btn {
-    border-radius: 10px !important;
+    border-radius: 8px !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
 .btn-primary {
     background-color: var(--brand-red-dark) !important;
     border-color: var(--brand-red-dark) !important;
     font-weight: 600;
+    box-shadow: 0 2px 8px rgba(156, 14, 23, 0.2);
 }
 
 .btn-primary:hover {
+    background-color: var(--brand-red) !important;
+    border-color: var(--brand-red) !important;
+    box-shadow: 0 4px 12px rgba(156, 14, 23, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-outline-primary {
+    color: var(--brand-red) !important;
+    border-color: var(--brand-red) !important;
+}
+
+.btn-outline-primary:hover {
     background-color: var(--brand-red) !important;
     border-color: var(--brand-red) !important;
 }
@@ -86,12 +229,105 @@ body {
     font-size: 0.95rem;
 }
 
+/* Button-Varianten der statischen Seite. Das pf-Markup verwendet diese
+   Klassennamen direkt (btn-maroon / btn-outline-dark-sm), daher
+   unveraendert uebernommen statt mit btn-primary/btn-outline-primary
+   zusammengelegt. */
+.btn-maroon {
+    background-color: var(--sm-maroon);
+    border-color: var(--sm-maroon);
+    color: #fff;
+    font-weight: 700;
+    border-radius: .5rem;
+    transition: box-shadow .3s ease, transform .3s ease, background-color .3s ease, border-color .3s ease;
+}
+
+.btn-maroon:hover {
+    background-color: var(--sm-maroon-bright);
+    border-color: var(--sm-maroon-bright);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(156, 14, 23, .3);
+    transform: translateY(-2px);
+}
+
+/* Schnellzugriff-Buttons im Dashboard ("Neue Karte erstellen", "Termin",
+   "Sektion") in dezenten Regenbogenfarben, damit die drei Aktionen auf
+   einen Blick unterscheidbar sind. Gleiches Hover-/Schatten-Verhalten
+   wie .btn-maroon, nur mit eigener Farbe je Button. */
+.btn-add-card,
+.btn-add-event,
+.btn-add-section {
+    color: #fff;
+    font-weight: 700;
+    border-radius: .5rem;
+    border: none;
+    transition: box-shadow .3s ease, transform .3s ease, background-color .3s ease;
+}
+
+.btn-add-card {
+    background-color: #B25444;
+}
+
+.btn-add-card:hover {
+    background-color: #C96257;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(178, 84, 68, .35);
+    transform: translateY(-2px);
+}
+
+.btn-add-event {
+    background-color: #5E8C61;
+}
+
+.btn-add-event:hover {
+    background-color: #6FA372;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(94, 140, 97, .35);
+    transform: translateY(-2px);
+}
+
+.btn-add-section {
+    background-color: #4F6FA8;
+}
+
+.btn-add-section:hover {
+    background-color: #5E82C4;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79, 111, 168, .35);
+    transform: translateY(-2px);
+}
+
+.btn-outline-dark-sm {
+    background-color: transparent;
+    border: 2px solid var(--sm-dark);
+    color: var(--sm-dark);
+    font-weight: 700;
+    border-radius: .5rem;
+    transition: box-shadow .3s ease, transform .3s ease, background-color .3s ease, color .3s ease;
+}
+
+.btn-outline-dark-sm:hover {
+    background-color: var(--sm-dark);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(40, 19, 81, .25);
+    transform: translateY(-2px);
+}
+
+.btn-maroon.btn-lg,
+.btn-outline-dark-sm.btn-lg {
+    padding: .45rem 1.15rem;
+    font-size: 1.05rem;
+}
+
 
 /* =========================================================
    Typografie
    ========================================================= */
 
-.card-title,
+.card-title {
+    color: var(--sm-dark);
+}
+
 .modal-title {
     color: var(--brand-red);
 }
@@ -105,19 +341,34 @@ body {
     white-space: pre-line;
 }
 
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-4px);
+}
+
 .hero-image {
     max-height: 360px;
     width: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(227, 6, 19, 0.15);
 }
 
 .card-img-top {
     aspect-ratio: 1280 / 715;
     object-fit: cover;
+    border-radius: 12px 12px 0 0;
 }
 
 .card-img-side {
     max-width: 100%;
     object-fit: contain;
+    border-radius: 8px;
 }
 
 .card-img-side-portrait {
@@ -125,6 +376,16 @@ body {
     max-height: 320px;
     width: auto;
     object-fit: contain;
+}
+
+.card-title {
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.card-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 .modal-dialog-top {
@@ -140,12 +401,83 @@ body {
     overflow-y: auto;
 }
 
+/* Weitere Kartentechnik-Bausteine der statischen Seite: eigenstaendige
+   "card-sm"-Karten sowie die dezente Abgrenzung von Karten innerhalb
+   von Karten. Das Verhalten von .card/.card:hover selbst bleibt
+   bewusst die Flask-Variante (siehe oben). */
+.card-sm {
+    border-radius: .75rem;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(40, 19, 81, .08);
+    padding: 1.75rem 1.5rem;
+    height: 100%;
+    transition: box-shadow .3s ease, transform .3s ease;
+}
+
+.card-sm:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    transform: translateY(-4px);
+}
+
+.card .card-sm,
+.card .termin-card {
+    background: var(--sm-bg-nested);
+    box-shadow: none;
+    border: 1px solid var(--sm-line);
+}
+
+.card .card-sm:hover,
+.card .termin-card:hover {
+    box-shadow: 0 6px 16px rgba(40, 19, 81, .10);
+}
+
+
+/* =========================================================
+   Badges & Labels
+   ========================================================= */
+
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-radius: 8px;
+}
+
+.badge-primary {
+    background-color: var(--brand-red) !important;
+    color: white !important;
+}
+
+.badge-secondary {
+    background-color: #f0f0f0 !important;
+    color: #333 !important;
+    border: 1px solid #ddd;
+}
+
+/* =========================================================
+   Spacing & Layout Utilities
+   ========================================================= */
+
+.py-lg-6 {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+.gap-5 {
+    gap: 3rem !important;
+}
+
 /* =========================================================
    Interaktive Elemente
    ========================================================= */
 
 .cursor-pointer {
     cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.cursor-pointer:hover {
+    opacity: 0.9;
 }
 
 
@@ -156,6 +488,127 @@ body {
 .footer-custom a:hover {
     color: var(--brand-red) !important;
     transition: color 0.3s ease;
+}
+
+/* Footer-Variante der statischen Seite (eigene Klasse "site-footer",
+   kollidiert nicht mit footer-custom). Wirkt, sobald die Startseite
+   ihren eigenen Footer-Bereich nutzt. */
+footer.site-footer {
+    background: #fff;
+    color: var(--sm-ink);
+    border-top: 1px solid var(--sm-line);
+}
+
+footer.site-footer a {
+    color: var(--sm-ink);
+    text-decoration: none;
+}
+
+footer.site-footer a:hover {
+    color: var(--sm-maroon);
+    text-decoration: underline;
+}
+
+/* Nachhaltigkeits-Badge im Footer (Green Web Foundation) */
+.sustainability-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.sustainability-badge-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+footer.site-footer .sustainability-badge-link:hover {
+    text-decoration: none;
+}
+
+.sustainability-badge-img {
+    width: 32px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+.sustainability-badge-text {
+    font-size: .78rem;
+    color: var(--sm-muted);
+}
+
+.sustainability-tooltip {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    width: 320px;
+    max-width: 85vw;
+    padding-bottom: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+    z-index: 60;
+    text-align: left;
+    pointer-events: none;
+}
+
+.sustainability-tooltip-inner {
+    position: relative;
+    background: #fff;
+    border-radius: .6rem;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .28);
+    padding: 1.1rem 1.2rem;
+}
+
+.sustainability-tooltip-inner::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 18px;
+    border: 8px solid transparent;
+    border-top-color: #fff;
+}
+
+.sustainability-tooltip h4 {
+    font-size: .95rem;
+    color: var(--sm-dark);
+    font-weight: 800;
+    margin-bottom: .55rem;
+}
+
+.sustainability-tooltip p {
+    font-size: .8rem;
+    line-height: 1.55;
+    color: var(--sm-ink);
+    margin-bottom: .6rem;
+}
+
+.sustainability-tooltip p:last-child {
+    margin-bottom: 0;
+}
+
+.sustainability-tooltip a {
+    color: var(--sm-maroon) !important;
+    text-decoration: underline !important;
+}
+
+.sustainability-badge:hover .sustainability-tooltip,
+.sustainability-badge:focus-within .sustainability-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+@media (max-width: 575.98px) {
+    .sustainability-tooltip {
+        right: -70px;
+        width: 260px;
+    }
+    .sustainability-tooltip-inner::after {
+        right: 88px;
+    }
 }
 
 
@@ -177,4 +630,208 @@ body {
 .ticker p {
     display: inline-block;
     margin: 0;
+}
+
+
+/* =========================================================
+   Playful Future - weitere Bausteine der statischen Seite
+   (playfulfuture-index-v20.html)
+   ========================================================= */
+
+.placeholder-media {
+    background: repeating-linear-gradient(45deg, #ECEAF5, #ECEAF5 12px, #E1DEF0 12px, #E1DEF0 24px);
+    border: 2px dashed #BDB6DD;
+    border-radius: .6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sm-purple);
+    font-weight: 600;
+    text-align: center;
+    min-height: 320px;
+}
+
+.placeholder-media i {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: .5rem;
+}
+
+.placeholder-media.video-placeholder {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+}
+
+.video-card {
+    display: block;
+}
+
+.video-card:hover .video-placeholder {
+    border-color: var(--sm-maroon);
+    color: var(--sm-maroon);
+}
+
+.video-embed {
+    border-radius: .6rem;
+    overflow: hidden;
+}
+
+.video-embed iframe {
+    border: 0;
+}
+
+.hero-media {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    max-height: 480px;
+    object-fit: cover;
+    border-radius: .6rem;
+    display: block;
+}
+
+.award-logo-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 130px;
+}
+
+.award-caption {
+    font-size: .85rem;
+    line-height: 1.45;
+    color: var(--sm-ink);
+}
+
+.award-logo {
+    max-height: 130px;
+    max-width: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+.stat-inline {
+    display: block;
+    font-weight: 800;
+    font-size: 1.9rem;
+    color: var(--sm-maroon);
+    line-height: 1.3;
+}
+
+.stat-source {
+    font-size: .78rem;
+    color: var(--sm-muted);
+}
+
+.testimonial-card i.bi-quote {
+    font-size: 1.8rem;
+    color: var(--sm-pink);
+}
+
+/* Schmerzpunkte-/Nutzenversprechen-Tabelle */
+.schmerz-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schmerz-table th {
+    text-align: left;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    font-weight: 700;
+    color: var(--sm-maroon);
+    padding: 0 1.25rem .9rem;
+    border-bottom: 2px solid var(--sm-line);
+    white-space: nowrap;
+}
+
+.schmerz-table td {
+    padding: 1.25rem;
+    vertical-align: top;
+    border-bottom: 1px solid var(--sm-line);
+    width: 33.33%;
+    color: var(--sm-ink);
+}
+
+.schmerz-table tr:last-child td {
+    border-bottom: none;
+}
+
+.schmerz-table .painpoint {
+    display: block;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    font-weight: 700;
+    color: var(--sm-maroon);
+    margin-bottom: .35rem;
+}
+
+.termin-card {
+    border-radius: .75rem;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(40, 19, 81, .08);
+    padding: 1.75rem 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    transition: box-shadow .3s ease, transform .3s ease;
+}
+
+.termin-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    transform: translateY(-4px);
+}
+
+.termin-format {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--sm-purple);
+    padding: .3rem .65rem;
+    border-radius: 999px;
+    align-self: flex-start;
+}
+
+.termin-date {
+    display: flex;
+    align-items: baseline;
+    gap: .45rem;
+    color: var(--sm-maroon);
+    font-weight: 800;
+}
+
+.termin-date .day {
+    font-size: 2.1rem;
+    line-height: 1;
+}
+
+.termin-date .month {
+    font-size: .95rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+/* Bereichs-Labels zur gemeinsamen Bearbeitung - am Ende einfach
+   ausblendbar, indem am <body>-Tag die Klasse "hide-dev-labels"
+   ergaenzt wird. */
+.dev-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--sm-purple);
+    opacity: .55;
+    background: #fff;
+    padding: .5rem 0;
+    margin: 0;
+}
+
+body.hide-dev-labels .dev-label {
+    display: none;
 }
