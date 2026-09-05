@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Erfolgsgeschichten – Mensch denk an Dich{% endblock %}
+{% block meta_description %}Erfolgsgeschichten und aktuelle Beiträge rund um MENSCH DENK AN DICH®.{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="mb-4 pb-2">
+        <p class="kicker mb-2">Erfolgsgeschichten</p>
+        <h1 class="display-6 mb-0">Beiträge & Neuigkeiten</h1>
+    </div>
+    {% include "_karten_liste.html" %}
+</div>
+{% endblock %}

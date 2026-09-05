@@ -7,10 +7,10 @@ db = SQLAlchemy()
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    contents = db.relationship('Content', backref='author', lazy=True)
+    cards = db.relationship('Card', backref='author', lazy=True)
     password_hash = db.Column(db.String(255), nullable=False)
 
-class Content(db.Model):
+class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     c_type = db.Column(db.String(50))
     title = db.Column(db.String(200), nullable=False)

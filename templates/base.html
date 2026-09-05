@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="description"
-          content="Spielbasierte Coachingmethoden zur Persönlichkeitsentwicklung. Entwickelt von Dr. Irene Preußner – Autorin, Spieleerfinderin und Coach.">
+          content="{% block meta_description %}Spielbasierte Coachingmethoden zur Persönlichkeitsentwicklung. Entwickelt von Dr. Irene Preußner – Autorin, Spieleerfinderin und Coach.{% endblock %}">
     <meta name="author" content="Dr. Henrik Bettermann">
     <title>{% block title %}Mensch denk an Dich – Coaching & Persönlichkeitsentwicklung{% endblock %}</title>
     <script type="application/ld+json">
@@ -18,6 +19,8 @@
     </script>
     <link rel="canonical" href="{{ request.url }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon.png') }}">
@@ -30,50 +33,93 @@
       </div>
     {% endif %}
 
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top shadow-sm">
+    <a class="skip-link btn btn-maroon" href="#main" style="position:absolute;left:-999px;top:0;z-index:2000;">Zum Inhalt springen</a>
+
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo">
-                <img src="{{ url_for('static', filename='img/bdvt_gold_card.png') }}" alt="BDVT Gold Award" class="logo">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='img/logo_maroon.png') }}" alt="MENSCH DENK AN DICH®" class="navbar-logo">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="">Das Spiel</a></li>
-                    <li class="nav-item"><a class="nav-link" href="">Das Team</a></li>
-                    <li class="nav-item"><a class="nav-link" href="">Die Wissenschaft</a></li>
-                    <li class="nav-item"><a class="nav-link" href="">Journal</a></li>
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Meine Karten</a></li>
-                        <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('logout') }}">Logout</a></li>
-                    {% endif %}
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto gap-lg-2">
+                    <li class="nav-item"><a class="nav-link" href="beratung.html">Beratung</a></li>
+                    <li class="nav-item"><a class="nav-link" href="akademie.html">Akademie</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('erfolgsgeschichten') }}">Erfolgsgeschichten</a></li>
+                    <li class="nav-item"><a class="nav-link text-nowrap" href="ueber-uns.html">Über uns</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#kontakt">Kontakt</a></li>
                 </ul>
+            </div>
+            <div class="d-flex align-items-center gap-2 btn-toggle-group">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-maroon text-nowrap">Mein Bereich</a>
+                {% else %}
+                    <a href="#kontakt" class="btn btn-maroon text-nowrap">Probe-Spielraum buchen</a>
+                {% endif %}
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Navigation umschalten">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
             </div>
         </div>
     </nav>
-    <div class="container my-5">
-        {% block content %}{% endblock %}
-    </div>
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <footer class="footer-custom py-3 bg-white border-top border-1" style="border-color: #e30613 !important;">
-        <div class="container text-center">
-            <div class="mb-2">
-                <!-- Die Links führen aktuell auf die Startseite (#), da wir noch keine Routen dafür haben -->
-                <a href="{{ url_for('impressum') }}" class="text-muted text-decoration-none mx-3">Impressum</a>
-                <a href="#" class="text-muted text-decoration-none mx-3">Kontakt</a>
-                <a href="#" class="text-muted text-decoration-none mx-3">Über mich</a>
-                <a href="#" class="text-muted text-decoration-none mx-3">Datenschutz</a>
-                {% if not current_user.is_authenticated %}
-                    <a class="text-muted text-decoration-none mx-3" href="{{ url_for('login') }}">
-                        Login
-                    </a>
-                {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="site-footer pt-5 pb-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <p class="h5 mb-3">MENSCH DENK AN DICH<sup>®</sup></p>
+                    <p class="small" style="color:var(--sm-muted);">Effizient, für alle die Zukunft machen.</p>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <p class="fw-semibold mb-3">Angebote</p>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="beratung.html">Beratung</a></li>
+                        <li class="mb-2"><a href="akademie.html">Akademie</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <p class="fw-semibold mb-3">Mehr</p>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="{{ url_for('erfolgsgeschichten') }}">Erfolgsgeschichten</a></li>
+                        <li class="mb-2"><a href="ueber-uns.html">Über uns</a></li>
+                        <li class="mb-2"><a href="{{ url_for('impressum') }}">Impressum</a></li>
+                        <li class="mb-2"><a href="#">Datenschutz</a></li>
+                        {% if current_user.is_authenticated %}
+                        <li class="mb-2"><a href="{{ url_for('logout') }}">Logout</a></li>
+                        {% else %}
+                        <li class="mb-2"><a href="{{ url_for('login') }}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <p class="fw-semibold mb-3">Kontakt</p>
+                    <p class="small">
+                        <a href="mailto:irene.preussner@mensch-denk-an-dich.de">irene.preussner@mensch-denk-an-dich.de</a>
+                    </p>
+                </div>
             </div>
-            <p class="text-muted small">&copy; 2026 Mensch denk an dich. Alle Rechte vorbehalten.</p>
+            <hr style="border-color:var(--sm-line);" class="mt-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <p class="small mb-0" style="color:var(--sm-muted);">&copy; 2026 MENSCH DENK AN DICH®. Alle Rechte vorbehalten.</p>
+                <div class="sustainability-badge">
+                    <a href="https://www.thegreenwebfoundation.org/" target="_blank" rel="noopener" class="sustainability-badge-link" aria-label="Nachhaltiges Webdesign – mehr erfahren">
+                        <img src="{{ url_for('static', filename='img/greenweb-badge.svg') }}" alt="Green Web Foundation Badge" class="sustainability-badge-img" width="32" height="35">
+                        <span class="sustainability-badge-text">Nachhaltiges Webdesign</span>
+                    </a>
+                    <div class="sustainability-tooltip" role="tooltip">
+                        <div class="sustainability-tooltip-inner">
+                            <h4>Nachhaltiges Webdesign</h4>
+                            <p>Diese Website wurde nicht mit WordPress gebaut, sondern bewusst mit schlankem, sauberem Code umgesetzt – ganz ohne unnötige Plugins, externe Skripte und Datenballast. Jeder Seitenaufruf verbraucht dadurch deutlich weniger Energie: Während eine durchschnittliche Website weltweit rund 0,8 Gramm CO2 pro Aufruf erzeugt, setzen wir gezielt auf Reduktion statt Aufblähung.</p>
+                            <p>Betrieben wird die Seite auf einem Cloudserver von Hetzner, deren Rechenzentren bereits seit 2008 zu 100&nbsp;% mit Strom aus Wasserkraft laufen, bei einem PUE-Wert von 1,13, einem der besten der Branche.</p>
+                            <p>Neugierig, wie grün eine Website wirklich ist? Mit Tools wie dem <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener">Website Carbon Calculator</a> oder dem <a href="https://www.thegreenwebfoundation.org/green-web-check/" target="_blank" rel="noopener">Green Web Check</a> lässt sich der CO2-Fußabdruck jeder beliebigen Seite überprüfen – auch dieser hier.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
 
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

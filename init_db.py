@@ -1,6 +1,5 @@
-from views import app
-from models import db, User, Content
-from flask_bcrypt import Bcrypt
+from views import app, bcrypt
+from models import db, User, Card
 
 with app.app_context():
     db.create_all()

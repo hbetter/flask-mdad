@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="container py-4">
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card shadow border-0">
@@ -9,7 +10,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Typ</label>
                         <select name="c_type" class="form-select">
-                            {% for key, label in content_types.items() %}
+                            {% for key, label in card_types.items() %}
                                 <option value="{{ key }}">{{ label }}</option>
                             {% endfor %}
                         </select>
@@ -102,4 +103,5 @@
         }
     });
 </script>
+</div>
 {% endblock %}

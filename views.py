@@ -15,14 +15,15 @@ from flask_login import (
 )
 from flask_migrate import Migrate
 
-from models import db, User, Content
+from models import db, User, Card
 
 
-CONTENT_TYPES = {
+CARD_TYPES = {
     "draft": "Entwurf",
-    "index_card": "Karteikarte auf Indexseite",
-    "journal": "Journalbeitrag",
-    "banner": "Bannertext",
+    "index_card": "Karte für Indexseite",
+    "journal_card": "Karte für Erfolgsgeschichten",
+    "double_card": "Karte für für beide Seiten",
+    "banner": "Banner auf Indexseite",
 }
 
 DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4"
@@ -110,7 +111,7 @@ def delete_uploaded_image(filename):
 
 
 def get_banner_text():
-    banner = Content.query.filter_by(c_type="banner").first()
+    banner = Card.query.filter_by(c_type="banner").first()
     return banner.description if banner else None
 
 
@@ -137,15 +138,32 @@ def load_user(user_id):
 def index():
     banner = get_banner_text()
     index_cards = (
-        Content.query
+        Card.query
         .filter_by(c_type="index_card")
-        .order_by(Content.order_number.asc(), Content.id.asc())
+        .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     return render_template(
         "index.html",
         index_cards=index_cards,
-        content_types=CONTENT_TYPES,
+        card_types=CARD_TYPES,
+        banner=banner,
+    )
+
+
+@app.route("/erfolgsgeschichten")
+def erfolgsgeschichten():
+    banner = get_banner_text()
+    index_cards = (
+        Card.query
+        .filter_by(c_type="index_card")
+        .order_by(Card.order_number.asc(), Card.id.asc())
+        .all()
+    )
+    return render_template(
+        "erfolgsgeschichten.html",
+        index_cards=index_cards,
+        card_types=CARD_TYPES,
         banner=banner,
     )
 
@@ -170,22 +188,22 @@ def login():
 @login_required
 def dashboard():
     banner = get_banner_text()
-    user_content = (
-        Content.query
+    user_cards = (
+        Card.query
         .filter_by(user_id=current_user.id)
-        .order_by(Content.order_number.asc(), Content.id.asc())
+        .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     index_card_orders = (
-        Content.query
+        Card.query
         .filter_by(c_type="index_card")
-        .order_by(Content.order_number.asc(), Content.id.asc())
+        .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     return render_template(
         "dashboard.html",
-        contents=user_content,
-        content_types=CONTENT_TYPES,
+        cards=user_cards,
+        card_types=CARD_TYPES,
         banner=banner,
         index_card_orders=index_card_orders,
     )
@@ -193,12 +211,12 @@ def dashboard():
 
 @app.route("/add", methods=["GET", "POST"])
 @login_required
-def add_content():
+def add_card():
     if request.method == "POST":
         c_type = request.form.get("c_type")
 
         if c_type == "banner":
-            existing_banner = Content.query.filter_by(c_type="banner").first()
+            existing_banner = Card.query.filter_by(c_type="banner").first()
             if existing_banner:
                 flash(
                     "Ein Banner existiert bereits und kann nicht erneut angelegt werden.",
@@ -225,7 +243,7 @@ def add_content():
                 )
             if not image_filename:
                 flash("Nur Bilddateien sind erlaubt.", "warning")
-                return redirect(url_for("add_content"))
+                return redirect(url_for("add_card"))
         order_number = int(request.form.get("order_number") or 0)
         if c_type != "index_card":
             order_number = 0
@@ -234,7 +252,7 @@ def add_content():
         if c_type != "index_card":
             col_size = DEFAULT_COL_SIZE
 
-        new_item = Content(
+        new_item = Card(
             c_type=c_type,
             title=request.form.get("title"),
             description=request.form.get("description"),
@@ -250,13 +268,29 @@ def add_content():
         flash("Inhalt hinzugefügt!", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("add.html", content_types=CONTENT_TYPES)
+    return render_template("add.html", card_types=CARD_TYPES)
 
 
-@app.route("/edit/<int:content_id>", methods=["GET", "POST"])
+@app.route("/add-event", methods=["GET"])
 @login_required
-def edit_content(content_id):
-    item = Content.query.get_or_404(content_id)
+def add_event():
+    # Platzhalter-Route: eigenes Formular fuer Termine (mit Datum, Ort etc.)
+    # folgt spaeter, sobald der Datenmodell-Bedarf geklaert ist.
+    return render_template("coming_soon.html", title="Termin hinzufügen")
+
+
+@app.route("/add-section", methods=["GET"])
+@login_required
+def add_section():
+    # Platzhalter-Route: eigenes Formular fuer Sektionen folgt spaeter,
+    # sobald der Datenmodell-Bedarf geklaert ist.
+    return render_template("coming_soon.html", title="Sektion hinzufügen")
+
+
+@app.route("/edit/<int:card_id>", methods=["GET", "POST"])
+@login_required
+def edit_card(card_id):
+    item = Card.query.get_or_404(card_id)
 
     if item.author != current_user:
         return redirect(url_for("dashboard"))
@@ -265,9 +299,9 @@ def edit_content(content_id):
         new_type = request.form.get("c_type")
 
         if new_type == "banner":
-            existing_banner = Content.query.filter(
-                Content.c_type == "banner",
-                Content.id != item.id,
+            existing_banner = Card.query.filter(
+                Card.c_type == "banner",
+                Card.id != item.id,
             ).first()
             if existing_banner:
                 flash("Ein Banner existiert bereits.", "warning")
@@ -320,7 +354,7 @@ def edit_content(content_id):
                 )
             if not image_filename:
                 flash("Nur Bilddateien sind erlaubt: png, jpg, jpeg, gif, webp", "warning")
-                return redirect(url_for("edit_content", content_id=item.id))
+                return redirect(url_for("edit_card", card_id=item.id))
 
             delete_uploaded_image(item.image_filename)
             item.image_filename = image_filename
@@ -331,16 +365,16 @@ def edit_content(content_id):
 
     return render_template(
         "edit.html",
-        content=item,
-        content_types=CONTENT_TYPES,
+        card=item,
+        card_types=CARD_TYPES,
         banner=get_banner_text(),
     )
 
 
-@app.route("/delete/<int:content_id>", methods=["POST"])
+@app.route("/delete/<int:card_id>", methods=["POST"])
 @login_required
-def delete_content(content_id):
-    item = Content.query.get_or_404(content_id)
+def delete_card(card_id):
+    item = Card.query.get_or_404(card_id)
 
     if item.author == current_user:
         delete_uploaded_image(item.image_filename)
@@ -367,6 +401,10 @@ def sitemap():
     pages = []
     pages.append({
         "loc": url_for("index", _external=True),
+        "lastmod": datetime.utcnow().date().isoformat()
+    })
+    pages.append({
+        "loc": url_for("erfolgsgeschichten", _external=True),
         "lastmod": datetime.utcnow().date().isoformat()
     })
 

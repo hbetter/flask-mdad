@@ -1,180 +1,411 @@
 {% extends "base.html" %}
-
+{% block title %}MENSCH DENK AN DICH® – Playful Future{% endblock %}
+{% block meta_description %}Der Resilienz-Booster für alle, die Zukunft machen. Auf Basis des mehrfach ausgezeichneten Spiels MENSCH DENK AN DICH® wird in nur 90 Minuten brachliegendes Innovations- und Resilienzpotenzial in jeder Organisation gehoben.{% endblock %}
 {% block content %}
-<div class="container py-4">
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-7">
-                    <h1 class="card-title h2">Ein Text, viel Mehrwertversprechen</h1>
-                    <h2 class="card-subtitle text-secondary h5 ">
-                        <br />Hier reichern wir den Kernsatz um die Hauptaussagen der Wirkfaktoren an.
-                        Rumms klar, direkt und auf den Punkt. <br /><br />
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                    </h2>
 
-                    <div class="row g-2 mt-3">
-                        <div class="col-sm-6">
-                            <a href="https://outlook.office365.com/owa/calendar/MENSCHDENKANDICHEINZELGESPRCHE@smeo-now.de/bookings/"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="btn btn-primary rounded-0 w-100 text-nowrap">
-                                Erstgespräch vereinbaren
-                            </a>
-                        </div>
-                        <div class="col-sm-6">
-                            <a href="#" class="btn btn-primary rounded-0 w-100 text-nowrap">
-                                An einem Spiel teilnehmen
-                            </a>
-                        </div>
-                        <div class="col-sm-6">
-                            <a href="#" class="btn btn-primary rounded-0 w-100 text-nowrap">
-                                Spielecoach werden
-                            </a>
-                        </div>
-                        <div class="col-sm-6">
-                            <a href="#" class="btn btn-primary rounded-0 w-100 text-nowrap">
-                                Spielecoach buchen
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="d-flex flex-column align-items-center align-items-lg-end text-center text-lg-end">
-                        <img
-                            src="{{ url_for('static', filename='img/IPM_auf_Arm_gestuetzt.webp') }}"
-                            alt="Dr. Irene Preußner"
-                            class="img-fluid rounded hero-image"
-                        >
-                        <p class="mt-2 mb-0 text-secondary">
-                            Dr. Irene Preußner, Geschäftsführerin <br />und Spieleentwicklerin
-                        </p>
-                    </div>
-                </div>
+<main id="main">
+
+  <!-- HERO -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <div class="row">
+            <div class="col-12">
+              <p class="kicker mb-2">Der Hebel für resiliente Unternehmen</p>
+              <h1 class="display-3 mb-3">Zukunft spielend gestalten</h1>
+              <p class="fs-4 mb-4">MENSCH DENK AN DICH®, das Resilienzspiel, für alle die Zukunft machen</p>
             </div>
+          </div>
+          <div class="row gy-5">
+            <div class="col-lg-6">
+              <p class="fs-5 mb-3">
+                In nur 90 Minuten heben wir das brachliegende Innovations- und Veränderungspotenzial
+                in jedem Unternehmen. Mit dem mehrfach ausgezeichneten Resilienzspiel
+                MENSCH DENK AN DICH® - evidenzbasiert und skalierbar.
+              </p>
+              <p class="fs-5 mb-2">
+                Für Unternehmen, die keine Zeit verlieren wollen:
+              </p>
+              <div class="d-flex flex-wrap gap-3 mb-4">
+                <a href="beratung.html" class="btn btn-outline-dark-sm btn-lg">Beratungsgespräch vereinbaren</a>
+              </div>
+              <p class="fs-5 mb-2">
+                Als Spiele Coach bringst du echte Veränderungen in Teams, Führung und ganzen Organisationen – effizient mit nachhaltiger Wirkung:
+              </p>
+              <div class="d-flex flex-wrap gap-3">
+                <a href="akademie.html" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <img src="{{ url_for('static', filename='img/collage_web.jpg') }}" alt="Impressionen aus dem Spiel MENSCH DENK AN DICH®" class="hero-media">
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-    <div class="row g-3">
-        {% for item in index_cards %}
-            <div class="{{ item.col_size }}">
-                <div
-                    class="card h-100 shadow-sm cursor-pointer"
-                    role="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#indexCardModal{{ item.id }}">
-                    {% if "col-lg-8" in item.col_size or item.col_size == "col-12" %}
-                        <div class="row g-0 h-100 align-items-stretch">
-                            <div class="{% if item.image_filename %}col-md-6{% else %}col-12{% endif %}">
-                                <div class="card-body d-flex flex-column h-100">
-                                    <h3 class="card-title h5">{{ item.title }}</h3>
+  </section>
 
-                                    {% if item.description %}
-                                    <h4 class="card-subtitle mb-2 text-secondary h6">
-                                        {{ item.description }}
-                                    </h4>
-                                    {% endif %}
-                                    {% set parts = item.body.split('##', 1) %}
-                                    <div class="card-text preserve-lines mb-0">
-                                        {{ parts[0]|safe }}
-                                    </div>
-                                    {% if parts|length > 1 %}
-                                    <div class="mt-2">
+  <!-- AWARDS -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+        <div class="col">
+          <div class="card shadow-sm h-100 text-center p-3">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/newwork_gold_web.jpg') }}" alt="New Work Business Award – Gold" class="award-logo">
+            </div>
+            <p class="award-caption mt-3 mb-0">Playful Leadership: Führungskultur nachhaltig transformieren, Resilienz spielerisch stärken</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm h-100 text-center p-3">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/newwork_gold_web.jpg') }}" alt="New Work Business Award – Gold" class="award-logo">
+            </div>
+            <p class="award-caption mt-3 mb-0">Playful Impact: Transformative Kraft des Spielens – Wandel aus dem Inneren bewirken</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm h-100 text-center p-3">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/newwork_silber_web.jpg') }}" alt="New Work Business Award – Silber" class="award-logo">
+            </div>
+            <p class="award-caption mt-3 mb-0">Playful Collaboration: Potenziale entfalten, Vertrauen stärken und gemeinsam wachsen</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm h-100 text-center p-3">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/bdvt_web.png') }}" alt="Europäischer Trainingspreis (BDVT)" class="award-logo">
+            </div>
+            <p class="award-caption mt-3 mb-0">Prozess der Lösungsfindung - Agiler Ansatz, der die Gruppendynamik nachhaltig beeinflusst</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card shadow-sm h-100 text-center p-3">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/bbgm_web.png') }}" alt="Innovationspreis Bundesverband BGM" class="award-logo">
+            </div>
+            <p class="award-caption mt-3 mb-0">Beeindruckende und inspirierende Inspiration im BGM - neue Maßstäbe gesetzt</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-                                    <button
-                                        type="button"
-                                        class="btn btn-outline-primary btn-sm mt-2"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#indexCardModal{{ item.id }}">
-                                        Weiterlesen
-                                    </button>
+  <!-- NUTZENVERSPRECHEN -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <p class="kicker mb-2">Echter Mehrwert</p>
+          <h2 class="display-5 mb-4">Ein Spiel, in dem alle gewinnen</h2>
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+            <div class="col">
+              <div class="card-sm text-center">
+                <p class="mb-0">Mehr als<span class="stat-inline">9 Jahre</span> erfolgreich mit Spaß im Einsatz</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm text-center">
+                <p class="mb-0">In nur<span class="stat-inline">90 min</span> echte Veränderung initiiert</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm text-center">
+                <p class="mb-0">Mit<span class="stat-inline">96 %</span> garantiert positiver Stimmung</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm text-center">
+                <p class="mb-0">Mehr als<span class="stat-inline">130 </span> zertifizierte Spiele Coaches in DACH</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm text-center">
+                <p class="mb-0">Mehr als<span class="stat-inline">5000</span> zufriedene Kunden</p>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-5">
+            <h3 class="h4 mb-4">MENSCH DENK AN DICH<sup>®</sup> ist der Lösungsweg, der alle abholt <br />und Unternehmen resilient macht.</h3>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+              <a href="akademie.html" class="btn btn-outline-dark-sm btn-lg">Beratungsgespräch vereinbaren</a>
+              <a href="akademie.html" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
 
+              <a href="#kontakt" class="btn btn-maroon btn-lg">Probe-Spielraum buchen</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
+  <!-- LÖSUNGSWEG -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <p class="kicker mb-2">Der spielerische Lösungsansatz</p>
+          <h2 class="display-5 mb-3">Neue Wege gehen</h2>
+          <p class="fs-5 mb-5">Fünf Gründe, warum MENSCH DENK AN DICH® einen Unterschied macht:</p>
+          <div class="table-responsive">
+            <table class="table schmerz-table mb-0">
+              <thead>
+                <tr>
+                  <th>Herausforderung</th>
+                  <th>Ergebnis</th>
+                  <th>Wirkung des Spiels</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="painpoint">Mangelndes Engagement</span>
+                    Viele Mitarbeitende leisten Dienst nach Vorschrift statt sich einzubringen.
+                  </td>
+                  <td>Mitarbeitende ziehen von sich aus mit – ohne Kontrolle, ohne Anreizsystem, ohne ständiges Nachhalten.</td>
+                  <td><span class="wirkmechanismus">Kreative Ideen finden und intrinsische Motivation</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="painpoint">Fehlende Veränderungsbereitschaft</span>
+                    Wandel wird ausgesessen statt aktiv mitgetragen.
+                  </td>
+                  <td>Veränderung wird selbst vorangetrieben. Der Widerstand fällt von innen weg, die Umsetzung beschleunigt sich.</td>
+                  <td><span class="wirkmechanismus">Erlebte Selbstwirksamkeit und soziale Verbundenheit</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="painpoint">Wenig Vertrauen in Führung</span>
+                    Nur 23&nbsp;% trauen der Geschäftsführung zu, Herausforderungen zu meistern.
+                  </td>
+                  <td>Offene Ideen statt vorsichtiges Schweigen – Entscheidungen stehen auf einer breiteren, ehrlicheren Informationsbasis.</td>
+                  <td><span class="wirkmechanismus">Psychologische Sicherheit ermöglicht Ko-Kreation</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="painpoint">Fachkräftemangel</span>
+                    1,7 Mio. unbesetzte Stellen – Deutschland weltweit an der Spitze der Mangelquote.
+                  </td>
+                  <td>Personalkapazität steigt - Zeit und Kosten gespart - besser als jede Rekrutierung.</td>
+                  <td><span class="wirkmechanismus">Brachliegende Potenziale werden gehoben, kollektive Stärke entsteht</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="painpoint">Reduktion auf kognitive Ebene</span>
+                    Klassische Formate vermitteln bloßes Wissen, aber verändern kein Verhalten.
+                  </td>
+                  <td>Ideen, Lösungen und Innovationen leichter erzeugt und schneller umgesetzt.</td>
+                  <td><span class="wirkmechanismus">Positive Emotion und kollektive Stärke als Treiber für Innovationen</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-                            {% if item.image_filename %}
-                                <div class="col-md-6 d-flex align-items-stretch justify-content-center p-3">
-                                    <div class="w-100 d-flex justify-content-center align-items-center h-100">
-                                        <img
-                                            src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
-                                            class="img-fluid card-img-side {% if item.image_orientation == 'portrait' %}card-img-side-portrait{% endif %}"
-                                            alt="{{ item.title }}"
-                                        >
-                                    </div>
-                                </div>
+  <!-- FAQS -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <p class="kicker mb-2">Hinterfragt</p>
+          <h2 class="display-5 mb-3">Fragen und Antworten</h2>
+          <p>plus CTA</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        {% if item.image_filename %}
-                        <img
-                            src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
-                            class="card-img-top"
-                            alt="{{ item.title }}"
-                        >
-                        {% endif %}
+  <!-- WISSENSCHAFT -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <p class="kicker mb-2">Wissenschaftlich fundiert</p>
+          <h2 class="display-5 mb-3">Messbarer Vorsprung</h2>
+          <p>Messbare Wirkung durch wissenschaftliche Fundierung.<br>2022 erste Spiele Evaluation an der FU Berlin, weitere Forschung in laufender Kooperationsstudie mit der BARMER. Nur 30&nbsp;% aller Veränderungsprojekte erreichen ihre Ziele - weniger Zeit mehr Ergebnis. Whitepapers</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-                        <div class="card-body d-flex flex-column">
-                            <h3 class="card-title h5">{{ item.title }}</h3>
-                            {% if item.description %}
-                            <h4 class="card-subtitle mb-2 text-secondary h6">
-                                {{ item.description }}
-                            </h4>
-                            {% endif %}
-                            {% set parts = item.body.split('##', 1) %}
-                            <div class="card-text preserve-lines mb-0">
-                                {{ parts[0]|safe }}
-                            </div>
-                            {% if parts|length > 1 %}
-                            <div class="mt-2">
+  <!-- BEKANNT -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <img src="{{ url_for('static', filename='img/bekannt-aus-logo.webp') }}" alt="Bekannt bei unseren Kunden" class="img-fluid w-100">
+        </div>
+      </div>
+    </div>
+  </section>
 
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary btn-sm mt-2"
-                                data-bs-toggle="modal"
-                                data-bs-target="#indexCardModal{{ item.id }}">
-                                Weiterlesen
-                            </button>
-
-                            </div>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                </div>
+  <!-- KUNDENSTIMMEN -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <p class="kicker mb-2">Referenzen</p>
+          <h2 class="display-5 mb-3">Kundenstimmen</h2>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <div class="card-sm testimonial-card">
+                <i class="bi bi-quote"></i>
+                <p class="fst-italic mt-2">
+                  Ein psychologisches Meisterwerk das Irene Preussner entwickelt hat. Wir bekamen für unseren Alltag Ideen und Anregungen mit, um diese Erkenntnisse über uns zu verfestigen und damit nachhaltiger zu machen. Ich als Chefin bemerke eine neue Gelassenheit bei mir und den Mitarbeitern im Umgang mit den Kunden und Problemen.
+                </p>
+                <p class="fw-semibold mb-0 mt-3" style="color:var(--sm-dark);">R. Lehmann</p>
+                <p class="small text-muted">Geschäftsführung</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card-sm testimonial-card">
+                <i class="bi bi-quote"></i>
+                <p class="fst-italic mt-2">
+                  Insgesamt war die Erfahrung mit dem Spiel äußerst positiv und bereichernd für unser gesamtes Team. Wir sind überzeugt davon, dass die gewonnenen Erkenntnisse und die gestärkte Teamdynamik einen langanhaltenden positiven Einfluss auf unsere tägliche Arbeit haben werden.
+                </p>
+                <p class="fw-semibold mb-0 mt-3" style="color:var(--sm-dark);">Dr. L. Börner</p>
+                <p class="small text-muted">Inhaber</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card-sm testimonial-card">
+                <i class="bi bi-quote"></i>
+                <p class="fst-italic mt-2">
+                  Wir hatten bereits einiges ausprobiert, mit denen wir auch schlechte Erfahrungen gemacht hatten. Unsere Hoffnung war, dass dadurch etwas Neues entsteht – und diese Hoffnung hat sich für uns absolut bestätigt. Das Spielen hat tatsächlich im Kopf frei gemacht und den Menschen einen anderen, positiven Sinn gegeben.
+                </p>
+                <p class="fw-semibold mb-0 mt-3" style="color:var(--sm-dark);">R. Haug</p>
+                <p class="small text-muted">Geschäftsführer</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card-sm testimonial-card">
+                <i class="bi bi-quote"></i>
+                <p class="fst-italic mt-2">
+                  MENSCH DENK AN DICH<sup>®</sup> fühlt sich leicht an, geht jedoch schweren Themen nicht
+                  aus dem Weg. Es schafft eine wunderbare Basis, die psychologische Sicherheit im Team
+                  auf feste Füße zu stellen, das wiederum stärkt die Resilienz in der Organisation.
+                </p>
+                <p class="fw-semibold mb-0 mt-3" style="color:var(--sm-dark);">C. Giesemann</p>
+                <p class="small text-muted">Resilienzexpertin & Autorin</p>
+              </div>
             </div>
 
-            <div class="modal fade" id="indexCardModal{{ item.id }}" tabindex="-1" aria-labelledby="indexCardModalLabel{{ item.id }}" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div>
-                                <h4 class="modal-title mb-1" id="indexCardModalLabel{{ item.id }}">
-                                    {{ item.title }}
-                                </h4>
-                                {% if item.description %}
-                                <div class="text-secondary">
-                                    {{ item.description }}
-                                </div>
-                                {% endif %}
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
-                        </div>
-                        <div class="modal-body">
-                            {% set item_body = item.body.replace('##', '') %}
-                            <div class="card-text preserve-lines">{{ item_body|safe }}</div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-                                Schließen
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </section>
+
+  <!-- SHORTS -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <p class="kicker mb-2">Shorts</p>
+          <h2 class="display-5 mb-3">Einblicke</h2>
+          <div class="row g-3">
+            <div class="col-lg-4">
+              <h3 class="fw-semibold mb-2 video-title">Platzhalter-Videotitel 1</h3>
+              <div class="ratio ratio-16x9 video-embed">
+                <iframe src="https://www.youtube.com/embed/ahOtrOiwfzI" title="Platzhalter-Videotitel 1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <a href="https://www.youtube.com/watch?v=PLATZHALTER2" target="_blank" rel="noopener" class="text-decoration-none text-reset video-card">
+                <h3 class="fw-semibold mb-2 video-title">Platzhalter-Videotitel 2</h3>
+                <div class="placeholder-media video-placeholder">
+                  <div>
+                    <i class="bi bi-play-circle-fill"></i>
+                    Video-Standbild 2
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4">
+              <a href="https://www.youtube.com/watch?v=PLATZHALTER3" target="_blank" rel="noopener" class="text-decoration-none text-reset video-card">
+                <h3 class="fw-semibold mb-2 video-title">Platzhalter-Videotitel 3</h3>
+                <div class="placeholder-media video-placeholder">
+                  <div>
+                    <i class="bi bi-play-circle-fill"></i>
+                    Video-Standbild 3
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- TERMINE -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-lg-5">
+          <p class="kicker mb-2">Termine</p>
+          <h2 class="display-5 mb-3">Risikofrei starten</h2>
+          <div class="row g-3">
+            <div class="col-sm-6 col-lg-3">
+              <div class="termin-card">
+                <span class="termin-format">Online</span>
+                <div class="termin-date"><span class="day">08</span><span class="month">Sep 2026</span></div>
+                <h3 class="h6 mb-1">Probe-Spielraum: Online-Impuls</h3>
+                <p class="small text-muted mb-3">60 Minuten kompakt – ein erster Eindruck für Teams, die ausprobieren wollen.</p>
+                <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="termin-card">
+                <span class="termin-format">Präsenz</span>
+                <div class="termin-date"><span class="day">24</span><span class="month">Okt 2026</span></div>
+                <h3 class="h6 mb-1">Präsenz-Workshop: Playful Future</h3>
+                <p class="small text-muted mb-3">Der volle 90-Minuten-Spielraum live vor Ort, mit anschließendem Austausch.</p>
+                <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="termin-card">
+                <span class="termin-format">Inhouse</span>
+                <div class="termin-date"><span class="day">03</span><span class="month">Dez 2026</span></div>
+                <h3 class="h6 mb-1">Inhouse-Intensiv: Team-Resilienz</h3>
+                <p class="small text-muted mb-3">Maßgeschneidert für Ihr Team – zum Jahresabschluss den Rückstand vermeiden.</p>
+                <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
+              </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <div class="termin-card">
+                <span class="termin-format">Präsenz</span>
+                <div class="termin-date"><span class="day">18</span><span class="month">Feb 2027</span></div>
+                <h3 class="h6 mb-1">Führungskräfte-Workshop: Playful Leadership</h3>
+                <p class="small text-muted mb-3">Stärkenbasiert führen, hierarchieübergreifend – für den Jahresauftakt 2027.</p>
+                <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ERFOLGSGESCHICHTEN: bestehende, datenbankgetriebene Karten (Dashboard-Verwaltung).
+       Zusätzlich auf eigener Unterseite unter /erfolgsgeschichten.
+       Hinweis: Die Karten (inkl. Modals) liegen bewusst AUSSERHALB der .card-Umrahmung:
+       .card:hover setzt einen transform, der für verschachtelte position:fixed-Modals einen
+       neuen containing block erzeugt und deren Positionierung/Animation beim Öffnen zerstört. -->
+  <section class="py-3 py-lg-4">
+    <div class="container">
+      {% include "_karten_liste.html" %}
+    </div>
+  </section>
+
+</main>
+
 {% endblock %}

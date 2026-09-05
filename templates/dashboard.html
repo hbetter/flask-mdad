@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-5 pb-3">
-    <h2 class="fw-bold text-dark">Meine Karten</h2>
-    <a href="{{ url_for('add_content') }}" class="btn btn-primary shadow-sm px-4">
-        <i class="bi bi-plus-lg"></i> + Neue Karte erstellen
-    </a>
+<div class="container py-4">
+<div class="d-flex justify-content-between align-items-center mb-5 pb-3 flex-wrap gap-2">
+    <h2 class="fw-bold text-dark">Meine Inhalte</h2>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('add_card') }}" class="btn btn-add-card shadow-sm px-4">
+            <i class="bi bi-card-text"></i> Karte
+        </a>
+        <a href="{{ url_for('add_event') }}" class="btn btn-add-event shadow-sm px-4">
+            <i class="bi bi-calendar-plus"></i> Termin
+        </a>
+        <a href="{{ url_for('add_section') }}" class="btn btn-add-section shadow-sm px-4">
+            <i class="bi bi-layout-text-window"></i> Sektion
+        </a>
+    </div>
 </div>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -20,7 +29,7 @@
 {% endwith %}
 
 <div class="row g-3">
-    {% for item in contents %}
+    {% for item in cards %}
         <div class="col-md-6 col-lg-4 mb-4">
             <div
                 class="card h-100 shadow-sm border-0 cursor-pointer"
@@ -38,7 +47,7 @@
                 <div class="card-header bg-white border-0 pt-4">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="badge rounded-pill bg-light text-dark border-1 px-3 py-2">
-                            {{ content_types.get(item.c_type, item.c_type) }}
+                            {{ card_types.get(item.c_type, item.c_type) }}
                         </span>
                         <small class="text-muted text-end">
                             ID: {{ item.id }}<br>
@@ -66,12 +75,12 @@
 
                 <div class="card-footer bg-white border-0 pb-4">
                     <div class="btn-group">
-                        <a href="{{ url_for('edit_content', content_id=item.id) }}"
+                        <a href="{{ url_for('edit_card', card_id=item.id) }}"
                            class="btn btn-sm btn-outline-secondary px-3 border-1"
                            onclick="event.stopPropagation();">
                             Bearbeiten
                         </a>
-                        <form action="{{ url_for('delete_content', content_id=item.id) }}"
+                        <form action="{{ url_for('delete_card', card_id=item.id) }}"
                               method="POST"
                               style="display: inline;"
                               onclick="event.stopPropagation();"
@@ -99,7 +108,7 @@
 
                     <form
                         method="POST"
-                        action="{{ url_for('edit_content', content_id=item.id) }}"
+                        action="{{ url_for('edit_card', card_id=item.id) }}"
                         enctype="multipart/form-data"
                     >
                         <div class="modal-body flex-grow-1 overflow-auto">
@@ -107,7 +116,7 @@
                                 <div class="{% if item.c_type in ('index_card', 'draft') %}col-md-4{% else %}col-12{% endif %}">
                                     <label class="form-label fw-bold mb-1">Typ</label>
                                     <select name="c_type" class="form-select form-select-sm">
-                                        {% for key, label in content_types.items() %}
+                                        {% for key, label in card_types.items() %}
                                             <option value="{{ key }}" {% if item.c_type == key %}selected{% endif %}>
                                                 {{ label }}
                                             </option>
@@ -161,7 +170,7 @@
                         </div>
                         <div class="modal-footer">
                             <a
-                                href="{{ url_for('edit_content', content_id=item.id) }}"
+                                href="{{ url_for('edit_card', card_id=item.id) }}"
                                 class="btn btn-primary me-auto"
                             >
                                 Karte vollständig bearbeiten
@@ -183,4 +192,5 @@
     {% endfor %}
 </div>
 
+</div>
 {% endblock %}
