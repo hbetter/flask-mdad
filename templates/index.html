@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_macros.html" as m %}
 {% block title %}MENSCH DENK AN DICH® – Playful Future{% endblock %}
 {% block meta_description %}Der Resilienz-Booster für alle, die Zukunft machen. Auf Basis des mehrfach ausgezeichneten Spiels MENSCH DENK AN DICH® wird in nur 90 Minuten brachliegendes Innovations- und Resilienzpotenzial in jeder Organisation gehoben.{% endblock %}
 {% block content %}
@@ -6,17 +7,8 @@
 <main id="main">
 
   <!-- HERO -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <div class="row">
-            <div class="col-12">
-              <p class="kicker mb-2">Der Hebel für resiliente Unternehmen</p>
-              <h1 class="display-3 mb-3">Zukunft spielend gestalten</h1>
-              <p class="fs-4 mb-4">MENSCH DENK AN DICH®, das Resilienzspiel, für alle die Zukunft machen</p>
-            </div>
-          </div>
+  {% call m.section_card("Der Hebel für resiliente Unternehmen", "Zukunft spielend gestalten", heading_tag='h1', heading_class='display-3 mb-3') %}
+          <p class="fs-4 mb-4">MENSCH DENK AN DICH®, das Resilienzspiel, für alle die Zukunft machen</p>
           <div class="row gy-5">
             <div class="col-lg-6">
               <p class="fs-5 mb-3">
@@ -41,14 +33,10 @@
               <img src="{{ url_for('static', filename='img/collage_web.jpg') }}" alt="Impressionen aus dem Spiel MENSCH DENK AN DICH®" class="hero-media">
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- AWARDS -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
+  {% call m.section_plain() %}
       <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
         <div class="col">
           <div class="card shadow-sm h-100 text-center p-3">
@@ -91,16 +79,10 @@
           </div>
         </div>
       </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- NUTZENVERSPRECHEN -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <p class="kicker mb-2">Echter Mehrwert</p>
-          <h2 class="display-5 mb-4">Ein Spiel, in dem alle gewinnen</h2>
+  {% call m.section_card("Echter Mehrwert", "Ein Spiel, in dem alle gewinnen") %}
           <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
             <div class="col">
               <div class="card-sm text-center">
@@ -137,18 +119,10 @@
               <a href="#kontakt" class="btn btn-maroon btn-lg">Probe-Spielraum buchen</a>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- LÖSUNGSWEG -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <p class="kicker mb-2">Der spielerische Lösungsansatz</p>
-          <h2 class="display-5 mb-3">Neue Wege gehen</h2>
+  {% call m.section_card("Der spielerische Lösungsansatz", "Neue Wege gehen") %}
           <p class="fs-5 mb-5">Fünf Gründe, warum MENSCH DENK AN DICH® einen Unterschied macht:</p>
           <div class="table-responsive">
             <table class="table schmerz-table mb-0">
@@ -203,55 +177,25 @@
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- FAQS -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <p class="kicker mb-2">Hinterfragt</p>
-          <h2 class="display-5 mb-3">Fragen und Antworten</h2>
+  {% call m.section_card("Hinterfragt", "Fragen und Antworten") %}
           <p>plus CTA</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- WISSENSCHAFT -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <p class="kicker mb-2">Wissenschaftlich fundiert</p>
-          <h2 class="display-5 mb-3">Messbarer Vorsprung</h2>
+  {% call m.section_card("Wissenschaftlich fundiert", "Messbarer Vorsprung") %}
           <p>Messbare Wirkung durch wissenschaftliche Fundierung.<br>2022 erste Spiele Evaluation an der FU Berlin, weitere Forschung in laufender Kooperationsstudie mit der BARMER. Nur 30&nbsp;% aller Veränderungsprojekte erreichen ihre Ziele - weniger Zeit mehr Ergebnis. Whitepapers</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- BEKANNT -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
+  {% call m.section_card() %}
           <img src="{{ url_for('static', filename='img/bekannt-aus-logo.webp') }}" alt="Bekannt bei unseren Kunden" class="img-fluid w-100">
-        </div>
-      </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- KUNDENSTIMMEN -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <p class="kicker mb-2">Referenzen</p>
-          <h2 class="display-5 mb-3">Kundenstimmen</h2>
+  {% call m.section_card("Referenzen", "Kundenstimmen") %}
           <div class="row g-3">
             <div class="col-md-3">
               <div class="card-sm testimonial-card">
@@ -297,18 +241,10 @@
             </div>
 
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- SHORTS -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <p class="kicker mb-2">Shorts</p>
-          <h2 class="display-5 mb-3">Einblicke</h2>
+  {% call m.section_card("Shorts", "Einblicke") %}
           <div class="row g-3">
             <div class="col-lg-4">
               <h3 class="fw-semibold mb-2 video-title">Platzhalter-Videotitel 1</h3>
@@ -339,19 +275,10 @@
               </a>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
+  {% endcall %}
 
   <!-- TERMINE -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      <div class="card shadow-sm">
-        <div class="card-body p-4 p-lg-5">
-          <p class="kicker mb-2">Termine</p>
-          <h2 class="display-5 mb-3">Risikofrei starten</h2>
+  {% call m.section_card("Termine", "Risikofrei starten") %}
           <div class="row g-3">
             <div class="col-sm-6 col-lg-3">
               <div class="termin-card">
@@ -390,21 +317,17 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  {% endcall %}
 
   <!-- ERFOLGSGESCHICHTEN: bestehende, datenbankgetriebene Karten (Dashboard-Verwaltung).
-       Zusätzlich auf eigener Unterseite unter /erfolgsgeschichten.
-       Hinweis: Die Karten (inkl. Modals) liegen bewusst AUSSERHALB der .card-Umrahmung:
-       .card:hover setzt einen transform, der für verschachtelte position:fixed-Modals einen
-       neuen containing block erzeugt und deren Positionierung/Animation beim Öffnen zerstört. -->
-  <section class="py-3 py-lg-4">
-    <div class="container">
-      {% include "_karten_liste.html" %}
-    </div>
-  </section>
+       Hinweis: Diese Karten dürfen in der äußeren Karten-Hülle liegen, weil beim Hover jetzt nur
+       noch echte klickbare Karten "anheben" (siehe custom.css) – sonst würde sich die Hülle beim
+       Hovern mit anheben und die Modals würden beim Öffnen an der falschen Stelle erscheinen. -->
+  {% call m.section_card("Erfolgsgeschichten", "Beiträge & Neuigkeiten") %}
+          <div class="row g-3">
+            {% include "_karten_liste.html" %}
+          </div>
+  {% endcall %}
 
 </main>
 

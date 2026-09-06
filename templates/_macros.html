@@ -1,0 +1,21 @@
+{% macro section_card(kicker=None, heading=None, heading_tag='h2', heading_class='display-5 mb-3') %}
+<section class="py-3 py-lg-4">
+  <div class="container">
+    <div class="card shadow-sm">
+      <div class="card-body p-4 p-lg-5">
+        {% if kicker %}<p class="kicker mb-2">{{ kicker }}</p>{% endif %}
+        {% if heading %}<{{ heading_tag }} class="{{ heading_class }}">{{ heading }}</{{ heading_tag }}>{% endif %}
+        {{ caller() }}
+      </div>
+    </div>
+  </div>
+</section>
+{% endmacro %}
+
+{% macro section_plain() %}
+<section class="py-3 py-lg-4">
+  <div class="container">
+    {{ caller() }}
+  </div>
+</section>
+{% endmacro %}
