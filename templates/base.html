@@ -67,36 +67,42 @@
     <footer class="site-footer pt-5 pb-4">
         <div class="container">
             <div class="row g-4">
-                <div class="col-lg-4">
+                <div class="col-lg-4 col-6">
                     <p class="h5 mb-3">MENSCH DENK AN DICH<sup>®</sup></p>
                     <p class="small" style="color:var(--sm-muted);">Effizient, für alle die Zukunft machen.</p>
                 </div>
-                <div class="col-lg-2 col-6">
-                    <p class="fw-semibold mb-3">Angebote</p>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="beratung.html">Beratung</a></li>
-                        <li class="mb-2"><a href="akademie.html">Akademie</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-6">
-                    <p class="fw-semibold mb-3">Mehr</p>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="{{ url_for('erfolgsgeschichten') }}">Erfolgsgeschichten</a></li>
-                        <li class="mb-2"><a href="ueber-uns.html">Über uns</a></li>
-                        <li class="mb-2"><a href="{{ url_for('impressum') }}">Impressum</a></li>
-                        <li class="mb-2"><a href="#">Datenschutz</a></li>
-                        {% if current_user.is_authenticated %}
-                        <li class="mb-2"><a href="{{ url_for('logout') }}">Logout</a></li>
-                        {% else %}
-                        <li class="mb-2"><a href="{{ url_for('login') }}">Login</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-                <div class="col-lg-4">
-                    <p class="fw-semibold mb-3">Kontakt</p>
-                    <p class="small">
-                        <a href="mailto:irene.preussner@mensch-denk-an-dich.de">irene.preussner@mensch-denk-an-dich.de</a>
-                    </p>
+                <div class="col-lg-8">
+                    <div class="d-flex flex-wrap gap-4 gap-lg-5">
+                        <div>
+                            <p class="fw-semibold mb-3">Rechtliches</p>
+                            <ul class="list-unstyled small">
+                                <li class="mb-2"><a href="{{ url_for('impressum') }}">Impressum</a></li>
+                                <li class="mb-2"><a href="{{ url_for('datenschutz') }}">Datenschutz</a></li>
+                                {% if current_user.is_authenticated %}
+                                <li class="mb-2"><a href="{{ url_for('logout') }}">Logout</a></li>
+                                {% else %}
+                                <li class="mb-2"><a href="{{ url_for('login') }}">Login</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="fw-semibold mb-3">Adresse</p>
+                            <p class="small mb-0">
+                                SMEO GmbH<br>
+                                Danckelmannstr. 54<br>
+                                14059 Berlin
+                            </p>
+                        </div>
+                        <div>
+                            <p class="fw-semibold mb-3">Kontakt</p>
+                            <p class="small mb-1">
+                                <a href="mailto:info@smeo-now.de">info@smeo-now.de</a>
+                            </p>
+                            <p class="small mb-0">
+                                <a href="tel:+493054846199">+49 30 548 46 199</a>
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <hr style="border-color:var(--sm-line);" class="mt-4">

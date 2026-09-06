@@ -391,6 +391,12 @@ def impressum():
     return render_template("impressum.html", banner=banner)
 
 
+@app.route("/datenschutz")
+def datenschutz():
+    banner = get_banner_text()
+    return render_template("datenschutz.html", banner=banner)
+
+
 @app.route("/logout")
 def logout():
     logout_user()
