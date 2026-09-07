@@ -8,14 +8,21 @@
                 <h3 class="mb-4">Karte bearbeiten</h3>
                 <form method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Typ</label>
-                        <select name="c_type" class="form-select">
-                            {% for key, label in card_types.items() %}
-                                <option value="{{ key }}" {% if card.c_type == key %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                        <label class="form-label fw-bold d-block">Anzeigen auf</label>
+                        {% for key, label in card_flags %}
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="{{ key }}" id="{{ key }}" value="1" {% if card[key] %}checked{% endif %}>
+                            <label class="form-check-label" for="{{ key }}">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="is_banner" id="is_banner" value="1" {% if card.is_banner %}checked{% endif %}>
+                            <label class="form-check-label" for="is_banner">
+                                Banner auf der Startseite (nur eine Karte gleichzeitig möglich)
+                            </label>
+                        </div>
                     </div>
                     <div class="mb-3" id="order-number-wrapper" style="display: none;">
                         <label class="form-label fw-bold">Reihenfolge auf der Indexseite</label>
@@ -112,13 +119,13 @@
 </div>
 <script>
     function toggleIndexFields() {
-        const typeSelect = document.querySelector('select[name="c_type"]');
+        const indexCheckbox = document.getElementById('on_index');
         const orderWrapper = document.getElementById('order-number-wrapper');
         const colWrapper = document.getElementById('col-size-wrapper');
 
-        if (!typeSelect) return;
+        if (!indexCheckbox) return;
 
-        const show = typeSelect.value === 'index_card';
+        const show = indexCheckbox.checked;
 
         if (orderWrapper) {
             orderWrapper.style.display = show ? 'block' : 'none';
@@ -130,11 +137,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        const typeSelect = document.querySelector('select[name="c_type"]');
+        const indexCheckbox = document.getElementById('on_index');
         toggleIndexFields();
 
-        if (typeSelect) {
-            typeSelect.addEventListener('change', toggleIndexFields);
+        if (indexCheckbox) {
+            indexCheckbox.addEventListener('change', toggleIndexFields);
         }
     });
 </script>

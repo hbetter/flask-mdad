@@ -18,13 +18,16 @@ from flask_migrate import Migrate
 from models import db, User, Card
 
 
-CARD_TYPES = {
-    "draft": "Entwurf",
-    "index_card": "Karte für Indexseite",
-    "journal_card": "Karte für Erfolgsgeschichten",
-    "double_card": "Karte für für beide Seiten",
-    "banner": "Banner auf Indexseite",
-}
+# Jede Karte kann unabhängig auf mehreren dieser Seiten erscheinen
+# (daher Tickboxen statt eines einzelnen Typs). "Banner" ist bewusst kein
+# Listeneintrag hier, sondern ein eigenes Feld (is_banner), weil es nur
+# einmal gleichzeitig vergeben werden darf.
+CARD_FLAGS = [
+    ("on_index", "Indexseite"),
+    ("on_beratung", "Beratung"),
+    ("on_akademie", "Akademie"),
+    ("on_erfolgsgeschichten", "Erfolgsgeschichten"),
+]
 
 DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4"
 RESIZED_IMAGE_WIDTH = 1280
@@ -111,7 +114,7 @@ def delete_uploaded_image(filename):
 
 
 def get_banner_text():
-    banner = Card.query.filter_by(c_type="banner").first()
+    banner = Card.query.filter_by(is_banner=True).first()
     return banner.description if banner else None
 
 
@@ -137,16 +140,15 @@ def load_user(user_id):
 @app.route("/")
 def index():
     banner = get_banner_text()
-    index_cards = (
+    cards = (
         Card.query
-        .filter_by(c_type="index_card")
+        .filter_by(on_index=True)
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     return render_template(
         "index.html",
-        index_cards=index_cards,
-        card_types=CARD_TYPES,
+        cards=cards,
         banner=banner,
     )
 
@@ -154,16 +156,15 @@ def index():
 @app.route("/erfolgsgeschichten")
 def erfolgsgeschichten():
     banner = get_banner_text()
-    index_cards = (
+    cards = (
         Card.query
-        .filter_by(c_type="index_card")
+        .filter_by(on_erfolgsgeschichten=True)
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     return render_template(
         "erfolgsgeschichten.html",
-        index_cards=index_cards,
-        card_types=CARD_TYPES,
+        cards=cards,
         banner=banner,
     )
 
@@ -196,14 +197,14 @@ def dashboard():
     )
     index_card_orders = (
         Card.query
-        .filter_by(c_type="index_card")
+        .filter_by(on_index=True)
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     return render_template(
         "dashboard.html",
         cards=user_cards,
-        card_types=CARD_TYPES,
+        card_flags=CARD_FLAGS,
         banner=banner,
         index_card_orders=index_card_orders,
     )
@@ -213,10 +214,14 @@ def dashboard():
 @login_required
 def add_card():
     if request.method == "POST":
-        c_type = request.form.get("c_type")
+        on_index = request.form.get("on_index") == "1"
+        on_beratung = request.form.get("on_beratung") == "1"
+        on_akademie = request.form.get("on_akademie") == "1"
+        on_erfolgsgeschichten = request.form.get("on_erfolgsgeschichten") == "1"
+        is_banner = request.form.get("is_banner") == "1"
 
-        if c_type == "banner":
-            existing_banner = Card.query.filter_by(c_type="banner").first()
+        if is_banner:
+            existing_banner = Card.query.filter_by(is_banner=True).first()
             if existing_banner:
                 flash(
                     "Ein Banner existiert bereits und kann nicht erneut angelegt werden.",
@@ -245,15 +250,19 @@ def add_card():
                 flash("Nur Bilddateien sind erlaubt.", "warning")
                 return redirect(url_for("add_card"))
         order_number = int(request.form.get("order_number") or 0)
-        if c_type != "index_card":
+        if not on_index:
             order_number = 0
 
         col_size = request.form.get("col_size") or DEFAULT_COL_SIZE
-        if c_type != "index_card":
+        if not on_index:
             col_size = DEFAULT_COL_SIZE
 
         new_item = Card(
-            c_type=c_type,
+            on_index=on_index,
+            on_beratung=on_beratung,
+            on_akademie=on_akademie,
+            on_erfolgsgeschichten=on_erfolgsgeschichten,
+            is_banner=is_banner,
             title=request.form.get("title"),
             description=request.form.get("description"),
             body=request.form.get("body"),
@@ -268,7 +277,7 @@ def add_card():
         flash("Inhalt hinzugefügt!", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("add.html", card_types=CARD_TYPES)
+    return render_template("add.html", card_flags=CARD_FLAGS)
 
 
 @app.route("/add-event", methods=["GET"])
@@ -296,18 +305,22 @@ def edit_card(card_id):
         return redirect(url_for("dashboard"))
 
     if request.method == "POST":
-        new_type = request.form.get("c_type")
+        new_is_banner = request.form.get("is_banner") == "1"
 
-        if new_type == "banner":
+        if new_is_banner:
             existing_banner = Card.query.filter(
-                Card.c_type == "banner",
+                Card.is_banner == True,
                 Card.id != item.id,
             ).first()
             if existing_banner:
                 flash("Ein Banner existiert bereits.", "warning")
                 return redirect(url_for("dashboard"))
 
-        item.c_type = new_type
+        item.on_index = request.form.get("on_index") == "1"
+        item.on_beratung = request.form.get("on_beratung") == "1"
+        item.on_akademie = request.form.get("on_akademie") == "1"
+        item.on_erfolgsgeschichten = request.form.get("on_erfolgsgeschichten") == "1"
+        item.is_banner = new_is_banner
 
         title = request.form.get("title")
         description = request.form.get("description")
@@ -366,7 +379,7 @@ def edit_card(card_id):
     return render_template(
         "edit.html",
         card=item,
-        card_types=CARD_TYPES,
+        card_flags=CARD_FLAGS,
         banner=get_banner_text(),
     )
 

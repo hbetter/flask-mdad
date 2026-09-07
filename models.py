@@ -12,7 +12,11 @@ class User(UserMixin, db.Model):
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    c_type = db.Column(db.String(50))
+    on_index = db.Column(db.Boolean, nullable=False, default=False)
+    on_beratung = db.Column(db.Boolean, nullable=False, default=False)
+    on_akademie = db.Column(db.Boolean, nullable=False, default=False)
+    on_erfolgsgeschichten = db.Column(db.Boolean, nullable=False, default=False)
+    is_banner = db.Column(db.Boolean, nullable=False, default=False)
     title = db.Column(db.String(200), nullable=False)
     body = db.Column(db.Text, nullable=False)
     description = db.Column(db.String(300))

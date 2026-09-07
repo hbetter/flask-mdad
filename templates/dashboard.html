@@ -46,9 +46,19 @@
                 {% endif %}
                 <div class="card-header bg-white border-0 pt-4">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge rounded-pill bg-light text-dark border-1 px-3 py-2">
-                            {{ card_types.get(item.c_type, item.c_type) }}
-                        </span>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for key, label in card_flags %}
+                                {% if item[key] %}
+                                <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">{{ label }}</span>
+                                {% endif %}
+                            {% endfor %}
+                            {% if item.is_banner %}
+                            <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">Banner</span>
+                            {% endif %}
+                            {% if not (item.on_index or item.on_beratung or item.on_akademie or item.on_erfolgsgeschichten or item.is_banner) %}
+                            <span class="badge rounded-pill bg-light text-muted border-1 px-2 py-1">Ohne Zuordnung</span>
+                            {% endif %}
+                        </div>
                         <small class="text-muted text-end">
                             ID: {{ item.id }}<br>
                             {% if item.order_number and item.order_number != 0 %}
@@ -94,7 +104,6 @@
             </div>
         </div>
 
-        {% if item.c_type in ('index_card', 'draft') %}
         <div class="modal fade" id="editModal{{ item.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ item.id }}" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-top">
                 <div class="modal-content">
@@ -112,18 +121,40 @@
                         enctype="multipart/form-data"
                     >
                         <div class="modal-body flex-grow-1 overflow-auto">
-                            <div class="row g-2">
-                                <div class="{% if item.c_type in ('index_card', 'draft') %}col-md-4{% else %}col-12{% endif %}">
-                                    <label class="form-label fw-bold mb-1">Typ</label>
-                                    <select name="c_type" class="form-select form-select-sm">
-                                        {% for key, label in card_types.items() %}
-                                            <option value="{{ key }}" {% if item.c_type == key %}selected{% endif %}>
-                                                {{ label }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold d-block mb-1">Anzeigen auf</label>
+                                {% for key, label in card_flags %}
+                                <div class="form-check form-check-inline">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="{{ key }}"
+                                        id="{{ key }}-{{ item.id }}"
+                                        value="1"
+                                        {% if key == 'on_index' %}data-index-toggle="{{ item.id }}"{% endif %}
+                                        {% if item[key] %}checked{% endif %}
+                                    >
+                                    <label class="form-check-label" for="{{ key }}-{{ item.id }}">{{ label }}</label>
                                 </div>
-                                <div class="col-md-3">
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="is_banner"
+                                        id="is_banner-{{ item.id }}"
+                                        value="1"
+                                        {% if item.is_banner %}checked{% endif %}
+                                    >
+                                    <label class="form-check-label" for="is_banner-{{ item.id }}">
+                                        Banner auf der Startseite (nur eine Karte gleichzeitig möglich)
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-6" id="order-number-wrapper-{{ item.id }}" style="{% if not item.on_index %}display: none;{% endif %}">
                                     <label class="form-label fw-bold mb-1">Ordnungsnummer</label>
                                     <input
                                         type="number"
@@ -133,7 +164,7 @@
                                         min="0"
                                     >
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-6" id="col-size-wrapper-{{ item.id }}" style="{% if not item.on_index %}display: none;{% endif %}">
                                     <label class="form-label fw-bold mb-1">Breite der Karte</label>
                                     <select name="col_size" class="form-select form-select-sm">
                                         <option value="col-12 col-md-6 col-lg-4" {% if item.col_size == "col-12 col-md-6 col-lg-4" %}selected{% endif %}>
@@ -188,9 +219,25 @@
                 </div>
             </div>
         </div>
-        {% endif %}
     {% endfor %}
 </div>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-index-toggle]').forEach(function (checkbox) {
+            var cardId = checkbox.dataset.indexToggle;
+            var orderWrapper = document.getElementById('order-number-wrapper-' + cardId);
+            var colWrapper = document.getElementById('col-size-wrapper-' + cardId);
+
+            function toggle() {
+                var show = checkbox.checked;
+                if (orderWrapper) orderWrapper.style.display = show ? 'block' : 'none';
+                if (colWrapper) colWrapper.style.display = show ? 'block' : 'none';
+            }
+
+            checkbox.addEventListener('change', toggle);
+        });
+    });
+</script>
 {% endblock %}

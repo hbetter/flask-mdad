@@ -319,15 +319,19 @@
           </div>
   {% endcall %}
 
-  <!-- ERFOLGSGESCHICHTEN: bestehende, datenbankgetriebene Karten (Dashboard-Verwaltung).
+  <!-- ERFOLGSGESCHICHTEN: bestehende, datenbankgetriebene Karten (Dashboard-Verwaltung),
+       gesteuert über die "Indexseite"-Tickbox der jeweiligen Karte.
        Hinweis: Diese Karten dürfen in der äußeren Karten-Hülle liegen, weil beim Hover jetzt nur
        noch echte klickbare Karten "anheben" (siehe custom.css) – sonst würde sich die Hülle beim
-       Hovern mit anheben und die Modals würden beim Öffnen an der falschen Stelle erscheinen. -->
-  {% call m.section_card("Erfolgsgeschichten", "Beiträge & Neuigkeiten") %}
+       Hovern mit anheben und die Modals würden beim Öffnen an der falschen Stelle erscheinen.
+       Section erscheint nur, wenn es mindestens eine Karte gibt (cards aus views.py). -->
+  {% if cards %}
+  {% call m.section_card("Erfolgsgeschichten", "Neuigkeiten") %}
           <div class="row g-3">
             {% include "_karten_liste.html" %}
           </div>
   {% endcall %}
+  {% endif %}
 
 </main>
 
