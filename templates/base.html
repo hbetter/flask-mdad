@@ -42,9 +42,9 @@
             </a>
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto gap-lg-2">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('beratung') }}">Beratung</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('akademie') }}">Akademie</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('erfolgsgeschichten') }}">Erfolgsgeschichten</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('consulting') }}">Beratung</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('academy') }}">Akademie</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('success_stories') }}">Erfolgsgeschichten</a></li>
                     <li class="nav-item"><a class="nav-link text-nowrap" href="ueber-uns.html">Über uns</a></li>
                     <li class="nav-item"><a class="nav-link" href="#kontakt">Kontakt</a></li>
                 </ul>
@@ -76,8 +76,8 @@
                         <div>
                             <p class="fw-semibold mb-3">Rechtliches</p>
                             <ul class="list-unstyled small">
-                                <li class="mb-2"><a href="{{ url_for('impressum') }}">Impressum</a></li>
-                                <li class="mb-2"><a href="{{ url_for('datenschutz') }}">Datenschutz</a></li>
+                                <li class="mb-2"><a href="{{ url_for('imprint') }}">Impressum</a></li>
+                                <li class="mb-2"><a href="{{ url_for('privacy') }}">Datenschutz</a></li>
                                 {% if current_user.is_authenticated %}
                                 <li class="mb-2"><a href="{{ url_for('logout') }}">Logout</a></li>
                                 {% else %}

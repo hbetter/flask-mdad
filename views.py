@@ -168,8 +168,8 @@ def index():
     )
 
 
-@app.route("/erfolgsgeschichten")
-def erfolgsgeschichten():
+@app.route("/success-stories")
+def success_stories():
     banner = get_banner_text()
     cards = (
         Card.query
@@ -178,14 +178,14 @@ def erfolgsgeschichten():
         .all()
     )
     return render_template(
-        "erfolgsgeschichten.html",
+        "success_stories.html",
         cards=cards,
         banner=banner,
     )
 
 
-@app.route("/beratung")
-def beratung():
+@app.route("/consulting")
+def consulting():
     banner = get_banner_text()
     cards = (
         Card.query
@@ -199,11 +199,11 @@ def beratung():
         .order_by(Section.order_number.asc(), Section.id.asc())
         .all()
     )
-    return render_template("beratung.html", cards=cards, sections=sections, banner=banner)
+    return render_template("consulting.html", cards=cards, sections=sections, banner=banner)
 
 
-@app.route("/akademie")
-def akademie():
+@app.route("/academy")
+def academy():
     banner = get_banner_text()
     cards = (
         Card.query
@@ -217,7 +217,7 @@ def akademie():
         .order_by(Section.order_number.asc(), Section.id.asc())
         .all()
     )
-    return render_template("akademie.html", cards=cards, sections=sections, banner=banner)
+    return render_template("academy.html", cards=cards, sections=sections, banner=banner)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -591,16 +591,16 @@ def delete_card(card_id):
     return redirect(url_for("dashboard"))
 
 
-@app.route("/impressum")
-def impressum():
+@app.route("/imprint")
+def imprint():
     banner = get_banner_text()
-    return render_template("impressum.html", banner=banner)
+    return render_template("imprint.html", banner=banner)
 
 
-@app.route("/datenschutz")
-def datenschutz():
+@app.route("/privacy")
+def privacy():
     banner = get_banner_text()
-    return render_template("datenschutz.html", banner=banner)
+    return render_template("privacy.html", banner=banner)
 
 
 @app.route("/logout")
@@ -616,7 +616,7 @@ def sitemap():
         "lastmod": datetime.utcnow().date().isoformat()
     })
     pages.append({
-        "loc": url_for("erfolgsgeschichten", _external=True),
+        "loc": url_for("success_stories", _external=True),
         "lastmod": datetime.utcnow().date().isoformat()
     })
 

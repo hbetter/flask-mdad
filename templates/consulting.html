@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m %}
-{% block title %}Akademie – Mensch denk an Dich{% endblock %}
-{% block meta_description %}Akademie und Spiele-Coach-Ausbildung rund um MENSCH DENK AN DICH® – Platzhalterseite, wird mit echten Inhalten gefüllt.{% endblock %}
+{% block title %}Beratung – Mensch denk an Dich{% endblock %}
+{% block meta_description %}Beratung rund um MENSCH DENK AN DICH® – Platzhalterseite, wird mit echten Inhalten gefüllt.{% endblock %}
 {% block content %}
 
 <!-- Platzhalterseite: Struktur (Hero + 2 statische Sektionen) nach dem Muster der
      Indexseite, Inhalte sind Lorem-Ipsum-Beispieltexte und Bildplatzhalter, die
-     später durch die echte Akademie-Seite ersetzt werden. -->
+     später durch die echte Beratungs-Seite ersetzt werden. -->
 <main id="main">
 
   <!-- HERO -->
-  {% call m.section_card("Akademie", "Lorem ipsum dolor sit amet", heading_tag='h1', heading_class='display-3 mb-3') %}
+  {% call m.section_card("Beratung", "Lorem ipsum dolor sit amet", heading_tag='h1', heading_class='display-3 mb-3') %}
           <p class="fs-4 mb-4">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           <div class="row gy-5">
             <div class="col-lg-6">
@@ -20,7 +20,7 @@
                 voluptate velit esse cillum dolore eu fugiat nulla pariatur.
               </p>
               <div class="d-flex flex-wrap gap-3">
-                <a href="#kontakt" class="btn btn-maroon btn-lg">Spiele Coach werden</a>
+                <a href="#kontakt" class="btn btn-maroon btn-lg">Beratungsgespräch vereinbaren</a>
               </div>
             </div>
             <div class="col-lg-6">
@@ -34,7 +34,7 @@
           </div>
   {% endcall %}
 
-  <!-- AUSBILDUNGSINHALTE (Platzhalter) -->
+  <!-- ABLAUF (Platzhalter) -->
   {% call m.section_card("Excepteur sint occaecat", "Sed ut perspiciatis unde omnis") %}
           <p class="fs-5 mb-5">Iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam:</p>
           <div class="row g-3">
@@ -77,7 +77,7 @@
           </div>
   {% endcall %}
 
-  <!-- VORAUSSETZUNGEN (Platzhalter) -->
+  <!-- FÜR WEN (Platzhalter) -->
   {% call m.section_card("At vero eos et accusamus", "Et harum quidem rerum facilis") %}
           <div class="row gy-5 align-items-center">
             <div class="col-lg-6">
@@ -99,24 +99,24 @@
                 necessitatibus saepe eveniet ut et voluptates repudiandae sint et
                 molestiae non recusandae.
               </p>
-              <a href="#kontakt" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
+              <a href="#kontakt" class="btn btn-outline-dark-sm btn-lg">Beratungsgespräch vereinbaren</a>
             </div>
           </div>
   {% endcall %}
 
   <!-- KARTEN: datenbankgetriebene Karten (Dashboard-Verwaltung) mit angehaktem
-       "Akademie"-Häkchen. Section erscheint nur, wenn es mindestens eine gibt. -->
+       "Beratung"-Häkchen. Section erscheint nur, wenn es mindestens eine gibt. -->
   {% if cards %}
-  {% call m.section_card("Einblicke", "Neuigkeiten aus der Akademie") %}
+  {% call m.section_card("Einblicke", "Neuigkeiten aus der Beratung") %}
           <div class="row g-3">
-            {% include "_karten_liste.html" %}
+            {% include "_cards_list.html" %}
           </div>
   {% endcall %}
   {% endif %}
 
 
   <!-- SEKTIONEN: frei anlegbare, datenbankgetriebene Sektionen (Dashboard-Verwaltung). -->
-  {% include "_sektionen_liste.html" %}
+  {% include "_sections_list.html" %}
 
 </main>
 
