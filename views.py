@@ -24,17 +24,17 @@ from models import db, User, Card, Section
 # einmal gleichzeitig vergeben werden darf.
 CARD_FLAGS = [
     ("on_index", "Indexseite"),
-    ("on_beratung", "Beratung"),
-    ("on_akademie", "Akademie"),
-    ("on_erfolgsgeschichten", "Erfolgsgeschichten"),
+    ("on_consulting", "Beratung"),
+    ("on_academy", "Akademie"),
+    ("on_success_stories", "Erfolgsgeschichten"),
 ]
 
 # Sektionen gibt es nur auf den drei Seiten mit statischem Aufbau (kein
 # Banner, keine Erfolgsgeschichten-Sektionen).
 SECTION_FLAGS = [
     ("on_index", "Indexseite"),
-    ("on_beratung", "Beratung"),
-    ("on_akademie", "Akademie"),
+    ("on_consulting", "Beratung"),
+    ("on_academy", "Akademie"),
 ]
 
 DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4"
@@ -173,7 +173,7 @@ def success_stories():
     banner = get_banner_text()
     cards = (
         Card.query
-        .filter_by(on_erfolgsgeschichten=True)
+        .filter_by(on_success_stories=True)
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
@@ -189,13 +189,13 @@ def consulting():
     banner = get_banner_text()
     cards = (
         Card.query
-        .filter_by(on_beratung=True)
+        .filter_by(on_consulting=True)
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     sections = (
         Section.query
-        .filter_by(on_beratung=True)
+        .filter_by(on_consulting=True)
         .order_by(Section.order_number.asc(), Section.id.asc())
         .all()
     )
@@ -207,13 +207,13 @@ def academy():
     banner = get_banner_text()
     cards = (
         Card.query
-        .filter_by(on_akademie=True)
+        .filter_by(on_academy=True)
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     sections = (
         Section.query
-        .filter_by(on_akademie=True)
+        .filter_by(on_academy=True)
         .order_by(Section.order_number.asc(), Section.id.asc())
         .all()
     )
@@ -274,9 +274,9 @@ def dashboard():
 def add_card():
     if request.method == "POST":
         on_index = request.form.get("on_index") == "1"
-        on_beratung = request.form.get("on_beratung") == "1"
-        on_akademie = request.form.get("on_akademie") == "1"
-        on_erfolgsgeschichten = request.form.get("on_erfolgsgeschichten") == "1"
+        on_consulting = request.form.get("on_consulting") == "1"
+        on_academy = request.form.get("on_academy") == "1"
+        on_success_stories = request.form.get("on_success_stories") == "1"
         is_banner = request.form.get("is_banner") == "1"
 
         if is_banner:
@@ -318,9 +318,9 @@ def add_card():
 
         new_item = Card(
             on_index=on_index,
-            on_beratung=on_beratung,
-            on_akademie=on_akademie,
-            on_erfolgsgeschichten=on_erfolgsgeschichten,
+            on_consulting=on_consulting,
+            on_academy=on_academy,
+            on_success_stories=on_success_stories,
             is_banner=is_banner,
             title=request.form.get("title"),
             description=request.form.get("description"),
@@ -352,8 +352,8 @@ def add_event():
 def add_section():
     if request.method == "POST":
         on_index = request.form.get("on_index") == "1"
-        on_beratung = request.form.get("on_beratung") == "1"
-        on_akademie = request.form.get("on_akademie") == "1"
+        on_consulting = request.form.get("on_consulting") == "1"
+        on_academy = request.form.get("on_academy") == "1"
 
         file = request.files.get("image")
         image_filename = None
@@ -381,8 +381,8 @@ def add_section():
 
         new_section = Section(
             on_index=on_index,
-            on_beratung=on_beratung,
-            on_akademie=on_akademie,
+            on_consulting=on_consulting,
+            on_academy=on_academy,
             kicker=request.form.get("kicker"),
             title=request.form.get("title"),
             description=request.form.get("description"),
@@ -410,8 +410,8 @@ def edit_section(section_id):
 
     if request.method == "POST":
         item.on_index = request.form.get("on_index") == "1"
-        item.on_beratung = request.form.get("on_beratung") == "1"
-        item.on_akademie = request.form.get("on_akademie") == "1"
+        item.on_consulting = request.form.get("on_consulting") == "1"
+        item.on_academy = request.form.get("on_academy") == "1"
 
         kicker = request.form.get("kicker")
         title = request.form.get("title")
@@ -510,9 +510,9 @@ def edit_card(card_id):
                 return redirect(url_for("dashboard"))
 
         item.on_index = request.form.get("on_index") == "1"
-        item.on_beratung = request.form.get("on_beratung") == "1"
-        item.on_akademie = request.form.get("on_akademie") == "1"
-        item.on_erfolgsgeschichten = request.form.get("on_erfolgsgeschichten") == "1"
+        item.on_consulting = request.form.get("on_consulting") == "1"
+        item.on_academy = request.form.get("on_academy") == "1"
+        item.on_success_stories = request.form.get("on_success_stories") == "1"
         item.is_banner = new_is_banner
 
         title = request.form.get("title")

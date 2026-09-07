@@ -14,9 +14,9 @@ class User(UserMixin, db.Model):
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     on_index = db.Column(db.Boolean, nullable=False, default=False)
-    on_beratung = db.Column(db.Boolean, nullable=False, default=False)
-    on_akademie = db.Column(db.Boolean, nullable=False, default=False)
-    on_erfolgsgeschichten = db.Column(db.Boolean, nullable=False, default=False)
+    on_consulting = db.Column(db.Boolean, nullable=False, default=False)
+    on_academy = db.Column(db.Boolean, nullable=False, default=False)
+    on_success_stories = db.Column(db.Boolean, nullable=False, default=False)
     is_banner = db.Column(db.Boolean, nullable=False, default=False)
     title = db.Column(db.String(200), nullable=False)
     body = db.Column(db.Text, nullable=False)
@@ -39,8 +39,8 @@ class Card(db.Model):
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     on_index = db.Column(db.Boolean, nullable=False, default=False)
-    on_beratung = db.Column(db.Boolean, nullable=False, default=False)
-    on_akademie = db.Column(db.Boolean, nullable=False, default=False)
+    on_consulting = db.Column(db.Boolean, nullable=False, default=False)
+    on_academy = db.Column(db.Boolean, nullable=False, default=False)
     kicker = db.Column(db.String(200))
     title = db.Column(db.String(200), nullable=False)
     body = db.Column(db.Text, nullable=False)

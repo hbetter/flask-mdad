@@ -54,7 +54,7 @@
                             {% if item.is_banner %}
                             <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">Banner</span>
                             {% endif %}
-                            {% if not (item.on_index or item.on_beratung or item.on_akademie or item.on_erfolgsgeschichten or item.is_banner) %}
+                            {% if not (item.on_index or item.on_consulting or item.on_academy or item.on_success_stories or item.is_banner) %}
                             <span class="badge rounded-pill bg-light text-muted border-1 px-2 py-1">Ohne Zuordnung</span>
                             {% endif %}
                         </div>
@@ -249,7 +249,7 @@
                                 <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">{{ label }}</span>
                                 {% endif %}
                             {% endfor %}
-                            {% if not (item.on_index or item.on_beratung or item.on_akademie) %}
+                            {% if not (item.on_index or item.on_consulting or item.on_academy) %}
                             <span class="badge rounded-pill bg-light text-muted border-1 px-2 py-1">Ohne Zuordnung</span>
                             {% endif %}
                         </div>
