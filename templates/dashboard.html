@@ -1,21 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-4">
-<div class="d-flex justify-content-between align-items-center mb-5 pb-3 flex-wrap gap-2">
-    <h2 class="fw-bold text-dark">Meine Inhalte</h2>
-    <div class="d-flex flex-wrap gap-2">
-        <a href="{{ url_for('add_card') }}" class="btn btn-add-card shadow-sm px-4">
-            <i class="bi bi-card-text"></i> Karte
-        </a>
-        <a href="{{ url_for('add_event') }}" class="btn btn-add-event shadow-sm px-4">
-            <i class="bi bi-calendar-plus"></i> Termin
-        </a>
-        <a href="{{ url_for('add_section') }}" class="btn btn-add-section shadow-sm px-4">
-            <i class="bi bi-layout-text-window"></i> Sektion
-        </a>
-    </div>
+<div class="container py-3">
+<div class="d-flex justify-content-end flex-wrap gap-2 mb-3">
+    <a href="{{ url_for('add_card') }}" class="btn btn-add-card shadow-sm px-4">
+        <i class="bi bi-card-text"></i> Karte
+    </a>
+    <a href="{{ url_for('add_event') }}" class="btn btn-add-event shadow-sm px-4">
+        <i class="bi bi-calendar-plus"></i> Termin
+    </a>
+    <a href="{{ url_for('add_section') }}" class="btn btn-add-section shadow-sm px-4">
+        <i class="bi bi-layout-text-window"></i> Sektion
+    </a>
 </div>
+
+<h2 class="fw-bold text-dark mb-3">Karten</h2>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -30,7 +29,7 @@
 
 <div class="row g-3">
     {% for item in cards %}
-        <div class="col-md-6 col-lg-4 mb-4">
+        <div class="col-md-6 col-lg-4">
             <div
                 class="card h-100 shadow-sm border-0 cursor-pointer"
                 role="button"
@@ -44,7 +43,7 @@
                         class="card-img-top"
                     >
                 {% endif %}
-                <div class="card-header bg-white border-0 pt-4">
+                <div class="card-header bg-white border-0 pt-3">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div class="d-flex flex-wrap gap-1">
                             {% for key, label in card_flags %}
@@ -83,7 +82,7 @@
                     </div>
                 </div>
 
-                <div class="card-footer bg-white border-0 pb-4">
+                <div class="card-footer bg-white border-0 pb-3">
                     <div class="btn-group">
                         <a href="{{ url_for('edit_card', card_id=item.id) }}"
                            class="btn btn-sm btn-outline-secondary px-3 border-1"
@@ -205,6 +204,172 @@
                                 class="btn btn-primary me-auto"
                             >
                                 Karte vollständig bearbeiten
+                            </a>
+
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Abbrechen
+                            </button>
+
+                            <button type="submit" class="btn btn-primary">
+                                Speichern
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3 mt-4 pt-4 border-top">
+    <h2 class="fw-bold text-dark">Sektionen</h2>
+</div>
+
+<div class="row g-3">
+    {% for item in sections %}
+        <div class="col-md-6 col-lg-4">
+            <div
+                class="card h-100 shadow-sm border-0 cursor-pointer"
+                role="button"
+                data-bs-toggle="modal"
+                data-bs-target="#editSectionModal{{ item.id }}"
+            >
+                {% if item.image_filename %}
+                    <img
+                        src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
+                        alt="{{ item.title }}"
+                        class="card-img-top"
+                    >
+                {% endif %}
+                <div class="card-header bg-white border-0 pt-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for key, label in section_flags %}
+                                {% if item[key] %}
+                                <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">{{ label }}</span>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not (item.on_index or item.on_beratung or item.on_akademie) %}
+                            <span class="badge rounded-pill bg-light text-muted border-1 px-2 py-1">Ohne Zuordnung</span>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted text-end">
+                            ID: {{ item.id }}<br>
+                            Ordnungsnummer: {{ item.order_number }}<br>
+                            {{ item.updated_at|datetimeformat }}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    {% if item.kicker %}
+                        <p class="text-uppercase small fw-semibold text-secondary mb-1">{{ item.kicker }}</p>
+                    {% endif %}
+                    <h5 class="card-title">{{ item.title }}</h5>
+
+                    {% if item.description %}
+                        <p class="card-subtitle mb-2 text-secondary">
+                            {{ item.description }}
+                        </p>
+                    {% endif %}
+
+                    <div class="card-text preserve-lines body-preview">
+                        {{ item.body|safe }}
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-0 pb-3">
+                    <div class="btn-group">
+                        <a href="{{ url_for('edit_section', section_id=item.id) }}"
+                           class="btn btn-sm btn-outline-secondary px-3 border-1"
+                           onclick="event.stopPropagation();">
+                            Bearbeiten
+                        </a>
+                        <form action="{{ url_for('delete_section', section_id=item.id) }}"
+                              method="POST"
+                              style="display: inline;"
+                              onclick="event.stopPropagation();"
+                              onsubmit="return confirm('Möchtest du diese Sektion wirklich löschen?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger ms-2 px-3 border-1">
+                                Löschen
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editSectionModal{{ item.id }}" tabindex="-1" aria-labelledby="editSectionModalLabel{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-top">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editSectionModalLabel{{ item.id }}">
+                            Positionierung der Sektion im öffentlichen Bereich
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('edit_section', section_id=item.id) }}"
+                        enctype="multipart/form-data"
+                    >
+                        <div class="modal-body flex-grow-1 overflow-auto">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold d-block mb-1">Anzeigen auf</label>
+                                {% for key, label in section_flags %}
+                                <div class="form-check form-check-inline">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="{{ key }}"
+                                        id="section-{{ key }}-{{ item.id }}"
+                                        value="1"
+                                        {% if item[key] %}checked{% endif %}
+                                    >
+                                    <label class="form-check-label" for="section-{{ key }}-{{ item.id }}">{{ label }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold mb-1">Ordnungsnummer</label>
+                                    <input
+                                        type="number"
+                                        name="order_number"
+                                        class="form-control form-control-sm"
+                                        value="{{ item.order_number }}"
+                                        min="0"
+                                    >
+                                </div>
+                                <div class="mt-3">
+                                    <label class="form-label fw-bold mb-2">Vergebene Ordnungsnummern</label>
+
+                                    <div class="small text-muted mb-2">
+                                        Bereits verwendete Reihenfolgen (eigene Sektionen):
+                                    </div>
+
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for section in sections %}
+                                            <span class="badge text-bg-light border px-2 py-2">
+                                                {{ section.order_number }} – {{ section.title }}
+                                                {% if section.id == item.id %}
+                                                    <span class="ms-1 text-secondary">(aktuell)</span>
+                                                {% endif %}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a
+                                href="{{ url_for('edit_section', section_id=item.id) }}"
+                                class="btn btn-primary me-auto"
+                            >
+                                Sektion vollständig bearbeiten
                             </a>
 
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">

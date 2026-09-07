@@ -5,11 +5,11 @@
     <div class="col-md-6">
         <div class="card shadow border-0">
             <div class="card-body p-4">
-                <h3 class="mb-4">Neue Karte hinzufügen</h3>
+                <h3 class="mb-4">Neue Sektion hinzufügen</h3>
                 <form method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label class="form-label fw-bold d-block">Anzeigen auf</label>
-                        {% for key, label in card_flags %}
+                        {% for key, label in section_flags %}
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" name="{{ key }}" id="{{ key }}" value="1">
                             <label class="form-check-label" for="{{ key }}">{{ label }}</label>
@@ -17,15 +17,7 @@
                         {% endfor %}
                     </div>
                     <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="is_banner" id="is_banner" value="1">
-                            <label class="form-check-label" for="is_banner">
-                                Banner auf der Startseite (nur eine Karte gleichzeitig möglich)
-                            </label>
-                        </div>
-                    </div>
-                    <div class="mb-3" id="order-number-wrapper" style="display: none;">
-                        <label class="form-label fw-bold">Reihenfolge auf der Indexseite</label>
+                        <label class="form-label fw-bold">Reihenfolge auf der Seite</label>
                         <input
                             type="number"
                             name="order_number"
@@ -34,13 +26,9 @@
                             min="0"
                         >
                     </div>
-                    <div class="mb-3" id="col-size-wrapper" style="display: none;">
-                        <label class="form-label fw-bold">Kartenbreite auf der Indexseite</label>
-                        <select name="col_size" class="form-select">
-                            <option value="col-12 col-md-6 col-lg-4">Normale Breite</option>
-                            <option value="col-12 col-md-6 col-lg-8">Doppelte Breite</option>
-                            <option value="col-12">Volle Breite</option>
-                        </select>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kicker</label>
+                        <input type="text" name="kicker" class="form-control" maxlength="200">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Titel</label>
@@ -72,11 +60,11 @@
                             <option value="portrait">Hochkant</option>
                         </select>
                         <small class="text-muted">
-                            Waagerecht für kleine Karten, Hochkant für zweispaltige Karten.
+                            Waagerecht für die meisten Sektionen, Hochkant für hochformatige Bilder.
                         </small>
                     </div>
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">In Datenbank speichern</button>
+                        <button type="submit" class="btn btn-primary">Speichern</button>
                         <a href="{{ url_for('dashboard') }}" class="btn btn-link text-muted">Abbrechen</a>
                     </div>
                 </form>
@@ -84,33 +72,5 @@
         </div>
     </div>
 </div>
-<script>
-    function toggleIndexFields() {
-        const indexCheckbox = document.getElementById('on_index');
-        const orderWrapper = document.getElementById('order-number-wrapper');
-        const colWrapper = document.getElementById('col-size-wrapper');
-
-        if (!indexCheckbox) return;
-
-        const show = indexCheckbox.checked;
-
-        if (orderWrapper) {
-            orderWrapper.style.display = show ? 'block' : 'none';
-        }
-
-        if (colWrapper) {
-            colWrapper.style.display = show ? 'block' : 'none';
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const indexCheckbox = document.getElementById('on_index');
-        toggleIndexFields();
-
-        if (indexCheckbox) {
-            indexCheckbox.addEventListener('change', toggleIndexFields);
-        }
-    });
-</script>
 </div>
 {% endblock %}

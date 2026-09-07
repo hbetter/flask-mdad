@@ -20,13 +20,13 @@
                 Für Unternehmen, die keine Zeit verlieren wollen:
               </p>
               <div class="d-flex flex-wrap gap-3 mb-4">
-                <a href="beratung.html" class="btn btn-outline-dark-sm btn-lg">Beratungsgespräch vereinbaren</a>
+                <a href="{{ url_for('beratung') }}" class="btn btn-outline-dark-sm btn-lg">Beratungsgespräch vereinbaren</a>
               </div>
               <p class="fs-5 mb-2">
                 Als Spiele Coach bringst du echte Veränderungen in Teams, Führung und ganzen Organisationen – effizient mit nachhaltiger Wirkung:
               </p>
               <div class="d-flex flex-wrap gap-3">
-                <a href="akademie.html" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
+                <a href="{{ url_for('akademie') }}" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
               </div>
             </div>
             <div class="col-lg-6">
@@ -113,8 +113,8 @@
           <div class="text-center mt-5">
             <h3 class="h4 mb-4">MENSCH DENK AN DICH<sup>®</sup> ist der Lösungsweg, der alle abholt <br />und Unternehmen resilient macht.</h3>
             <div class="d-flex flex-wrap justify-content-center gap-3">
-              <a href="akademie.html" class="btn btn-outline-dark-sm btn-lg">Beratungsgespräch vereinbaren</a>
-              <a href="akademie.html" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
+              <a href="{{ url_for('beratung') }}" class="btn btn-outline-dark-sm btn-lg">Beratungsgespräch vereinbaren</a>
+              <a href="{{ url_for('akademie') }}" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
 
               <a href="#kontakt" class="btn btn-maroon btn-lg">Probe-Spielraum buchen</a>
             </div>
@@ -332,6 +332,10 @@
           </div>
   {% endcall %}
   {% endif %}
+
+
+  <!-- SEKTIONEN: frei anlegbare, datenbankgetriebene Sektionen (Dashboard-Verwaltung). -->
+  {% include "_sektionen_liste.html" %}
 
 </main>
 

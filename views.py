@@ -15,7 +15,7 @@ from flask_login import (
 )
 from flask_migrate import Migrate
 
-from models import db, User, Card
+from models import db, User, Card, Section
 
 
 # Jede Karte kann unabhängig auf mehreren dieser Seiten erscheinen
@@ -27,6 +27,14 @@ CARD_FLAGS = [
     ("on_beratung", "Beratung"),
     ("on_akademie", "Akademie"),
     ("on_erfolgsgeschichten", "Erfolgsgeschichten"),
+]
+
+# Sektionen gibt es nur auf den drei Seiten mit statischem Aufbau (kein
+# Banner, keine Erfolgsgeschichten-Sektionen).
+SECTION_FLAGS = [
+    ("on_index", "Indexseite"),
+    ("on_beratung", "Beratung"),
+    ("on_akademie", "Akademie"),
 ]
 
 DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4"
@@ -146,9 +154,16 @@ def index():
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
+    sections = (
+        Section.query
+        .filter_by(on_index=True)
+        .order_by(Section.order_number.asc(), Section.id.asc())
+        .all()
+    )
     return render_template(
         "index.html",
         cards=cards,
+        sections=sections,
         banner=banner,
     )
 
@@ -167,6 +182,42 @@ def erfolgsgeschichten():
         cards=cards,
         banner=banner,
     )
+
+
+@app.route("/beratung")
+def beratung():
+    banner = get_banner_text()
+    cards = (
+        Card.query
+        .filter_by(on_beratung=True)
+        .order_by(Card.order_number.asc(), Card.id.asc())
+        .all()
+    )
+    sections = (
+        Section.query
+        .filter_by(on_beratung=True)
+        .order_by(Section.order_number.asc(), Section.id.asc())
+        .all()
+    )
+    return render_template("beratung.html", cards=cards, sections=sections, banner=banner)
+
+
+@app.route("/akademie")
+def akademie():
+    banner = get_banner_text()
+    cards = (
+        Card.query
+        .filter_by(on_akademie=True)
+        .order_by(Card.order_number.asc(), Card.id.asc())
+        .all()
+    )
+    sections = (
+        Section.query
+        .filter_by(on_akademie=True)
+        .order_by(Section.order_number.asc(), Section.id.asc())
+        .all()
+    )
+    return render_template("akademie.html", cards=cards, sections=sections, banner=banner)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -201,12 +252,20 @@ def dashboard():
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
+    user_sections = (
+        Section.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Section.order_number.asc(), Section.id.asc())
+        .all()
+    )
     return render_template(
         "dashboard.html",
         cards=user_cards,
         card_flags=CARD_FLAGS,
         banner=banner,
         index_card_orders=index_card_orders,
+        sections=user_sections,
+        section_flags=SECTION_FLAGS,
     )
 
 
@@ -277,7 +336,7 @@ def add_card():
         flash("Inhalt hinzugefügt!", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("add.html", card_flags=CARD_FLAGS)
+    return render_template("add_card.html", card_flags=CARD_FLAGS)
 
 
 @app.route("/add-event", methods=["GET"])
@@ -288,12 +347,146 @@ def add_event():
     return render_template("coming_soon.html", title="Termin hinzufügen")
 
 
-@app.route("/add-section", methods=["GET"])
+@app.route("/add-section", methods=["GET", "POST"])
 @login_required
 def add_section():
-    # Platzhalter-Route: eigenes Formular fuer Sektionen folgt spaeter,
-    # sobald der Datenmodell-Bedarf geklaert ist.
-    return render_template("coming_soon.html", title="Sektion hinzufügen")
+    if request.method == "POST":
+        on_index = request.form.get("on_index") == "1"
+        on_beratung = request.form.get("on_beratung") == "1"
+        on_akademie = request.form.get("on_akademie") == "1"
+
+        file = request.files.get("image")
+        image_filename = None
+        image_orientation = request.form.get("image_orientation", "landscape")
+        if file and file.filename:
+            if image_orientation == "portrait":
+                image_filename = resize_and_save_image(
+                    file,
+                    app.config["UPLOAD_FOLDER"],
+                    target_width=PORTRAIT_WIDTH,
+                    target_height=PORTRAIT_HEIGHT,
+                )
+            else:
+                image_filename = resize_and_save_image(
+                    file,
+                    app.config["UPLOAD_FOLDER"],
+                    target_width=LANDSCAPE_WIDTH,
+                    target_height=LANDSCAPE_HEIGHT,
+                )
+            if not image_filename:
+                flash("Nur Bilddateien sind erlaubt.", "warning")
+                return redirect(url_for("add_section"))
+
+        order_number = int(request.form.get("order_number") or 0)
+
+        new_section = Section(
+            on_index=on_index,
+            on_beratung=on_beratung,
+            on_akademie=on_akademie,
+            kicker=request.form.get("kicker"),
+            title=request.form.get("title"),
+            description=request.form.get("description"),
+            body=request.form.get("body"),
+            order_number=order_number,
+            user_id=current_user.id,
+            image_filename=image_filename,
+            updated_at=datetime.now(timezone.utc),
+        )
+        db.session.add(new_section)
+        db.session.commit()
+        flash("Sektion hinzugefügt!", "success")
+        return redirect(url_for("dashboard"))
+
+    return render_template("add_section.html", section_flags=SECTION_FLAGS)
+
+
+@app.route("/edit-section/<int:section_id>", methods=["GET", "POST"])
+@login_required
+def edit_section(section_id):
+    item = Section.query.get_or_404(section_id)
+
+    if item.author != current_user:
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+        item.on_index = request.form.get("on_index") == "1"
+        item.on_beratung = request.form.get("on_beratung") == "1"
+        item.on_akademie = request.form.get("on_akademie") == "1"
+
+        kicker = request.form.get("kicker")
+        title = request.form.get("title")
+        description = request.form.get("description")
+        body = request.form.get("body")
+
+        if kicker is not None:
+            item.kicker = kicker.strip()
+
+        if title is not None and title.strip():
+            item.title = title.strip()
+
+        if description is not None:
+            item.description = description.strip()
+
+        if body is not None and body.strip():
+            item.body = body.strip()
+
+        item.updated_at = datetime.now(timezone.utc)
+        item.order_number = int(request.form.get("order_number"))
+
+        delete_image = request.form.get("delete_image") == "1"
+
+        if delete_image and item.image_filename:
+            delete_uploaded_image(item.image_filename)
+            item.image_filename = None
+
+        file = request.files.get("image")
+        image_filename = None
+        image_orientation = request.form.get("image_orientation", "landscape")
+        if file and file.filename:
+            if image_orientation == "portrait":
+                image_filename = resize_and_save_image(
+                    file,
+                    app.config["UPLOAD_FOLDER"],
+                    target_width=PORTRAIT_WIDTH,
+                    target_height=PORTRAIT_HEIGHT,
+                )
+            else:
+                image_filename = resize_and_save_image(
+                    file,
+                    app.config["UPLOAD_FOLDER"],
+                    target_width=LANDSCAPE_WIDTH,
+                    target_height=LANDSCAPE_HEIGHT,
+                )
+            if not image_filename:
+                flash("Nur Bilddateien sind erlaubt: png, jpg, jpeg, gif, webp", "warning")
+                return redirect(url_for("edit_section", section_id=item.id))
+
+            delete_uploaded_image(item.image_filename)
+            item.image_filename = image_filename
+
+        db.session.commit()
+        flash("Sektion aktualisiert.", "success")
+        return redirect(url_for("dashboard"))
+
+    return render_template(
+        "edit_section.html",
+        section=item,
+        section_flags=SECTION_FLAGS,
+    )
+
+
+@app.route("/delete-section/<int:section_id>", methods=["POST"])
+@login_required
+def delete_section(section_id):
+    item = Section.query.get_or_404(section_id)
+
+    if item.author == current_user:
+        delete_uploaded_image(item.image_filename)
+        db.session.delete(item)
+        db.session.commit()
+        flash("Sektion gelöscht.", "info")
+
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/edit/<int:card_id>", methods=["GET", "POST"])
@@ -377,7 +570,7 @@ def edit_card(card_id):
         return redirect(url_for("dashboard"))
 
     return render_template(
-        "edit.html",
+        "edit_card.html",
         card=item,
         card_flags=CARD_FLAGS,
         banner=get_banner_text(),

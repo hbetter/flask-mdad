@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-body p-4">
+                <h3 class="mb-4">Sektion bearbeiten</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold d-block">Anzeigen auf</label>
+                        {% for key, label in section_flags %}
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="{{ key }}" id="{{ key }}" value="1" {% if section[key] %}checked{% endif %}>
+                            <label class="form-check-label" for="{{ key }}">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Reihenfolge auf der Seite</label>
+                        <input
+                            type="number"
+                            name="order_number"
+                            class="form-control"
+                            value="{{ section.order_number }}"
+                            min="0"
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kicker</label>
+                        <input type="text" name="kicker" class="form-control" maxlength="200" value="{{ section.kicker or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Titel</label>
+                        <input type="text" name="title" class="form-control" value="{{ section.title }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kurzbeschreibung</label>
+                        <input
+                            type="text"
+                            name="description"
+                            class="form-control"
+                            maxlength="300"
+                            value="{{ section.description or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Inhalt</label>
+                        <textarea name="body" class="form-control" rows="20" required>{{ section.body }}</textarea>
+                    </div>
+                    {% if section.image_filename %}
+                    <div class="mb-3">
+                        <p class="text-muted mb-2">Aktuelles Bild:</p>
+                        <img
+                            src="{{ url_for('static', filename='uploads/' ~ section.image_filename) }}"
+                            alt="Aktuelles Bild"
+                            class="img-fluid rounded border"
+                        >
+                    </div>
+                    <div class="form-check mb-3">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="delete_image"
+                            id="delete_image"
+                            value="1"
+                        >
+                        <label class="form-check-label" for="delete_image">
+                            Aktuelles Bild löschen
+                        </label>
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <label for="image" class="form-label fw-bold">Neues Bild hochladen</label>
+                        <input
+                            type="file"
+                            class="form-control"
+                            id="image"
+                            name="image"
+                            accept="image/*"
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label for="image_orientation" class="form-label fw-bold">Bildformat</label>
+                        <select name="image_orientation" id="image_orientation" class="form-select">
+                            <option value="landscape" selected>Waagerecht</option>
+                            <option value="portrait">Hochkant</option>
+                        </select>
+                        <small class="text-muted">
+                            Diese Auswahl wird verwendet, wenn ein neues Bild hochgeladen wird.
+                        </small>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Speichern</button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-link text-muted text-decoration-none">Abbrechen</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

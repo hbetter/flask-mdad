@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}Akademie – Mensch denk an Dich{% endblock %}
+{% block meta_description %}Akademie und Spiele-Coach-Ausbildung rund um MENSCH DENK AN DICH® – Platzhalterseite, wird mit echten Inhalten gefüllt.{% endblock %}
+{% block content %}
+
+<!-- Platzhalterseite: Struktur (Hero + 2 statische Sektionen) nach dem Muster der
+     Indexseite, Inhalte sind Lorem-Ipsum-Beispieltexte und Bildplatzhalter, die
+     später durch die echte Akademie-Seite ersetzt werden. -->
+<main id="main">
+
+  <!-- HERO -->
+  {% call m.section_card("Akademie", "Lorem ipsum dolor sit amet", heading_tag='h1', heading_class='display-3 mb-3') %}
+          <p class="fs-4 mb-4">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <div class="row gy-5">
+            <div class="col-lg-6">
+              <p class="fs-5 mb-3">
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+                voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+              </p>
+              <div class="d-flex flex-wrap gap-3">
+                <a href="#kontakt" class="btn btn-maroon btn-lg">Spiele Coach werden</a>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="placeholder-media hero-media">
+                <div>
+                  <i class="bi bi-image"></i>
+                  Bildplatzhalter
+                </div>
+              </div>
+            </div>
+          </div>
+  {% endcall %}
+
+  <!-- AUSBILDUNGSINHALTE (Platzhalter) -->
+  {% call m.section_card("Excepteur sint occaecat", "Sed ut perspiciatis unde omnis") %}
+          <p class="fs-5 mb-5">Iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam:</p>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="card-sm h-100">
+                <div class="placeholder-media mb-3" style="min-height: 160px;">
+                  <div>
+                    <i class="bi bi-image"></i>
+                    Bildplatzhalter
+                  </div>
+                </div>
+                <h3 class="h5 mb-2">Eaque ipsa quae</h3>
+                <p class="mb-0 small">Ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card-sm h-100">
+                <div class="placeholder-media mb-3" style="min-height: 160px;">
+                  <div>
+                    <i class="bi bi-image"></i>
+                    Bildplatzhalter
+                  </div>
+                </div>
+                <h3 class="h5 mb-2">Nemo enim ipsam</h3>
+                <p class="mb-0 small">Voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card-sm h-100">
+                <div class="placeholder-media mb-3" style="min-height: 160px;">
+                  <div>
+                    <i class="bi bi-image"></i>
+                    Bildplatzhalter
+                  </div>
+                </div>
+                <h3 class="h5 mb-2">Neque porro quisquam</h3>
+                <p class="mb-0 small">Qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam.</p>
+              </div>
+            </div>
+          </div>
+  {% endcall %}
+
+  <!-- VORAUSSETZUNGEN (Platzhalter) -->
+  {% call m.section_card("At vero eos et accusamus", "Et harum quidem rerum facilis") %}
+          <div class="row gy-5 align-items-center">
+            <div class="col-lg-6">
+              <div class="placeholder-media" style="min-height: 280px;">
+                <div>
+                  <i class="bi bi-image"></i>
+                  Bildplatzhalter
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <p class="fs-5 mb-3">
+                Est et expedita distinctio, nam libero tempore, cum soluta nobis est
+                eligendi optio cumque nihil impedit quo minus id quod maxime placeat
+                facere possimus, omnis voluptas assumenda est omnis dolor repellendus.
+              </p>
+              <p class="mb-4">
+                Temporibus autem quibusdam et aut officiis debitis aut rerum
+                necessitatibus saepe eveniet ut et voluptates repudiandae sint et
+                molestiae non recusandae.
+              </p>
+              <a href="#kontakt" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
+            </div>
+          </div>
+  {% endcall %}
+
+  <!-- KARTEN: datenbankgetriebene Karten (Dashboard-Verwaltung) mit angehaktem
+       "Akademie"-Häkchen. Section erscheint nur, wenn es mindestens eine gibt. -->
+  {% if cards %}
+  {% call m.section_card("Einblicke", "Neuigkeiten aus der Akademie") %}
+          <div class="row g-3">
+            {% include "_karten_liste.html" %}
+          </div>
+  {% endcall %}
+  {% endif %}
+
+
+  <!-- SEKTIONEN: frei anlegbare, datenbankgetriebene Sektionen (Dashboard-Verwaltung). -->
+  {% include "_sektionen_liste.html" %}
+
+</main>
+
+{% endblock %}
