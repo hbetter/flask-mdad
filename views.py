@@ -26,7 +26,7 @@ CARD_FLAGS = [
     ("on_index", "Indexseite"),
     ("on_consulting", "Beratung"),
     ("on_academy", "Akademie"),
-    ("on_success_stories", "Erfolgsgeschichten"),
+    ("on_stories", "Erfolgsgeschichten"),
 ]
 
 # Sektionen gibt es nur auf den drei Seiten mit statischem Aufbau (kein
@@ -168,17 +168,17 @@ def index():
     )
 
 
-@app.route("/success-stories")
-def success_stories():
+@app.route("/stories")
+def stories():
     banner = get_banner_text()
     cards = (
         Card.query
-        .filter_by(on_success_stories=True)
+        .filter_by(on_stories=True)
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
     return render_template(
-        "success_stories.html",
+        "stories.html",
         cards=cards,
         banner=banner,
     )
@@ -276,7 +276,7 @@ def add_card():
         on_index = request.form.get("on_index") == "1"
         on_consulting = request.form.get("on_consulting") == "1"
         on_academy = request.form.get("on_academy") == "1"
-        on_success_stories = request.form.get("on_success_stories") == "1"
+        on_stories = request.form.get("on_stories") == "1"
         is_banner = request.form.get("is_banner") == "1"
 
         if is_banner:
@@ -320,7 +320,7 @@ def add_card():
             on_index=on_index,
             on_consulting=on_consulting,
             on_academy=on_academy,
-            on_success_stories=on_success_stories,
+            on_stories=on_stories,
             is_banner=is_banner,
             title=request.form.get("title"),
             description=request.form.get("description"),
@@ -512,7 +512,7 @@ def edit_card(card_id):
         item.on_index = request.form.get("on_index") == "1"
         item.on_consulting = request.form.get("on_consulting") == "1"
         item.on_academy = request.form.get("on_academy") == "1"
-        item.on_success_stories = request.form.get("on_success_stories") == "1"
+        item.on_stories = request.form.get("on_stories") == "1"
         item.is_banner = new_is_banner
 
         title = request.form.get("title")
@@ -616,7 +616,7 @@ def sitemap():
         "lastmod": datetime.utcnow().date().isoformat()
     })
     pages.append({
-        "loc": url_for("success_stories", _external=True),
+        "loc": url_for("stories", _external=True),
         "lastmod": datetime.utcnow().date().isoformat()
     })
 

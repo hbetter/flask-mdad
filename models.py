@@ -16,7 +16,7 @@ class Card(db.Model):
     on_index = db.Column(db.Boolean, nullable=False, default=False)
     on_consulting = db.Column(db.Boolean, nullable=False, default=False)
     on_academy = db.Column(db.Boolean, nullable=False, default=False)
-    on_success_stories = db.Column(db.Boolean, nullable=False, default=False)
+    on_stories = db.Column(db.Boolean, nullable=False, default=False)
     is_banner = db.Column(db.Boolean, nullable=False, default=False)
     title = db.Column(db.String(200), nullable=False)
     body = db.Column(db.Text, nullable=False)
