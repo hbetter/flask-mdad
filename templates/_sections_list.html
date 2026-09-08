@@ -1,11 +1,13 @@
 {% for section in sections %}
-{% call m.section_card(section.kicker, section.title) %}
-        {% if section.description %}
-        <p class="fs-5 mb-4">{{ section.description }}</p>
-        {% endif %}
-        {% if section.image_filename %}
+{% if section.image_filename %}
+{% call m.section_card() %}
         <div class="row gy-5 align-items-center">
           <div class="col-lg-6">
+            {% if section.kicker %}<p class="kicker mb-2">{{ section.kicker }}</p>{% endif %}
+            <h2 class="display-5 mb-3">{{ section.title }}</h2>
+            {% if section.description %}
+            <p class="fs-5 mb-4">{{ section.description }}</p>
+            {% endif %}
             <div class="card-text preserve-lines">{{ section.body|safe }}</div>
           </div>
           <div class="col-lg-6">
@@ -16,8 +18,13 @@
             >
           </div>
         </div>
-        {% else %}
-        <div class="card-text preserve-lines">{{ section.body|safe }}</div>
-        {% endif %}
 {% endcall %}
+{% else %}
+{% call m.section_card(section.kicker, section.title) %}
+        {% if section.description %}
+        <p class="fs-5 mb-4">{{ section.description }}</p>
+        {% endif %}
+        <div class="card-text preserve-lines">{{ section.body|safe }}</div>
+{% endcall %}
+{% endif %}
 {% endfor %}

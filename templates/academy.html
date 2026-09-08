@@ -33,6 +33,9 @@
             </div>
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[1] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- AUSBILDUNGSINHALTE (Platzhalter) -->
   {% call m.section_card("Excepteur sint occaecat", "Sed ut perspiciatis unde omnis") %}
@@ -76,6 +79,9 @@
             </div>
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[2] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- VORAUSSETZUNGEN (Platzhalter) -->
   {% call m.section_card("At vero eos et accusamus", "Et harum quidem rerum facilis") %}
@@ -103,6 +109,9 @@
             </div>
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[3] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- KARTEN: datenbankgetriebene Karten (Dashboard-Verwaltung) mit angehaktem
        "Akademie"-Häkchen. Section erscheint nur, wenn es mindestens eine gibt. -->
@@ -115,8 +124,6 @@
   {% endif %}
 
 
-  <!-- SEKTIONEN: frei anlegbare, datenbankgetriebene Sektionen (Dashboard-Verwaltung). -->
-  {% include "_sections_list.html" %}
 
 </main>
 

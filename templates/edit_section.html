@@ -7,7 +7,7 @@
             <div class="card-body p-4">
                 <h3 class="mb-4">Sektion bearbeiten</h3>
                 <form method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
+                    <div class="mb-3 section-flags-toggle">
                         <label class="form-label fw-bold d-block">Anzeigen auf</label>
                         {% for key, label in section_flags %}
                         <div class="form-check form-check-inline">
@@ -16,15 +16,29 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Reihenfolge auf der Seite</label>
-                        <input
-                            type="number"
-                            name="order_number"
-                            class="form-control"
-                            value="{{ section.order_number }}"
-                            min="0"
-                        >
+                    <div class="mb-3 position-field-on_index">
+                        <label class="form-label fw-bold">Slot auf der Indexseite</label>
+                        <select name="slot_index" class="form-select">
+                            {% for value, label in slot_options_index %}
+                            <option value="{{ value }}" {% if value == current_slot_index %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 position-field-on_consulting">
+                        <label class="form-label fw-bold">Slot auf der Beratungsseite</label>
+                        <select name="slot_consulting" class="form-select">
+                            {% for value, label in slot_options_consulting %}
+                            <option value="{{ value }}" {% if value == current_slot_consulting %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 position-field-on_academy">
+                        <label class="form-label fw-bold">Slot auf der Akademieseite</label>
+                        <select name="slot_academy" class="form-select">
+                            {% for value, label in slot_options_academy %}
+                            <option value="{{ value }}" {% if value == current_slot_academy %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Kicker</label>

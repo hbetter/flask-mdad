@@ -835,3 +835,29 @@ footer.site-footer .sustainability-badge-link:hover {
 body.hide-dev-labels .dev-label {
     display: none;
 }
+/* Termin-Formular (add_event.html/edit_event.html): das Uhrzeit-Feld wird
+   rein per CSS ausgeblendet, wenn "Ganztaegig" angehakt ist (kein
+   JavaScript). :has() prueft, ob die Checkbox innerhalb des
+   .all-day-toggle-Wrappers angehakt ist; ~ trifft dann das nachfolgende
+   .time-field-Geschwisterelement. */
+.all-day-toggle:has(#all_day:checked) ~ .time-field {
+    display: none;
+}
+
+/* Sektions-Formular (add_section.html/edit_section.html/dashboard.html-
+   Modal): die Slot-Auswahl je Seite wird nur angezeigt, wenn die zugehoerige
+   "Anzeigen auf"-Checkbox angehakt ist - ohne JavaScript ueber :has() +
+   allgemeinen Geschwister-Selektor. Selektiert wird ueber das name-Attribut
+   (nicht die id), da auf dashboard.html mehrere Sektions-Modale mit
+   eindeutigen ids, aber gleichem name auf einer Seite stehen koennen. */
+.position-field-on_index,
+.position-field-on_consulting,
+.position-field-on_academy {
+    display: none;
+}
+
+.section-flags-toggle:has(input[name="on_index"]:checked) ~ .position-field-on_index,
+.section-flags-toggle:has(input[name="on_consulting"]:checked) ~ .position-field-on_consulting,
+.section-flags-toggle:has(input[name="on_academy"]:checked) ~ .position-field-on_academy {
+    display: block;
+}

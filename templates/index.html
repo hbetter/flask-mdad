@@ -34,6 +34,9 @@
             </div>
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[1] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- AWARDS -->
   {% call m.section_plain() %}
@@ -80,6 +83,9 @@
         </div>
       </div>
   {% endcall %}
+  {% with sections=sections_in_slot[2] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- NUTZENVERSPRECHEN -->
   {% call m.section_card("Echter Mehrwert", "Ein Spiel, in dem alle gewinnen") %}
@@ -120,6 +126,9 @@
             </div>
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[3] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- LÖSUNGSWEG -->
   {% call m.section_card("Der spielerische Lösungsansatz", "Neue Wege gehen") %}
@@ -178,21 +187,33 @@
             </table>
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[4] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- FAQS -->
   {% call m.section_card("Hinterfragt", "Fragen und Antworten") %}
           <p>plus CTA</p>
   {% endcall %}
+  {% with sections=sections_in_slot[5] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- WISSENSCHAFT -->
   {% call m.section_card("Wissenschaftlich fundiert", "Messbarer Vorsprung") %}
           <p>Messbare Wirkung durch wissenschaftliche Fundierung.<br>2022 erste Spiele Evaluation an der FU Berlin, weitere Forschung in laufender Kooperationsstudie mit der BARMER. Nur 30&nbsp;% aller Veränderungsprojekte erreichen ihre Ziele - weniger Zeit mehr Ergebnis. Whitepapers</p>
   {% endcall %}
+  {% with sections=sections_in_slot[6] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- BEKANNT -->
   {% call m.section_card() %}
           <img src="{{ url_for('static', filename='img/bekannt-aus-logo.webp') }}" alt="Bekannt bei unseren Kunden" class="img-fluid w-100">
   {% endcall %}
+  {% with sections=sections_in_slot[7] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- KUNDENSTIMMEN -->
   {% call m.section_card("Referenzen", "Kundenstimmen") %}
@@ -242,6 +263,9 @@
 
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[8] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
   <!-- SHORTS -->
   {% call m.section_card("Shorts", "Einblicke") %}
@@ -276,48 +300,42 @@
             </div>
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[9] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
 
-  <!-- TERMINE -->
+  <!-- TERMINE: dynamisch aus den im Dashboard gepflegten Terminen (views.py:
+       index()), gleiche Sortierung wie im Dashboard (chronologisch). Design/
+       Markup unveraendert gegenueber der frueheren statischen Version, nur
+       die Inhalte kommen jetzt aus der Datenbank. Kategorie erscheint als
+       Praefix im Titel (z. B. "Webinar: ..."), Terminart weiterhin oben als
+       Format-Label. Abschnitt erscheint nur, wenn mindestens ein Termin
+       existiert. -->
+  {% if events %}
   {% call m.section_card("Termine", "Risikofrei starten") %}
           <div class="row g-3">
+            {% for item in events %}
             <div class="col-sm-6 col-lg-3">
               <div class="termin-card">
-                <span class="termin-format">Online</span>
-                <div class="termin-date"><span class="day">08</span><span class="month">Sep 2026</span></div>
-                <h3 class="h6 mb-1">Probe-Spielraum: Online-Impuls</h3>
-                <p class="small text-muted mb-3">60 Minuten kompakt – ein erster Eindruck für Teams, die ausprobieren wollen.</p>
+                <span class="termin-format">{{ item.event_type|eventtypelabel }}</span>
+                <div class="termin-date">
+                    <span class="day">{{ item.starts_at|datetimeformat("%d") }}</span>
+                    <span class="month">{{ item.starts_at|germanmonthyear }}</span>
+                </div>
+                <h3 class="h6 mb-1">{{ item.category|eventcategorylabel }}: {{ item.title }}</h3>
+                {% if item.subtitle %}
+                <p class="small text-muted mb-3">{{ item.subtitle }}</p>
+                {% endif %}
                 <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
               </div>
             </div>
-            <div class="col-sm-6 col-lg-3">
-              <div class="termin-card">
-                <span class="termin-format">Präsenz</span>
-                <div class="termin-date"><span class="day">24</span><span class="month">Okt 2026</span></div>
-                <h3 class="h6 mb-1">Präsenz-Workshop: Playful Future</h3>
-                <p class="small text-muted mb-3">Der volle 90-Minuten-Spielraum live vor Ort, mit anschließendem Austausch.</p>
-                <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-3">
-              <div class="termin-card">
-                <span class="termin-format">Inhouse</span>
-                <div class="termin-date"><span class="day">03</span><span class="month">Dez 2026</span></div>
-                <h3 class="h6 mb-1">Inhouse-Intensiv: Team-Resilienz</h3>
-                <p class="small text-muted mb-3">Maßgeschneidert für Ihr Team – zum Jahresabschluss den Rückstand vermeiden.</p>
-                <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-3">
-              <div class="termin-card">
-                <span class="termin-format">Präsenz</span>
-                <div class="termin-date"><span class="day">18</span><span class="month">Feb 2027</span></div>
-                <h3 class="h6 mb-1">Führungskräfte-Workshop: Playful Leadership</h3>
-                <p class="small text-muted mb-3">Stärkenbasiert führen, hierarchieübergreifend – für den Jahresauftakt 2027.</p>
-                <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
-              </div>
-            </div>
+            {% endfor %}
           </div>
   {% endcall %}
+  {% with sections=sections_in_slot[10] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+  {% endif %}
 
   <!-- ERFOLGSGESCHICHTEN: bestehende, datenbankgetriebene Karten (Dashboard-Verwaltung),
        gesteuert über die "Indexseite"-Tickbox der jeweiligen Karte.
@@ -334,8 +352,6 @@
   {% endif %}
 
 
-  <!-- SEKTIONEN: frei anlegbare, datenbankgetriebene Sektionen (Dashboard-Verwaltung). -->
-  {% include "_sections_list.html" %}
 
 </main>
 

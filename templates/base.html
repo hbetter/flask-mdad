@@ -53,7 +53,7 @@
                 {% if current_user.is_authenticated and request.endpoint == 'dashboard' %}
                     <a href="{{ url_for('logout') }}" class="btn btn-maroon text-nowrap">Logout</a>
                 {% elif current_user.is_authenticated %}
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-maroon text-nowrap">Bedienfeld</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-maroon text-nowrap">Dashboard</a>
                 {% else %}
                     <a href="#kontakt" class="btn btn-maroon text-nowrap">Probe-Spielraum buchen</a>
                 {% endif %}

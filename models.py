@@ -9,6 +9,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     cards = db.relationship('Card', backref='author', lazy=True)
     sections = db.relationship('Section', backref='author', lazy=True)
+    events = db.relationship('Event', backref='author', lazy=True)
     password_hash = db.Column(db.String(255), nullable=False)
 
 class Card(db.Model):
@@ -52,4 +53,34 @@ class Section(db.Model):
         nullable=False,
         default=lambda: datetime.now(timezone.utc)
     )
-    order_number = db.Column(db.Integer, nullable=False, default=0)
+    # Platzierung pro Seite ueber durchnummerierte Slots zwischen den
+    # statischen Abschnitten (Slot 1 = zwischen dem 1. und 2. statischen
+    # Abschnitt usw., siehe PAGE_STATIC_KICKERS/PAGE_SLOT_COUNT in views.py).
+    # slot_position_* ordnet mehrere Sektionen im selben Slot (1, 2, ...).
+    # None bedeutet: nicht auf dieser Seite platziert.
+    slot_index_index = db.Column(db.Integer)
+    slot_position_index = db.Column(db.Integer)
+    slot_index_consulting = db.Column(db.Integer)
+    slot_position_consulting = db.Column(db.Integer)
+    slot_index_academy = db.Column(db.Integer)
+    slot_position_academy = db.Column(db.Integer)
+
+
+# Termine (Events): eigenstaendiges Modell, unabhaengig von Card/Section, da
+# Termine keine Platzierung auf den statischen Seiten haben, sondern ueber
+# Titel, Art, Untertitel, Zeitpunkt und Ort verwaltet werden.
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    event_type = db.Column(db.String(50), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
+    all_day = db.Column(db.Boolean, nullable=False, default=False)
+    subtitle = db.Column(db.String(300))
+    starts_at = db.Column(db.DateTime, nullable=False)
+    location = db.Column(db.String(300), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc)
+    )
