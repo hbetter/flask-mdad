@@ -24,8 +24,8 @@
                             </label>
                         </div>
                     </div>
-                    <div class="mb-3" id="order-number-wrapper" style="display: none;">
-                        <label class="form-label fw-bold">Reihenfolge auf der Indexseite</label>
+                    <div class="mb-3" id="order-number-wrapper">
+                        <label class="form-label fw-bold">Reihenfolge</label>
                         <input
                             type="number"
                             name="order_number"
@@ -34,8 +34,8 @@
                             min="0"
                         >
                     </div>
-                    <div class="mb-3" id="col-size-wrapper" style="display: none;">
-                        <label class="form-label fw-bold">Breite der Karte auf der Indexseite</label>
+                    <div class="mb-3" id="col-size-wrapper">
+                        <label class="form-label fw-bold">Breite der Karte</label>
                         <select name="col_size" class="form-select">
                             <option value="col-12 col-md-6 col-lg-4" {% if card.col_size == "col-12 col-md-6 col-lg-4" %}selected{% endif %}>
                                 Normale Breite
@@ -117,33 +117,5 @@
         </div>
     </div>
 </div>
-<script>
-    function toggleIndexFields() {
-        const indexCheckbox = document.getElementById('on_index');
-        const orderWrapper = document.getElementById('order-number-wrapper');
-        const colWrapper = document.getElementById('col-size-wrapper');
-
-        if (!indexCheckbox) return;
-
-        const show = indexCheckbox.checked;
-
-        if (orderWrapper) {
-            orderWrapper.style.display = show ? 'block' : 'none';
-        }
-
-        if (colWrapper) {
-            colWrapper.style.display = show ? 'block' : 'none';
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const indexCheckbox = document.getElementById('on_index');
-        toggleIndexFields();
-
-        if (indexCheckbox) {
-            indexCheckbox.addEventListener('change', toggleIndexFields);
-        }
-    });
-</script>
 </div>
 {% endblock %}

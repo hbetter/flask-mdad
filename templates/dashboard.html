@@ -130,7 +130,6 @@
                                         name="{{ key }}"
                                         id="{{ key }}-{{ item.id }}"
                                         value="1"
-                                        {% if key == 'on_index' %}data-index-toggle="{{ item.id }}"{% endif %}
                                         {% if item[key] %}checked{% endif %}
                                     >
                                     <label class="form-check-label" for="{{ key }}-{{ item.id }}">{{ label }}</label>
@@ -153,7 +152,7 @@
                                 </div>
                             </div>
                             <div class="row g-2">
-                                <div class="col-md-6" id="order-number-wrapper-{{ item.id }}" style="{% if not item.on_index %}display: none;{% endif %}">
+                                <div class="col-md-6" id="order-number-wrapper-{{ item.id }}">
                                     <label class="form-label fw-bold mb-1">Ordnungsnummer</label>
                                     <input
                                         type="number"
@@ -163,7 +162,7 @@
                                         min="0"
                                     >
                                 </div>
-                                <div class="col-md-6" id="col-size-wrapper-{{ item.id }}" style="{% if not item.on_index %}display: none;{% endif %}">
+                                <div class="col-md-6" id="col-size-wrapper-{{ item.id }}">
                                     <label class="form-label fw-bold mb-1">Breite der Karte</label>
                                     <select name="col_size" class="form-select form-select-sm">
                                         <option value="col-12 col-md-6 col-lg-4" {% if item.col_size == "col-12 col-md-6 col-lg-4" %}selected{% endif %}>
@@ -181,11 +180,11 @@
                                     <label class="form-label fw-bold mb-2">Vergebene Ordnungsnummern</label>
 
                                     <div class="small text-muted mb-2">
-                                        Bereits verwendete Reihenfolgen auf der Indexseite:
+                                        Bereits verwendete Reihenfolgen:
                                     </div>
 
                                     <div class="d-flex flex-wrap gap-2">
-                                        {% for card in index_card_orders %}
+                                        {% for card in card_orders %}
                                             <span class="badge text-bg-light border px-2 py-2">
                                                 {{ card.order_number }} – {{ card.title }}
                                                 {% if card.id == item.id %}
@@ -454,21 +453,4 @@
 </div>
 
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('[data-index-toggle]').forEach(function (checkbox) {
-            var cardId = checkbox.dataset.indexToggle;
-            var orderWrapper = document.getElementById('order-number-wrapper-' + cardId);
-            var colWrapper = document.getElementById('col-size-wrapper-' + cardId);
-
-            function toggle() {
-                var show = checkbox.checked;
-                if (orderWrapper) orderWrapper.style.display = show ? 'block' : 'none';
-                if (colWrapper) colWrapper.style.display = show ? 'block' : 'none';
-            }
-
-            checkbox.addEventListener('change', toggle);
-        });
-    });
-</script>
 {% endblock %}

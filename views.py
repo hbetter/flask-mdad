@@ -483,9 +483,8 @@ def dashboard():
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
-    index_card_orders = (
+    card_orders = (
         Card.query
-        .filter_by(on_index=True)
         .order_by(Card.order_number.asc(), Card.id.asc())
         .all()
     )
@@ -522,7 +521,7 @@ def dashboard():
         cards=user_cards,
         card_flags=CARD_FLAGS,
         banner=banner,
-        index_card_orders=index_card_orders,
+        card_orders=card_orders,
         sections=user_sections,
         section_flags=SECTION_FLAGS,
         transition_labels=transition_labels,
@@ -572,12 +571,7 @@ def add_card():
                 flash("Nur Bilddateien sind erlaubt.", "warning")
                 return redirect(url_for("add_card"))
         order_number = int(request.form.get("order_number") or 0)
-        if not on_index:
-            order_number = 0
-
         col_size = request.form.get("col_size") or DEFAULT_COL_SIZE
-        if not on_index:
-            col_size = DEFAULT_COL_SIZE
 
         new_item = Card(
             on_index=on_index,
