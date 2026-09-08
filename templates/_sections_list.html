@@ -1,21 +1,21 @@
 {% for section in sections %}
 {% if section.image_filename %}
 {% call m.section_card() %}
-        <div class="row gy-5 align-items-center">
-          <div class="col-lg-6">
+        <div class="row gy-5 align-items-start">
+          <div class="col-lg-6 order-lg-{{ '1' if section.image_position == 'left' else '2' }}">
+            <img
+              src="{{ url_for('static', filename='uploads/' ~ section.image_filename) }}"
+              alt="{{ section.title }}"
+              class="img-fluid rounded"
+            >
+          </div>
+          <div class="col-lg-6 order-lg-{{ '2' if section.image_position == 'left' else '1' }}">
             {% if section.kicker %}<p class="kicker mb-2">{{ section.kicker }}</p>{% endif %}
             <h2 class="display-5 mb-3">{{ section.title }}</h2>
             {% if section.description %}
             <p class="fs-5 mb-4">{{ section.description }}</p>
             {% endif %}
             <div class="card-text preserve-lines">{{ section.body|safe }}</div>
-          </div>
-          <div class="col-lg-6">
-            <img
-              src="{{ url_for('static', filename='uploads/' ~ section.image_filename) }}"
-              alt="{{ section.title }}"
-              class="img-fluid rounded"
-            >
           </div>
         </div>
 {% endcall %}

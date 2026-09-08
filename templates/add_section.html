@@ -77,6 +77,13 @@
                             Waagerecht für die meisten Sektionen, Hochkant für hochformatige Bilder.
                         </small>
                     </div>
+                    <div class="mb-3">
+                        <label for="image_position" class="form-label fw-bold">Bildposition</label>
+                        <select name="image_position" id="image_position" class="form-select">
+                            <option value="right" selected>Bild rechts</option>
+                            <option value="left">Bild links</option>
+                        </select>
+                    </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">Speichern</button>
                         <a href="{{ url_for('dashboard') }}" class="btn btn-link text-muted">Abbrechen</a>

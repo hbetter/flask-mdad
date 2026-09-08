@@ -50,9 +50,9 @@ EVENT_TYPE_LABELS = dict(EVENT_TYPES)
 # unabhaengig von der Terminart/dem Format oben).
 EVENT_CATEGORIES = [
     ("webinar", "Webinar"),
-    ("trial_session", "Probe-Spielraum"),
+    ("trial_session", "Probe Spielraum"),
     ("coach_certification", "Spiele Coach Qualifizierung"),
-    ("workshop", "Workshop"),
+    ("workshop", "Impuls Workshop"),
 ]
 EVENT_CATEGORY_LABELS = dict(EVENT_CATEGORIES)
 
@@ -716,6 +716,9 @@ def add_section():
         on_index = request.form.get("on_index") == "1"
         on_consulting = request.form.get("on_consulting") == "1"
         on_academy = request.form.get("on_academy") == "1"
+        image_position = request.form.get("image_position")
+        if image_position not in ("left", "right"):
+            image_position = "right"
 
         file = request.files.get("image")
         image_filename = None
@@ -763,6 +766,7 @@ def add_section():
             body=request.form.get("body"),
             user_id=current_user.id,
             image_filename=image_filename,
+            image_position=image_position,
             updated_at=datetime.now(timezone.utc),
         )
         db.session.add(new_section)
@@ -838,6 +842,10 @@ def edit_section(section_id):
 
         if body is not None and body.strip():
             item.body = body.strip()
+
+        image_position = request.form.get("image_position")
+        if image_position in ("left", "right"):
+            item.image_position = image_position
 
         item.updated_at = datetime.now(timezone.utc)
 

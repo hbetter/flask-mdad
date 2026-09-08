@@ -47,6 +47,10 @@ class Section(db.Model):
     body = db.Column(db.Text, nullable=False)
     description = db.Column(db.String(300))
     image_filename = db.Column(db.String(255))
+    # Auf welcher Seite des Textes das Bild steht (nur relevant, wenn ein
+    # Bild vorhanden ist) - unabhaengig vom Bildformat (image_orientation
+    # beim Hochladen bestimmt nur den Bildausschnitt, nicht die Position).
+    image_position = db.Column(db.String(10), nullable=False, default="right")
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     updated_at = db.Column(
         db.DateTime,

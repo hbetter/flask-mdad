@@ -104,6 +104,13 @@
                             Diese Auswahl wird verwendet, wenn ein neues Bild hochgeladen wird.
                         </small>
                     </div>
+                    <div class="mb-3">
+                        <label for="image_position" class="form-label fw-bold">Bildposition</label>
+                        <select name="image_position" id="image_position" class="form-select">
+                            <option value="right" {% if section.image_position != 'left' %}selected{% endif %}>Bild rechts</option>
+                            <option value="left" {% if section.image_position == 'left' %}selected{% endif %}>Bild links</option>
+                        </select>
+                    </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">Speichern</button>
                         <a href="{{ url_for('dashboard') }}" class="btn btn-link text-muted text-decoration-none">Abbrechen</a>
