@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>ActiveCampaign Formulare – Vollständige Embed-Codes</title>
+
+  <!-- Google Font: Open Sans (identisch zur Website, siehe base.html /
+       static/css/custom.css) statt des urspruenglichen Roboto, damit die
+       Formulare sich in den Fliesstext der Seite einfuegen. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+
+    /* ============================================================
+       GLOBALE RESET-HILFEN FÜR AC-FORMULARE
+       ============================================================ */
+    ._form { box-sizing: border-box; }
+    ._form input, ._form select, ._form textarea {
+      box-sizing: border-box;
+    }
+
+    /* ============================================================
+       EINHEITLICHES AUSSEHEN FÜR ALLE FORMULARE
+       ============================================================
+       Statt für jedes Formular eigene, von ActiveCampaign vorgegebene
+       Werte zu pflegen, orientieren sich alle fünf Formulare jetzt am
+       Bootstrap-Theme der Website (static/css/custom.css):
+
+       - Schrift:    'Open Sans' (Website-Schrift statt Roboto/IBM Plex)
+       - Container:  wie .card-sm (weiß, radius .75rem, dezenter Schatten)
+       - Überschrift: wie h1–h3 der Website (Open Sans 800, #281351)
+       - Eingaben:   wie Bootstraps .form-control/.form-select
+                     (Bootstrap-Standardwerte: Rahmen #ced4da, radius
+                     .375rem, Fokusring in Bootstrap-Blau)
+       - Label:      wie .form-label.fw-bold der übrigen Formulare
+       - Button:     wie .btn-maroon der Website (Bordeaux, radius .5rem,
+                     Hover in Signalrot mit Schatten/Hub)
+
+       ActiveCampaign speichert pro Formular eine eigene, id-basierte
+       Stylesheet-Regel (z. B. "#_form_6AA1869F213EC_ ._submit"), die
+       jede Regel hier per CSS-Spezifität schlagen würde. Deshalb steht
+       hinter jedem Wert "!important" - ausreichend für Container,
+       Überschrift, Label und die meisten Eingabe-Eigenschaften, da
+       ActiveCampaign dort selbst kein !important setzt. Einzige
+       Ausnahme: den Absende-Button (Hintergrund/Rahmen/Radius/Padding/
+       Farbe) und die Textfarbe der Eingaben markiert ActiveCampaign
+       *selbst* mit !important - das lässt sich von außen per CSS gar
+       nicht mehr schlagen. Für genau diese beiden Fälle erzwingt das
+       kleine Script am Ende der Seite die Werte per Inline-Style
+       (schlägt jede Stylesheet-Regel, auch mit !important), sobald
+       ActiveCampaign die Felder erzeugt hat.
+
+       Die Breite (max-width) bleibt je Formular individuell, weil sie
+       vom jeweiligen Einsatzort abhängt.
+       ============================================================ */
+
+    ._form_11, ._form_3, ._form_5, ._form_14, ._form_8 {
+      background-color: #ffffff !important;
+      border-radius: .75rem !important;
+      box-shadow: 0 6px 20px rgba(40, 19, 81, .08) !important;
+      padding: 1.75rem 1.5rem !important;
+      font-family: 'Open Sans', sans-serif !important;
+      color: #33373D !important;
+    }
+    ._form_11, ._form_5, ._form_14, ._form_8 { max-width: 600px; }
+    ._form_3 { max-width: 500px; }
+
+    ._form_11 ._form_element ._field_header, ._form_11 h1, ._form_11 h2, ._form_11 h3,
+    ._form_3 ._form_element ._field_header, ._form_3 h1, ._form_3 h2, ._form_3 h3,
+    ._form_5 ._form_element ._field_header, ._form_5 h1, ._form_5 h2, ._form_5 h3,
+    ._form_14 ._form_element ._field_header, ._form_14 h1, ._form_14 h2, ._form_14 h3,
+    ._form_8 ._form_element ._field_header, ._form_8 h1, ._form_8 h2, ._form_8 h3 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-weight: 800 !important;
+      font-size: 1.375rem !important;
+      color: #281351 !important;
+      margin-bottom: .75rem !important;
+    }
+
+    /* Feldbeschriftungen wie Bootstraps .form-label, Fettung wie im
+       übrigen Dashboard/Formularen (form-label fw-bold). */
+    ._form_11 label, ._form_3 label, ._form_5 label, ._form_14 label, ._form_8 label {
+      font-family: 'Open Sans', sans-serif !important;
+      font-weight: 700 !important;
+      font-size: .95rem !important;
+      color: #33373D !important;
+      margin-bottom: .375rem !important;
+      display: block !important;
+    }
+
+    /* Eingabefelder wie Bootstraps .form-control/.form-select
+       (Standardwerte des Bootstrap-Themes der Website, siehe
+       bootstrap.min.css: --bs-border-radius, Rahmenfarbe #ced4da).
+       Die Textfarbe steht zusätzlich unten im Script, weil
+       ActiveCampaign sie selbst mit !important belegt. */
+    ._form_11 input[type="text"], ._form_11 input[type="email"], ._form_11 input[type="tel"],
+    ._form_11 input[type="date"], ._form_11 select,
+    ._form_3 input[type="text"], ._form_3 input[type="email"], ._form_3 input[type="tel"],
+    ._form_5 input[type="text"], ._form_5 input[type="email"],
+    ._form_14 input[type="text"], ._form_14 input[type="email"],
+    ._form_8 input[type="text"], ._form_8 input[type="email"], ._form_8 input[type="tel"] {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 1rem !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      background-color: #ffffff !important;
+      background-clip: padding-box !important;
+      border: 1px solid #ced4da !important;
+      border-radius: .375rem !important;
+      /* padding-left bewusst NICHT erzwungen: das Telefonfeld ist ein
+         intl-tel-input-Widget, das seinen eigenen linken Abstand per
+         Inline-Style fuer die Laenderflagge berechnet - ein erzwungener
+         Wert wuerde die Flagge mit der Eingabe ueberlappen lassen. */
+      padding-top: .375rem !important;
+      padding-right: .75rem !important;
+      padding-bottom: .375rem !important;
+      width: 100% !important;
+      transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
+    }
+
+    ._form_11 input:focus, ._form_11 select:focus,
+    ._form_3 input:focus,
+    ._form_5 input:focus,
+    ._form_14 input:focus,
+    ._form_8 input:focus {
+      border-color: #86b7fe !important;
+      outline: 0 !important;
+      box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25) !important;
+    }
+
+    /* Button wie .btn-maroon der Website (siehe custom.css). Hintergrund/
+       Rahmen/Radius/Padding/Farbe wirken hier nicht (ActiveCampaign
+       belegt genau diese mit eigenem !important) - siehe Script unten. */
+    ._form_11 ._submit, ._form_3 ._submit, ._form_5 ._submit, ._form_14 ._submit, ._form_8 ._submit {
+      font-family: 'Open Sans', sans-serif !important;
+      font-weight: 700 !important;
+      font-size: 1rem !important;
+      width: 100% !important;
+      cursor: pointer !important;
+      transition: box-shadow .3s ease, transform .3s ease, background-color .3s ease !important;
+    }
+    ._form_11 ._submit:hover, ._form_3 ._submit:hover, ._form_5 ._submit:hover,
+    ._form_14 ._submit:hover, ._form_8 ._submit:hover {
+      box-shadow: 0 4px 12px rgba(156, 14, 23, .3) !important;
+      transform: translateY(-2px) !important;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- 1. IMPULSWORKSHOP ANMELDUNG – MENSCH DENK AN DICH (ID: 11)  -->
+  <!-- ============================================================ -->
+  <div class="_form_11"></div>
+  <script src="https://smeo.activehosted.com/f/embed.php?id=11" type="text/javascript" charset="utf-8"></script>
+
+  <!-- ============================================================ -->
+  <!-- 2. NEWSLETTER-ANMELDUNG – MENSCH DENK AN DICH (ID: 5)       -->
+  <!-- ============================================================ -->
+  <div class="_form_5"></div>
+  <script src="https://smeo.activehosted.com/f/embed.php?id=5" type="text/javascript" charset="utf-8"></script>
+
+  <!-- ============================================================ -->
+  <!-- 3. SPIELE-COACH ANMELDUNG – MENSCH DENK AN DICH (ID: 8)     -->
+  <!-- ============================================================ -->
+  <div class="_form_8"></div>
+  <script src="https://smeo.activehosted.com/f/embed.php?id=8" type="text/javascript" charset="utf-8"></script>
+
+  <!-- ============================================================
+       ActiveCampaign erzeugt pro Formular eine eigene, id-basierte
+       Stylesheet-Regel und markiert darin den Absende-Button
+       (Hintergrund, Rahmen, Eckenradius, Innenabstand, Textfarbe) sowie
+       die Textfarbe der Eingabefelder selbst mit "!important" - das
+       schlägt jede externe CSS-Regel, egal wie spezifisch. Einzige
+       zuverlässige Möglichkeit, diese wenigen Werte trotzdem an die
+       Website anzupassen: Inline-Style mit "!important" direkt am
+       jeweiligen Element, sobald ActiveCampaign es erzeugt hat (das
+       schlägt seinerseits jede Stylesheet-Regel). Alles andere auf der
+       Seite läuft über reines CSS oben.
+       ============================================================ -->
+  <script>
+    (function () {
+      var SUBMIT_STYLE = {
+        'background-color': '#9C0E17',
+        'background-image': 'none',
+        'border': 'none',
+        'border-radius': '.5rem',
+        'padding': '.625rem 1rem',
+        'color': '#ffffff',
+      };
+      var SUBMIT_HOVER_BG = '#e30613';
+      var INPUT_TEXT_COLOR = '#212529';
+
+      function setImportant(el, styles) {
+        Object.keys(styles).forEach(function (prop) {
+          el.style.setProperty(prop, styles[prop], 'important');
+        });
+      }
+
+      function styleSubmit(el) {
+        if (el.dataset.brandStyled) return;
+        el.dataset.brandStyled = '1';
+        setImportant(el, SUBMIT_STYLE);
+        el.addEventListener('mouseenter', function () {
+          el.style.setProperty('background-color', SUBMIT_HOVER_BG, 'important');
+        });
+        el.addEventListener('mouseleave', function () {
+          el.style.setProperty('background-color', SUBMIT_STYLE['background-color'], 'important');
+        });
+      }
+
+      function applyBrandStyles(root) {
+        root.querySelectorAll('._submit').forEach(styleSubmit);
+        root.querySelectorAll(
+          'input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, textarea'
+        ).forEach(function (el) {
+          el.style.setProperty('color', INPUT_TEXT_COLOR, 'important');
+        });
+      }
+
+      ['_form_11', '_form_3', '_form_5', '_form_14', '_form_8'].forEach(function (cls) {
+        document.querySelectorAll('.' + cls).forEach(function (container) {
+          applyBrandStyles(container);
+          new MutationObserver(function () {
+            applyBrandStyles(container);
+          }).observe(container, { childList: true, subtree: true });
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

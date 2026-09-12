@@ -110,21 +110,25 @@ h1, h2, h3 {
     width: auto;
 }
 
-@media (min-width: 992px) {
-    .navbar-logo {
-        height: 70px;
-    }
-    .navbar > .container {
-        flex-wrap: nowrap;
-    }
-    .navbar .btn-toggle-group {
-        margin-left: 2rem;
-    }
+/* Logo und Button/Menue-Icon sollen auf JEDER Breite in einer Zeile
+   bleiben (kein Umbruch auf dem Smartphone) - deshalb hier ohne
+   Media-Query, nicht erst ab 992px. */
+.navbar > .container {
+    flex-wrap: nowrap;
 }
 
 .navbar .btn-toggle-group {
     flex-shrink: 1;
     min-width: 0;
+}
+
+@media (min-width: 992px) {
+    .navbar-logo {
+        height: 70px;
+    }
+    .navbar .btn-toggle-group {
+        margin-left: 2rem;
+    }
 }
 
 .navbar-custom .nav-link {
