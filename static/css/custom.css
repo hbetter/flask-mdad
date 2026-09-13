@@ -784,6 +784,60 @@ footer.site-footer .sustainability-badge-link:hover {
     margin-bottom: .35rem;
 }
 
+/* Unter 768px wird die Tabelle in gestapelte Karten verwandelt, damit
+   sie ohne seitliches Wischen lesbar ist (statt horizontal zu scrollen). */
+@media (max-width: 767.98px) {
+    .schmerz-table thead {
+        display: none;
+    }
+
+    .schmerz-table,
+    .schmerz-table tbody,
+    .schmerz-table tr,
+    .schmerz-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .schmerz-table tr {
+        margin-bottom: 1.25rem;
+        padding: 1.1rem 1.25rem;
+        border-radius: .75rem;
+        background: #fff;
+        box-shadow: 0 6px 20px rgba(40, 19, 81, .08);
+        border-bottom: none;
+    }
+
+    .schmerz-table tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .schmerz-table td {
+        padding: .6rem 0;
+        border-bottom: none;
+    }
+
+    .schmerz-table td:first-child {
+        padding-top: 0;
+    }
+
+    .schmerz-table td[data-label] {
+        border-top: 1px dashed var(--sm-line);
+        padding-top: .75rem;
+    }
+
+    .schmerz-table td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        font-weight: 700;
+        color: var(--sm-muted);
+        margin-bottom: .35rem;
+    }
+}
+
 .termin-card {
     border-radius: .75rem;
     background: #fff;
