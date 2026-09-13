@@ -72,6 +72,18 @@ h1, h2, h3 {
     flex-shrink: 0;
 }
 
+/* Bootstrap springt bei 576px/768px auf feste Container-Breiten
+   (540px/720px) - auf Smartphones im Querformat (haeufig 700-930px
+   breit, aber niedrig) bleibt dadurch sehr viel ungenutzter, leerer
+   Rand links/rechts. Betrifft gezielt nur echte Handys im Querformat
+   (kombiniert aus max-width + geringer Bildschirmhoehe), nicht Tablets
+   im Hochformat, die zufaellig im gleichen Breitenbereich liegen. */
+@media (max-width: 991.98px) and (orientation: landscape) and (max-height: 500px) {
+    .container {
+        max-width: calc(100% - 2rem);
+    }
+}
+
 
 /* =========================================================
    Navigation
