@@ -1,6 +1,6 @@
 # Prompt: Statische Website aus dem MENSCH DENK AN DICH®-Portal erzeugen
 
-Erzeuge aus dem lokal laufenden Flask-Portal (http://localhost:5001) eine schlanke statische Website. Nutze dafür meinen Chrome-Browser und schreibe die Ergebnisse direkt in den Ordner `~/Downloads/mdad-website/`.
+Erzeuge aus dem lokal laufenden Flask-Portal (http://localhost:5001) eine schlanke statische Website. Nutze dafür meinen Chrome-Browser und schreibe die Ergebnisse direkt in den Ordner `equipe-pq/` im Repo `flask-mdad` (`~/Docker/flask-mdad/equipe-pq/`).
 
 ## Seiten
 - `/` → `index.html`
