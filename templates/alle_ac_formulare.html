@@ -14,136 +14,165 @@
   <style>
 
     /* ============================================================
-       GLOBALE RESET-HILFEN FÜR AC-FORMULARE
-       ============================================================ */
-    ._form { box-sizing: border-box; }
-    ._form input, ._form select, ._form textarea {
-      box-sizing: border-box;
-    }
-
-    /* ============================================================
-       EINHEITLICHES AUSSEHEN FÜR ALLE FORMULARE
+       EINHEITLICHES AUSSEHEN FÜR ALLE ACTIVECAMPAIGN-FORMULARE
        ============================================================
-       Statt für jedes Formular eigene, von ActiveCampaign vorgegebene
-       Werte zu pflegen, orientieren sich alle fünf Formulare jetzt am
-       Bootstrap-Theme der Website (static/css/custom.css):
+       Jedes eingebettete Formular besteht aus
+         <div class="_form_NN">            (unser Platzhalter)
+           <form class="_form _form_NN …"> (von ActiveCampaign erzeugt)
+       Alle Regeln unten hängen deshalb an "form._form" - der Klasse, die
+       ActiveCampaign jedem Formular gibt. Sie greifen damit automatisch
+       für jedes vorhandene und jedes künftig eingebettete Formular.
+       Ein neues Formular braucht nur noch seinen Embed-Code (div + script),
+       hier im CSS und im Script unten ist nichts nachzutragen.
 
-       - Schrift:    'Open Sans' (Website-Schrift statt Roboto/IBM Plex)
-       - Container:  wie .card-sm (weiß, radius .75rem, dezenter Schatten)
+       Gestaltung orientiert am Bootstrap-Theme der Website
+       (static/css/custom.css):
+       - Schrift:     'Open Sans' (statt Roboto/IBM Plex)
+       - Karte:       wie .card-sm (weiß, radius .75rem, dezenter Schatten)
        - Überschrift: wie h1–h3 der Website (Open Sans 800, #281351)
-       - Eingaben:   wie Bootstraps .form-control/.form-select
-                     (Bootstrap-Standardwerte: Rahmen #ced4da, radius
-                     .375rem, Fokusring in Bootstrap-Blau)
-       - Label:      wie .form-label.fw-bold der übrigen Formulare
-       - Button:     wie .btn-maroon der Website (Bordeaux, radius .5rem,
-                     Hover in Signalrot mit Schatten/Hub)
+       - Label:       wie .form-label.fw-bold
+       - Eingaben:    wie Bootstraps .form-control/.form-select
+       - Button:      wie .btn-maroon (Bordeaux, Hover Signalrot)
+       Alle Farben/Maße stehen einmal als Variablen im ersten Block.
 
-       ActiveCampaign speichert pro Formular eine eigene, id-basierte
-       Stylesheet-Regel (z. B. "#_form_6AA1869F213EC_ ._submit"), die
-       jede Regel hier per CSS-Spezifität schlagen würde. Deshalb steht
-       hinter jedem Wert "!important" - ausreichend für Container,
-       Überschrift, Label und die meisten Eingabe-Eigenschaften, da
-       ActiveCampaign dort selbst kein !important setzt. Einzige
-       Ausnahme: den Absende-Button (Hintergrund/Rahmen/Radius/Padding/
-       Farbe) und die Textfarbe der Eingaben markiert ActiveCampaign
-       *selbst* mit !important - das lässt sich von außen per CSS gar
-       nicht mehr schlagen. Für genau diese beiden Fälle erzwingt das
-       kleine Script am Ende der Seite die Werte per Inline-Style
-       (schlägt jede Stylesheet-Regel, auch mit !important), sobald
-       ActiveCampaign die Felder erzeugt hat.
-
-       Die Breite (max-width) bleibt je Formular individuell, weil sie
-       vom jeweiligen Einsatzort abhängt.
+       Warum überall "!important": ActiveCampaign liefert pro Formular
+       eigene id-basierte Regeln (z. B. "#_form_6AA1869F213EC_ ._submit"),
+       die per Spezifität jede Regel hier schlagen würden. Button-Farben
+       und die Textfarbe der Eingaben setzt ActiveCampaign sogar selbst
+       mit !important - die erzwingt das Script am Seitenende per
+       Inline-Style.
        ============================================================ */
 
-    ._form_11, ._form_3, ._form_5, ._form_14, ._form_8 {
+    /* ":not(#_)" hebt die Spezifität auf ID-Niveau: ActiveCampaign
+       erzwingt Hintergrund, Rahmen und Eckenradius des Formulars selbst
+       per "#_form_<ID>_ { … !important }". Ohne diesen Zusatz blieben
+       z. B. die Ecken bei 4px statt .75rem. */
+    form._form:not(#_) {
+      --ac-font: 'Open Sans', sans-serif;
+      --ac-text: #33373D;
+      --ac-heading: #281351;
+      --ac-border: #ced4da;
+      --ac-focus-border: #86b7fe;
+      --ac-focus-ring: rgba(13, 110, 253, .25);
+      --ac-brand: #9C0E17;           /* .btn-maroon */
+      --ac-brand-shadow: rgba(156, 14, 23, .3);
+      --ac-label-size: .95rem;
+
+      box-sizing: border-box !important;
+      max-width: 600px !important;
       background-color: #ffffff !important;
+      border: 0 !important;
       border-radius: .75rem !important;
       box-shadow: 0 6px 20px rgba(40, 19, 81, .08) !important;
       padding: 1.75rem 1.5rem !important;
-      font-family: 'Open Sans', sans-serif !important;
-      color: #33373D !important;
+      font-family: var(--ac-font) !important;
+      color: var(--ac-text) !important;
     }
-    ._form_11, ._form_5, ._form_14, ._form_8 { max-width: 600px; }
-    ._form_3 { max-width: 500px; }
+    form._form * { box-sizing: border-box !important; }
 
-    ._form_11 ._form_element ._field_header, ._form_11 h1, ._form_11 h2, ._form_11 h3,
-    ._form_3 ._form_element ._field_header, ._form_3 h1, ._form_3 h2, ._form_3 h3,
-    ._form_5 ._form_element ._field_header, ._form_5 h1, ._form_5 h2, ._form_5 h3,
-    ._form_14 ._form_element ._field_header, ._form_14 h1, ._form_14 h2, ._form_14 h3,
-    ._form_8 ._form_element ._field_header, ._form_8 h1, ._form_8 h2, ._form_8 h3 {
-      font-family: 'Open Sans', sans-serif !important;
+    /* Abweichende Breite nur dort, wo der Einsatzort es verlangt: */
+    form._form_3:not(#_) { max-width: 500px !important; }
+
+    /* Formulartitel und Überschrift-Felder */
+    form._form ._form-title,
+    form._form ._field_header,
+    form._form :is(h1, h2, h3) {
+      font-family: var(--ac-font) !important;
       font-weight: 800 !important;
       font-size: 1.375rem !important;
-      color: #281351 !important;
+      color: var(--ac-heading) !important;
       margin-bottom: .75rem !important;
     }
 
-    /* Feldbeschriftungen wie Bootstraps .form-label, Fettung wie im
-       übrigen Dashboard/Formularen (form-label fw-bold). */
-    ._form_11 label, ._form_3 label, ._form_5 label, ._form_14 label, ._form_8 label {
-      font-family: 'Open Sans', sans-serif !important;
-      font-weight: 700 !important;
-      font-size: .95rem !important;
-      color: #33373D !important;
-      margin-bottom: .375rem !important;
+    /* Feldbeschriftungen (auch Titel von Checkbox-Gruppen = <legend>) */
+    form._form label,
+    form._form legend._form-label {
       display: block !important;
+      font-family: var(--ac-font) !important;
+      font-weight: 700 !important;
+      font-size: var(--ac-label-size) !important;
+      color: var(--ac-text) !important;
+      margin-bottom: .375rem !important;
+    }
+    form._form legend._form-label {
+      float: none !important;
+      width: 100% !important;
+      padding: 0 !important;
     }
 
-    /* Eingabefelder wie Bootstraps .form-control/.form-select
-       (Standardwerte des Bootstrap-Themes der Website, siehe
-       bootstrap.min.css: --bs-border-radius, Rahmenfarbe #ced4da).
-       Die Textfarbe steht zusätzlich unten im Script, weil
-       ActiveCampaign sie selbst mit !important belegt. */
-    ._form_11 input[type="text"], ._form_11 input[type="email"], ._form_11 input[type="tel"],
-    ._form_11 input[type="date"], ._form_11 select,
-    ._form_3 input[type="text"], ._form_3 input[type="email"], ._form_3 input[type="tel"],
-    ._form_5 input[type="text"], ._form_5 input[type="email"],
-    ._form_14 input[type="text"], ._form_14 input[type="email"],
-    ._form_8 input[type="text"], ._form_8 input[type="email"], ._form_8 input[type="tel"] {
-      font-family: 'Open Sans', sans-serif !important;
+    /* Checkbox-/Radio-Gruppen (z. B. "Rolle / Funktion"): wie im
+       AC-Original eine kompakte Liste, Kästchen und Text in einer Zeile,
+       Text in normaler Schriftstärke. */
+    form._form fieldset {
+      border: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-width: 0 !important;
+    }
+    form._form ._checkbox-radio {
+      display: flex !important;
+      align-items: flex-start !important;
+      gap: .5rem !important;
+      margin: 0 0 .25rem !important;
+      padding: 0 !important;
+    }
+    form._form ._checkbox-radio :is(input[type="checkbox"], input[type="radio"]) {
+      flex: 0 0 auto !important;
+      width: 1rem !important;
+      height: 1rem !important;
+      margin: .25rem 0 0 !important;
+      padding: 0 !important;
+      accent-color: var(--ac-brand) !important;
+      cursor: pointer !important;
+    }
+    form._form ._checkbox-radio span { display: inline !important; margin: 0 !important; }
+    form._form ._checkbox-radio label {
+      display: inline !important;
+      font-weight: 400 !important;
+      line-height: 1.5 !important;
+      margin: 0 !important;
+      cursor: pointer !important;
+    }
+
+    /* Eingabefelder wie Bootstraps .form-control/.form-select.
+       padding-left bewusst NICHT erzwungen: das Telefonfeld ist ein
+       intl-tel-input-Widget, das seinen linken Abstand für die
+       Länderflagge selbst per Inline-Style setzt. */
+    form._form :is(input[type="text"], input[type="email"], input[type="tel"],
+                   input[type="date"], input[type="number"], select, textarea) {
+      font-family: var(--ac-font) !important;
       font-size: 1rem !important;
       font-weight: 400 !important;
       line-height: 1.5 !important;
       background-color: #ffffff !important;
       background-clip: padding-box !important;
-      border: 1px solid #ced4da !important;
+      border: 1px solid var(--ac-border) !important;
       border-radius: .375rem !important;
-      /* padding-left bewusst NICHT erzwungen: das Telefonfeld ist ein
-         intl-tel-input-Widget, das seinen eigenen linken Abstand per
-         Inline-Style fuer die Laenderflagge berechnet - ein erzwungener
-         Wert wuerde die Flagge mit der Eingabe ueberlappen lassen. */
       padding-top: .375rem !important;
       padding-right: .75rem !important;
       padding-bottom: .375rem !important;
       width: 100% !important;
       transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
     }
-
-    ._form_11 input:focus, ._form_11 select:focus,
-    ._form_3 input:focus,
-    ._form_5 input:focus,
-    ._form_14 input:focus,
-    ._form_8 input:focus {
-      border-color: #86b7fe !important;
+    form._form :is(input, select, textarea):focus {
+      border-color: var(--ac-focus-border) !important;
       outline: 0 !important;
-      box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25) !important;
+      box-shadow: 0 0 0 .25rem var(--ac-focus-ring) !important;
     }
+    form._form ._checkbox-radio input:focus { box-shadow: none !important; }
 
-    /* Button wie .btn-maroon der Website (siehe custom.css). Hintergrund/
-       Rahmen/Radius/Padding/Farbe wirken hier nicht (ActiveCampaign
-       belegt genau diese mit eigenem !important) - siehe Script unten. */
-    ._form_11 ._submit, ._form_3 ._submit, ._form_5 ._submit, ._form_14 ._submit, ._form_8 ._submit {
-      font-family: 'Open Sans', sans-serif !important;
+    /* Absende-Button: Schrift/Breite/Hover-Effekt hier, Farbe/Rahmen/
+       Radius/Padding im Script (AC setzt die selbst mit !important). */
+    form._form ._submit {
+      font-family: var(--ac-font) !important;
       font-weight: 700 !important;
       font-size: 1rem !important;
       width: 100% !important;
       cursor: pointer !important;
       transition: box-shadow .3s ease, transform .3s ease, background-color .3s ease !important;
     }
-    ._form_11 ._submit:hover, ._form_3 ._submit:hover, ._form_5 ._submit:hover,
-    ._form_14 ._submit:hover, ._form_8 ._submit:hover {
-      box-shadow: 0 4px 12px rgba(156, 14, 23, .3) !important;
+    form._form ._submit:hover {
+      box-shadow: 0 4px 12px var(--ac-brand-shadow) !important;
       transform: translateY(-2px) !important;
     }
 
@@ -151,23 +180,32 @@
 </head>
 <body>
 
+
+
   <!-- ============================================================ -->
-  <!-- 1. IMPULSWORKSHOP ANMELDUNG – MENSCH DENK AN DICH (ID: 11)  -->
+  <!-- 1. NEWSLETTER-ANMELDUNG – MENSCH DENK AN DICH (ID: 5)       -->
+  <!-- ============================================================ -->
+  <div class="_form_14"></div>
+  <script src="https://smeo.activehosted.com/f/embed.php?id=14" type="text/javascript" charset="utf-8"></script>
+
+  <!-- ============================================================ -->
+  <!-- 2. IMPULSWORKSHOP ANMELDUNG – MENSCH DENK AN DICH (ID: 11)  -->
   <!-- ============================================================ -->
   <div class="_form_11"></div>
   <script src="https://smeo.activehosted.com/f/embed.php?id=11" type="text/javascript" charset="utf-8"></script>
 
-  <!-- ============================================================ -->
-  <!-- 2. NEWSLETTER-ANMELDUNG – MENSCH DENK AN DICH (ID: 5)       -->
-  <!-- ============================================================ -->
-  <div class="_form_5"></div>
-  <script src="https://smeo.activehosted.com/f/embed.php?id=5" type="text/javascript" charset="utf-8"></script>
 
   <!-- ============================================================ -->
   <!-- 3. SPIELE-COACH ANMELDUNG – MENSCH DENK AN DICH (ID: 8)     -->
   <!-- ============================================================ -->
   <div class="_form_8"></div>
   <script src="https://smeo.activehosted.com/f/embed.php?id=8" type="text/javascript" charset="utf-8"></script>
+
+    <!-- ============================================================ -->
+  <!-- 4. SPIELRAUM ANMELDUNG – MENSCH DENK AN DICH (ID: 16)     -->
+  <!-- ============================================================ -->
+  <div class="_form_16"></div>
+  <script src="https://smeo.activehosted.com/f/embed.php?id=16" type="text/javascript" charset="utf-8"></script>
 
   <!-- ============================================================
        ActiveCampaign erzeugt pro Formular eine eigene, id-basierte
@@ -179,7 +217,8 @@
        Website anzupassen: Inline-Style mit "!important" direkt am
        jeweiligen Element, sobald ActiveCampaign es erzeugt hat (das
        schlägt seinerseits jede Stylesheet-Regel). Alles andere auf der
-       Seite läuft über reines CSS oben.
+       Seite läuft über reines CSS oben. Das Script erfasst automatisch
+       jedes AC-Formular der Seite (form._form).
        ============================================================ -->
   <script>
     (function () {
@@ -212,23 +251,74 @@
         });
       }
 
+      /* Vergangene Termine aus den Auswahllisten entfernen.
+         Die Optionen sind in ActiveCampaign in zwei Formaten gepflegt:
+           - eintägig:  "Ort - TT.MM.JJ"     (z. B. "Berlin - 21.01.27")
+           - zweitägig: "Ort - TT/TT.MM.JJ"  (z. B. "Essen - 28/29.10.26")
+         Maßgeblich ist jeweils der (erste) Veranstaltungstag: Jede
+         Option, deren erster Tag vor dem heutigen Tag liegt, wird
+         entfernt; am ersten Veranstaltungstag selbst bleibt sie noch
+         sichtbar. Optionen ohne erkennbares Datum
+         (z. B. die leere Platzhalter-Option) bleiben unangetastet.
+         Stichtag ist die Uhr des Besuchers. Sind keine Termine mehr
+         übrig, erscheint ein deaktivierter Hinweis in der Liste. */
+      // Gruppe 1: (erster) Tag, Gruppe 2: optionaler zweiter Tag nach "/",
+      // Gruppe 3: Monat, Gruppe 4: Jahr (zwei- oder vierstellig).
+      var DATE_RE = /(\d{1,2})(?:\s*\/\s*(\d{1,2}))?\.(\d{1,2})\.(\d{2}|\d{4})(?!\d)/;
+      var NO_DATES_TEXT = 'Aktuell keine Termine verfügbar';
+
+      function filterPastDates(select) {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var hadDates = false;
+        Array.prototype.slice.call(select.options).forEach(function (opt) {
+          var m = (opt.value || opt.textContent).match(DATE_RE);
+          if (!m) return;
+          hadDates = true;
+          var year = parseInt(m[4], 10);
+          if (year < 100) year += 2000;
+          var date = new Date(year, parseInt(m[3], 10) - 1, parseInt(m[1], 10));
+          if (date < today) opt.remove();
+        });
+        if (hadDates && !select.dataset.noDatesHint) {
+          var left = Array.prototype.some.call(select.options, function (o) {
+            return DATE_RE.test(o.value || o.textContent);
+          });
+          if (!left) {
+            select.dataset.noDatesHint = '1';
+            var hint = document.createElement('option');
+            hint.textContent = NO_DATES_TEXT;
+            hint.value = '';
+            hint.disabled = true;
+            select.appendChild(hint);
+          }
+        }
+      }
+
       function applyBrandStyles(root) {
+        root.querySelectorAll('select').forEach(filterPastDates);
         root.querySelectorAll('._submit').forEach(styleSubmit);
         root.querySelectorAll(
-          'input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, textarea'
+          'input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], select, textarea'
         ).forEach(function (el) {
           el.style.setProperty('color', INPUT_TEXT_COLOR, 'important');
         });
       }
 
-      ['_form_11', '_form_3', '_form_5', '_form_14', '_form_8'].forEach(function (cls) {
-        document.querySelectorAll('.' + cls).forEach(function (container) {
-          applyBrandStyles(container);
-          new MutationObserver(function () {
-            applyBrandStyles(container);
-          }).observe(container, { childList: true, subtree: true });
-        });
-      });
+      /* Alle AC-Formulare der Seite erfassen - auch solche, die
+         ActiveCampaign erst nach dem Laden einsetzt. Kein Pflegen einer
+         Formularliste nötig. Mehrere Änderungen in kurzer Folge werden
+         zu einem Durchlauf pro Frame zusammengefasst. */
+      function applyAll() {
+        document.querySelectorAll('form._form').forEach(applyBrandStyles);
+      }
+      var scheduled = false;
+      new MutationObserver(function () {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(function () { scheduled = false; applyAll(); });
+      }).observe(document.body, { childList: true, subtree: true });
+      applyAll();
     })();
   </script>
 
