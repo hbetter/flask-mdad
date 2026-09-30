@@ -12,14 +12,6 @@
                         <input type="text" name="title" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Art des Termins</label>
-                        <select name="event_type" class="form-select" required>
-                            {% for key, label in event_types %}
-                            <option value="{{ key }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label fw-bold">Eventkategorie</label>
                         <select name="category" class="form-select" required>
                             {% for key, label in event_categories %}
@@ -37,13 +29,25 @@
                             <label class="form-check-label" for="all_day">Ganztägig</label>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Datum</label>
-                        <input type="date" name="starts_at_date" class="form-control" required>
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <label class="form-label fw-bold">Startdatum</label>
+                            <input type="date" name="starts_at_date" class="form-control" required>
+                        </div>
+                        <div class="col time-field">
+                            <label class="form-label fw-bold">Startzeit</label>
+                            <input type="time" name="starts_at_time" class="form-control">
+                        </div>
                     </div>
-                    <div class="mb-3 time-field">
-                        <label class="form-label fw-bold">Uhrzeit</label>
-                        <input type="time" name="starts_at_time" class="form-control">
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <label class="form-label fw-bold">Enddatum</label>
+                            <input type="date" name="ends_at_date" class="form-control" required>
+                        </div>
+                        <div class="col time-field">
+                            <label class="form-label fw-bold">Endzeit</label>
+                            <input type="time" name="ends_at_time" class="form-control">
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Ort</label>

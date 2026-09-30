@@ -37,24 +37,27 @@ SECTION_FLAGS = [
     ("on_academy", "Akademie"),
 ]
 
-# Interner Wert (englisch) -> sichtbares Label (deutsch) fuer die Terminart.
-EVENT_TYPES = [
-    ("online", "Online"),
-    ("in_person", "Präsenz"),
-    ("in_house", "Inhouse"),
-]
-EVENT_TYPE_LABELS = dict(EVENT_TYPES)
-
 # Interner Wert (englisch) -> sichtbares Label (deutsch) fuer die
 # Eventkategorie (was fuer eine Veranstaltung es inhaltlich ist,
 # unabhaengig von der Terminart/dem Format oben).
 EVENT_CATEGORIES = [
     ("webinar", "Webinar"),
-    ("trial_session", "Probe Spielraum"),
-    ("coach_certification", "Spiele Coach Qualifizierung"),
-    ("workshop", "Impuls Workshop"),
+    ("inhouse", "Probe Spielraum"),
+    ("certification", "Spiele Coach Zertifizierung"),
+    ("trial", "Spiele Event"),
 ]
 EVENT_CATEGORY_LABELS = dict(EVENT_CATEGORIES)
+
+# Bootstrap-Icons-Name (ohne "bi-"-Praefix) je Kategorie - wird dezent als
+# Hintergrundgrafik auf den Terminkarten dargestellt (Dashboard und
+# oeffentlicher Bereich), damit die Kategorie auch ohne Lesen des Badges
+# auf einen Blick erkennbar ist.
+EVENT_CATEGORY_ICONS = {
+    "webinar": "camera-video",
+    "inhouse": "house-door",
+    "certification": "award",
+    "trial": "dice-5",
+}
 
 DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4"
 RESIZED_IMAGE_WIDTH = 1280
@@ -174,13 +177,14 @@ def parse_local_datetime(value):
     return naive.replace(tzinfo=berlin_tz).astimezone(timezone.utc)
 
 
-def resolve_event_starts_at(form, all_day):
+def resolve_event_datetime(form, all_day, prefix):
     # Termine haben getrennte Datum- und Uhrzeit-Felder (kein <input
     # type="datetime-local">, siehe add_event.html/edit_event.html). Bei
     # ganztaegigen Terminen wird die Uhrzeit ignoriert (Feld ist ausgeblendet,
-    # wird aber trotzdem mitgesendet) und auf 00:00 gesetzt.
-    date_str = form.get("starts_at_date")
-    time_str = "00:00" if all_day else form.get("starts_at_time")
+    # wird aber trotzdem mitgesendet) und auf 00:00 gesetzt. prefix ist
+    # "starts_at" oder "ends_at" und waehlt das jeweilige Feldpaar aus.
+    date_str = form.get(f"{prefix}_date")
+    time_str = "00:00" if all_day else form.get(f"{prefix}_time")
 
     if not date_str or not time_str:
         return None
@@ -218,37 +222,46 @@ def timeinput(value):
     return value.astimezone(berlin_tz).strftime("%H:%M")
 
 
-@app.template_filter("eventtypelabel")
-def eventtypelabel(value):
-    return EVENT_TYPE_LABELS.get(value, value)
-
-
 @app.template_filter("eventcategorylabel")
 def eventcategorylabel(value):
     return EVENT_CATEGORY_LABELS.get(value, value)
 
 
-GERMAN_MONTH_ABBR = {
-    1: "Jan", 2: "Feb", 3: "Mär", 4: "Apr", 5: "Mai", 6: "Jun",
-    7: "Jul", 8: "Aug", 9: "Sep", 10: "Okt", 11: "Nov", 12: "Dez",
-}
+@app.template_filter("eventcategoryicon")
+def eventcategoryicon(value):
+    return EVENT_CATEGORY_ICONS.get(value, "calendar-event")
 
 
-@app.template_filter("germanmonthyear")
-def germanmonthyear(value):
-    # Formatiert ein datetime als "<dt. Monatskuerzel> <Jahr>" (z. B.
-    # "Okt 2026"), unabhaengig von der Server-Locale (Docker-Images haben
-    # meist keine deutsche Locale installiert).
-    if value is None:
-        return ""
-
+@app.template_filter("eventdaterange")
+def eventdaterange(item):
+    # Kompakte Anzeige von Start bis Ende eines Termins (Dashboard/Portal):
+    # ganztaegig -> nur Datum (nur einmal, wenn Start- und Endtag gleich
+    # sind, sonst als Datumsspanne); mit Uhrzeit -> Datum + Uhrzeitspanne,
+    # bzw. volle Datum-Uhrzeit-Spanne, wenn der Termin ueber Tage hinweg
+    # geht. Ersetzt die vorherige separate "Ganztaegig"-Markierung, da die
+    # Spanne selbst schon zeigt, ob eine Uhrzeit relevant ist.
     berlin_tz = ZoneInfo("Europe/Berlin")
 
-    if value.tzinfo is None:
-        value = value.replace(tzinfo=timezone.utc)
+    def to_local(value):
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone(berlin_tz)
 
-    local_value = value.astimezone(berlin_tz)
-    return f"{GERMAN_MONTH_ABBR[local_value.month]} {local_value.year}"
+    start = to_local(item.starts_at)
+    end = to_local(item.ends_at) if item.ends_at else None
+    same_day = end is None or start.date() == end.date()
+
+    if item.all_day:
+        if same_day:
+            return start.strftime("%d.%m.%Y")
+        return f"{start.strftime('%d.%m.%Y')} – {end.strftime('%d.%m.%Y')}"
+
+    if same_day:
+        if end is None:
+            return start.strftime("%d.%m.%Y, %H:%M")
+        return f"{start.strftime('%d.%m.%Y, %H:%M')} – {end.strftime('%H:%M')}"
+
+    return f"{start.strftime('%d.%m.%Y %H:%M')} – {end.strftime('%d.%m.%Y %H:%M')}"
 
 
 # Anzahl der Slots je Seite - reine Zahl, ohne jeden Bezug zu den
@@ -527,7 +540,6 @@ def dashboard():
         transition_labels=transition_labels,
         section_slot_choices=section_slot_choices,
         events=user_events,
-        event_types=EVENT_TYPES,
     )
 
 
@@ -601,16 +613,16 @@ def add_card():
 def add_event():
     if request.method == "POST":
         all_day = request.form.get("all_day") == "1"
-        starts_at = resolve_event_starts_at(request.form, all_day)
-        event_type = request.form.get("event_type")
+        starts_at = resolve_event_datetime(request.form, all_day, "starts_at")
+        ends_at = resolve_event_datetime(request.form, all_day, "ends_at")
         category = request.form.get("category")
 
-        if starts_at is None:
-            flash("Bitte ein gültiges Datum (und, falls nicht ganztägig, eine Uhrzeit) angeben.", "warning")
+        if starts_at is None or ends_at is None:
+            flash("Bitte ein gültiges Start- und Enddatum (und, falls nicht ganztägig, jeweils eine Uhrzeit) angeben.", "warning")
             return redirect(url_for("add_event"))
 
-        if event_type not in EVENT_TYPE_LABELS:
-            flash("Bitte eine gültige Art des Termins wählen.", "warning")
+        if ends_at < starts_at:
+            flash("Das Enddatum darf nicht vor dem Startdatum liegen.", "warning")
             return redirect(url_for("add_event"))
 
         if category not in EVENT_CATEGORY_LABELS:
@@ -619,11 +631,11 @@ def add_event():
 
         new_event = Event(
             title=request.form.get("title"),
-            event_type=event_type,
             category=category,
             all_day=all_day,
             subtitle=request.form.get("subtitle"),
             starts_at=starts_at,
+            ends_at=ends_at,
             location=request.form.get("location"),
             user_id=current_user.id,
             updated_at=datetime.now(timezone.utc),
@@ -635,7 +647,6 @@ def add_event():
 
     return render_template(
         "add_event.html",
-        event_types=EVENT_TYPES,
         event_categories=EVENT_CATEGORIES,
     )
 
@@ -652,17 +663,17 @@ def edit_event(event_id):
         title = request.form.get("title")
         subtitle = request.form.get("subtitle")
         location = request.form.get("location")
-        event_type = request.form.get("event_type")
         category = request.form.get("category")
         all_day = request.form.get("all_day") == "1"
-        starts_at = resolve_event_starts_at(request.form, all_day)
+        starts_at = resolve_event_datetime(request.form, all_day, "starts_at")
+        ends_at = resolve_event_datetime(request.form, all_day, "ends_at")
 
-        if starts_at is None:
-            flash("Bitte ein gültiges Datum (und, falls nicht ganztägig, eine Uhrzeit) angeben.", "warning")
+        if starts_at is None or ends_at is None:
+            flash("Bitte ein gültiges Start- und Enddatum (und, falls nicht ganztägig, jeweils eine Uhrzeit) angeben.", "warning")
             return redirect(url_for("edit_event", event_id=item.id))
 
-        if event_type not in EVENT_TYPE_LABELS:
-            flash("Bitte eine gültige Art des Termins wählen.", "warning")
+        if ends_at < starts_at:
+            flash("Das Enddatum darf nicht vor dem Startdatum liegen.", "warning")
             return redirect(url_for("edit_event", event_id=item.id))
 
         if category not in EVENT_CATEGORY_LABELS:
@@ -678,10 +689,10 @@ def edit_event(event_id):
         if location is not None and location.strip():
             item.location = location.strip()
 
-        item.event_type = event_type
         item.category = category
         item.all_day = all_day
         item.starts_at = starts_at
+        item.ends_at = ends_at
         item.updated_at = datetime.now(timezone.utc)
 
         db.session.commit()
@@ -691,7 +702,6 @@ def edit_event(event_id):
     return render_template(
         "edit_event.html",
         event=item,
-        event_types=EVENT_TYPES,
         event_categories=EVENT_CATEGORIES,
     )
 

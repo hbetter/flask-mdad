@@ -855,36 +855,57 @@ footer.site-footer .sustainability-badge-link:hover {
     transform: translateY(-4px);
 }
 
-.termin-format {
+/* Kategorie-Icon dezent im Hintergrund der Terminkarten (oeffentlicher
+   Bereich: .termin-card: Dashboard: .dash-termin-card) - macht die
+   Kategorie auch ohne Lesen des Badges auf einen Blick erkennbar. Liegt
+   als grosses, blasses Icon in der oberen rechten Ecke hinter dem
+   eigentlichen Karteninhalt. */
+.termin-card,
+.dash-termin-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.category-icon-bg {
+    position: absolute;
+    top: -.75rem;
+    right: -.75rem;
+    font-size: 6rem;
+    line-height: 1;
+    color: var(--sm-maroon);
+    opacity: .08;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.termin-card > :not(.category-icon-bg),
+.dash-termin-card > :not(.category-icon-bg) {
+    position: relative;
+    z-index: 1;
+}
+
+/* Kraeftig eingefaerbtes Badge fuer die Zuordnung/Kategorie, die oben auf
+   einer Karte erscheint (Termin-Kategorie im Dashboard und im oeffentlichen
+   Bereich, Seiten-Zuordnung bei Karten/Sektionen im Dashboard): bewusst
+   auffaellig im Gegensatz zu den neutralen hellen Pill-Badges wie
+   "Ganztaegig"/"Banner"/"Ohne Zuordnung". */
+.badge-page-tag {
     display: inline-block;
     font-size: .72rem;
     font-weight: 700;
-    letter-spacing: .04em;
+    letter-spacing: .03em;
     text-transform: uppercase;
     color: #fff;
-    background: var(--sm-purple);
+    background: var(--sm-maroon);
     padding: .3rem .65rem;
     border-radius: 999px;
+}
+
+/* .termin-card ist eine Flex-Spalte (column) - ohne diese Ausnahme wuerde
+   das Badge durch "align-items: stretch" (Flexbox-Default) auf die volle
+   Kartenbreite gezogen statt kompakt zu bleiben. */
+.termin-card .badge-page-tag {
     align-self: flex-start;
-}
-
-.termin-date {
-    display: flex;
-    align-items: baseline;
-    gap: .45rem;
-    color: var(--sm-maroon);
-    font-weight: 800;
-}
-
-.termin-date .day {
-    font-size: 2.1rem;
-    line-height: 1;
-}
-
-.termin-date .month {
-    font-size: .95rem;
-    text-transform: uppercase;
-    letter-spacing: .03em;
 }
 
 /* Bereichs-Labels zur gemeinsamen Bearbeitung - am Ende einfach
@@ -908,9 +929,12 @@ body.hide-dev-labels .dev-label {
 /* Termin-Formular (add_event.html/edit_event.html): das Uhrzeit-Feld wird
    rein per CSS ausgeblendet, wenn "Ganztaegig" angehakt ist (kein
    JavaScript). :has() prueft, ob die Checkbox innerhalb des
-   .all-day-toggle-Wrappers angehakt ist; ~ trifft dann das nachfolgende
-   .time-field-Geschwisterelement. */
-.all-day-toggle:has(#all_day:checked) ~ .time-field {
+   .all-day-toggle-Wrappers angehakt ist; ~ .row trifft die nachfolgenden
+   Datum/Zeit-Zeilen (Start, Ende), .time-field darin ist die jeweilige
+   Zeit-Spalte. Die Datum-Spalte nutzt ebenfalls .col (statt .col-6), damit
+   sie den frei werdenden Platz automatisch ausfuellt, wenn die Zeit-Spalte
+   verschwindet. */
+.all-day-toggle:has(#all_day:checked) ~ .row .time-field {
     display: none;
 }
 

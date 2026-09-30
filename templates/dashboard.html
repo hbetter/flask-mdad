@@ -43,12 +43,12 @@
                         class="card-img-top"
                     >
                 {% endif %}
-                <div class="card-header bg-white border-0 pt-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div class="d-flex flex-wrap gap-1">
+                <div class="card-header bg-white border-0 pt-3 pb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex flex-wrap align-items-center gap-1">
                             {% for key, label in card_flags %}
                                 {% if item[key] %}
-                                <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">{{ label }}</span>
+                                <span class="badge badge-page-tag">{{ label }}</span>
                                 {% endif %}
                             {% endfor %}
                             {% if item.is_banner %}
@@ -68,11 +68,11 @@
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <h5 class="card-title">{{ item.title }}</h5>
+                <div class="card-body py-2">
+                    <h5 class="card-title mb-1">{{ item.title }}</h5>
 
                     {% if item.description %}
-                        <p class="card-subtitle mb-2 text-secondary">
+                        <p class="card-subtitle small text-secondary mb-2">
                             {{ item.description }}
                         </p>
                     {% endif %}
@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <div class="card-footer bg-white border-0 pb-3">
+                <div class="card-footer bg-white border-0 py-2">
                     <div class="btn-group">
                         <a href="{{ url_for('edit_card', card_id=item.id) }}"
                            class="btn btn-sm btn-outline-secondary px-3 border-1"
@@ -227,18 +227,12 @@
 <div class="row g-3">
     {% for item in events %}
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header bg-white border-0 pt-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div class="d-flex flex-wrap gap-1">
-                            <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">
-                                {{ item.event_type|eventtypelabel }}
-                            </span>
-                            {% if item.all_day %}
-                            <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">
-                                Ganztägig
-                            </span>
-                            {% endif %}
+            <div class="card h-100 shadow-sm border-0 dash-termin-card">
+                <i class="bi bi-{{ item.category|eventcategoryicon }} category-icon-bg" aria-hidden="true"></i>
+                <div class="card-header bg-white border-0 pt-3 pb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex flex-wrap align-items-center gap-1">
+                            <span class="badge badge-page-tag">{{ item.category|eventcategorylabel }}</span>
                         </div>
                         <small class="text-muted text-end">
                             ID: {{ item.id }}<br>
@@ -247,30 +241,20 @@
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <p class="text-uppercase small fw-semibold text-secondary mb-1">{{ item.category|eventcategorylabel }}</p>
-                    <h5 class="card-title">{{ item.title }}</h5>
+                <div class="card-body py-2">
+                    <h5 class="card-title mb-1">{{ item.title }}</h5>
 
                     {% if item.subtitle %}
-                        <p class="card-subtitle mb-2 text-secondary">
+                        <p class="card-subtitle small text-secondary mb-2">
                             {{ item.subtitle }}
                         </p>
                     {% endif %}
 
-                    <p class="card-text mb-1">
-                        <i class="bi bi-calendar-event"></i>
-                        {% if item.all_day %}
-                            {{ item.starts_at|datetimeformat("%d.%m.%Y") }}
-                        {% else %}
-                            {{ item.starts_at|datetimeformat }}
-                        {% endif %}
-                    </p>
-                    <p class="card-text preserve-lines">
-                        <i class="bi bi-geo-alt"></i> {{ item.location }}
-                    </p>
+                    <p class="card-text small mb-1"><i class="bi bi-calendar-event"></i> {{ item|eventdaterange }}</p>
+                    <p class="card-text preserve-lines small mb-0"><i class="bi bi-geo-alt"></i> {{ item.location }}</p>
                 </div>
 
-                <div class="card-footer bg-white border-0 pb-3">
+                <div class="card-footer bg-white border-0 py-2">
                     <div class="btn-group">
                         <a href="{{ url_for('edit_event', event_id=item.id) }}"
                            class="btn btn-sm btn-outline-secondary px-3 border-1">
@@ -311,12 +295,12 @@
                         class="card-img-top"
                     >
                 {% endif %}
-                <div class="card-header bg-white border-0 pt-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div class="d-flex flex-wrap gap-1">
+                <div class="card-header bg-white border-0 pt-3 pb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex flex-wrap align-items-center gap-1">
                             {% for key, label in section_flags %}
                                 {% if item[key] %}
-                                <span class="badge rounded-pill bg-light text-dark border-1 px-2 py-1">{{ label }}</span>
+                                <span class="badge badge-page-tag">{{ label }}</span>
                                 {% endif %}
                             {% endfor %}
                             {% if not (item.on_index or item.on_consulting or item.on_academy) %}
@@ -333,14 +317,14 @@
                     </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body py-2">
                     {% if item.kicker %}
                         <p class="text-uppercase small fw-semibold text-secondary mb-1">{{ item.kicker }}</p>
                     {% endif %}
-                    <h5 class="card-title">{{ item.title }}</h5>
+                    <h5 class="card-title mb-1">{{ item.title }}</h5>
 
                     {% if item.description %}
-                        <p class="card-subtitle mb-2 text-secondary">
+                        <p class="card-subtitle small text-secondary mb-2">
                             {{ item.description }}
                         </p>
                     {% endif %}
@@ -350,7 +334,7 @@
                     </div>
                 </div>
 
-                <div class="card-footer bg-white border-0 pb-3">
+                <div class="card-footer bg-white border-0 py-2">
                     <div class="btn-group">
                         <a href="{{ url_for('edit_section', section_id=item.id) }}"
                            class="btn btn-sm btn-outline-secondary px-3 border-1"

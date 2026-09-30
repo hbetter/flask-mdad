@@ -76,11 +76,11 @@ class Section(db.Model):
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-    event_type = db.Column(db.String(50), nullable=False)
     category = db.Column(db.String(50), nullable=False)
     all_day = db.Column(db.Boolean, nullable=False, default=False)
     subtitle = db.Column(db.String(300))
     starts_at = db.Column(db.DateTime, nullable=False)
+    ends_at = db.Column(db.DateTime, nullable=False)
     location = db.Column(db.String(300), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     updated_at = db.Column(
