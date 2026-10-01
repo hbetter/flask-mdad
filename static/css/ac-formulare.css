@@ -1,0 +1,205 @@
+/* Einheitliches Aussehen fuer alle ActiveCampaign-Formulare der Website.
+   Ausgelagert aus templates/alle_ac_formulare.html, damit Styling und
+   Skript nicht in custom.css landen, sondern eigenstaendig bleiben und
+   ueberall dort eingebunden werden koennen, wo ein AC-Formular
+   (Embed-Code "<div class="_form_NN">" + "embed.php"-Script) auf einer
+   Seite eingesetzt wird. */
+/* ============================================================
+   EINHEITLICHES AUSSEHEN FÜR ALLE ACTIVECAMPAIGN-FORMULARE
+   ============================================================
+   Jedes eingebettete Formular besteht aus
+     <div class="_form_NN">            (unser Platzhalter)
+       <form class="_form _form_NN …"> (von ActiveCampaign erzeugt)
+   Alle Regeln unten hängen deshalb an "form._form" - der Klasse, die
+   ActiveCampaign jedem Formular gibt. Sie greifen damit automatisch
+   für jedes vorhandene und jedes künftig eingebettete Formular.
+   Ein neues Formular braucht nur noch seinen Embed-Code (div + script),
+   hier im CSS und im Script unten ist nichts nachzutragen.
+
+   Gestaltung orientiert am Bootstrap-Theme der Website
+   (static/css/custom.css):
+   - Schrift:     'Open Sans' (statt Roboto/IBM Plex)
+   - Karte:       wie .card-sm (weiß, radius .75rem, dezenter Schatten)
+   - Überschrift: wie h1–h3 der Website (Open Sans 800, #281351)
+   - Label:       wie .form-label.fw-bold
+   - Eingaben:    wie Bootstraps .form-control/.form-select
+   - Button:      wie .btn-maroon (Bordeaux, Hover Signalrot)
+   Alle Farben/Maße stehen einmal als Variablen im ersten Block.
+
+   Warum überall "!important": ActiveCampaign liefert pro Formular
+   eigene id-basierte Regeln (z. B. "#_form_6AA1869F213EC_ ._submit"),
+   die per Spezifität jede Regel hier schlagen würden. Button-Farben
+   und die Textfarbe der Eingaben setzt ActiveCampaign sogar selbst
+   mit !important - die erzwingt das Script am Seitenende per
+   Inline-Style.
+   ============================================================ */
+
+/* ":not(#_)" hebt die Spezifität auf ID-Niveau: ActiveCampaign
+   erzwingt Hintergrund, Rahmen und Eckenradius des Formulars selbst
+   per "#_form_<ID>_ { … !important }". Ohne diesen Zusatz blieben
+   z. B. die Ecken bei 4px statt .75rem. */
+form._form:not(#_) {
+  --ac-font: 'Open Sans', sans-serif;
+  --ac-text: #33373D;
+  --ac-heading: #281351;
+  --ac-border: #ced4da;
+  --ac-focus-border: #86b7fe;
+  --ac-focus-ring: rgba(13, 110, 253, .25);
+  --ac-brand: #9C0E17;           /* .btn-maroon */
+  --ac-brand-shadow: rgba(156, 14, 23, .3);
+  --ac-label-size: .95rem;
+
+  box-sizing: border-box !important;
+  max-width: 600px !important;
+  background-color: #ffffff !important;
+  border: 0 !important;
+  border-radius: .75rem !important;
+  box-shadow: 0 6px 20px rgba(40, 19, 81, .08) !important;
+  padding: 1.75rem 1.5rem !important;
+  font-family: var(--ac-font) !important;
+  color: var(--ac-text) !important;
+}
+form._form * { box-sizing: border-box !important; }
+
+/* Abweichende Breite nur dort, wo der Einsatzort es verlangt: */
+form._form_3:not(#_) { max-width: 500px !important; }
+
+/* Formulartitel und Überschrift-Felder */
+form._form ._form-title,
+form._form ._field_header,
+form._form :is(h1, h2, h3) {
+  font-family: var(--ac-font) !important;
+  font-weight: 800 !important;
+  font-size: 1.375rem !important;
+  color: var(--ac-heading) !important;
+  margin-bottom: .75rem !important;
+}
+
+/* Feldbeschriftungen (auch Titel von Checkbox-Gruppen = <legend>) */
+form._form label,
+form._form legend._form-label {
+  display: block !important;
+  font-family: var(--ac-font) !important;
+  font-weight: 700 !important;
+  font-size: var(--ac-label-size) !important;
+  color: var(--ac-text) !important;
+  margin-bottom: .375rem !important;
+}
+form._form legend._form-label {
+  float: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Checkbox-/Radio-Gruppen (z. B. "Rolle / Funktion"): wie im
+   AC-Original eine kompakte Liste, Kästchen und Text in einer Zeile,
+   Text in normaler Schriftstärke. */
+form._form fieldset {
+  border: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+}
+form._form ._checkbox-radio {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: .5rem !important;
+  margin: 0 0 .25rem !important;
+  padding: 0 !important;
+}
+form._form ._checkbox-radio :is(input[type="checkbox"], input[type="radio"]) {
+  flex: 0 0 auto !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  margin: .25rem 0 0 !important;
+  padding: 0 !important;
+  accent-color: var(--ac-brand) !important;
+  cursor: pointer !important;
+}
+form._form ._checkbox-radio span { display: inline !important; margin: 0 !important; }
+form._form ._checkbox-radio label {
+  display: inline !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+}
+
+/* Eingabefelder wie Bootstraps .form-control/.form-select.
+   padding-left bewusst NICHT erzwungen: das Telefonfeld ist ein
+   intl-tel-input-Widget, das seinen linken Abstand für die
+   Länderflagge selbst per Inline-Style setzt. */
+form._form :is(input[type="text"], input[type="email"], input[type="tel"],
+               input[type="date"], input[type="number"], select, textarea) {
+  font-family: var(--ac-font) !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  background-color: #ffffff !important;
+  background-clip: padding-box !important;
+  border: 1px solid var(--ac-border) !important;
+  border-radius: .375rem !important;
+  padding-top: .375rem !important;
+  padding-right: .75rem !important;
+  padding-bottom: .375rem !important;
+  width: 100% !important;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
+}
+form._form :is(input, select, textarea):focus {
+  border-color: var(--ac-focus-border) !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 .25rem var(--ac-focus-ring) !important;
+}
+form._form ._checkbox-radio input:focus { box-shadow: none !important; }
+
+/* Absende-Button: Schrift/Breite/Hover-Effekt hier, Farbe/Rahmen/
+   Radius/Padding im Script (AC setzt die selbst mit !important). */
+form._form ._submit {
+  font-family: var(--ac-font) !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  transition: box-shadow .3s ease, transform .3s ease, background-color .3s ease !important;
+}
+form._form ._submit:hover {
+  box-shadow: 0 4px 12px var(--ac-brand-shadow) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Formular in einem Bootstrap-Modal (z. B. Spielraum-Anmeldung): der
+   Modal-Rahmen (.modal-content) stellt bereits weissen Hintergrund,
+   Ecken und Schatten - die eigene Karten-Optik des Formulars oben
+   waere dort doppelt gemoppelt und wuerde zusaetzlich den verfuegbaren
+   Platz unnoetig verkleinern. */
+.modal-body form._form:not(#_) {
+  max-width: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Spielraum-Formular im Modal (ID 16): Titel und Beschreibungstext
+   kommen dort bereits aus dem Modal-Header (siehe base.html,
+   #spielraumModal) - das Formular selbst brachte beides zusaetzlich
+   mit ("_field_header"/"_field_html" am Formularanfang), was zu einer
+   sichtbaren Dopplung fuehrte. Daher hier ausgeblendet; betrifft nur
+   dieses eine Formular im Modal-Kontext. */
+.modal-body form._form_16 ._field_header,
+.modal-body form._form_16 ._field_html {
+  display: none !important;
+}
+
+/* Gleiches Prinzip fuer die Formulare 8, 11 und 14 - Titel und
+   Beschreibungstext stehen jetzt im jeweiligen Modal-Header (siehe
+   base.html, #spieleCoachModal/#spieleEventModal/#newsletterModal).
+   Formular 11 hat im Unterschied zu den anderen keinen "_field_header"-
+   Wrapper um den Titel, deshalb dort direkt "._form-title" ausblenden. */
+.modal-body form._form_8 ._field_header,
+.modal-body form._form_8 ._field_html,
+.modal-body form._form_14 ._field_header,
+.modal-body form._form_14 ._field_html,
+.modal-body form._form_11 ._form-title,
+.modal-body form._form_11 ._field_html {
+  display: none !important;
+}

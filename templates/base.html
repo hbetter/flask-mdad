@@ -22,6 +22,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <!-- Einheitliches Aussehen fuer eingebettete ActiveCampaign-Formulare
+         (z. B. die Spielraum-Anmeldung im Modal unten), ausgelagert nach
+         static/css/ac-formulare.css statt in custom.css. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ac-formulare.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 </head>
@@ -55,7 +59,7 @@
                 {% elif current_user.is_authenticated %}
                     <a href="{{ url_for('dashboard') }}" class="btn btn-maroon text-nowrap">Dashboard</a>
                 {% else %}
-                    <a href="#kontakt" class="btn btn-maroon text-nowrap"><span class="d-none d-sm-inline">Probe Spielraum buchen</span><span class="d-inline d-sm-none">Buchen</span></a>
+                    <button type="button" class="btn btn-maroon text-nowrap" data-bs-toggle="modal" data-bs-target="#spielraumModal"><span class="d-none d-sm-inline">Probe Spielraum buchen</span><span class="d-inline d-sm-none">Buchen</span></button>
                 {% endif %}
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Navigation umschalten">
                     <span class="navbar-toggler-icon"></span>
@@ -128,6 +132,101 @@
         </div>
     </footer>
 
+    <!-- Spielraum-Anmeldung (ActiveCampaign-Formular ID 16) als Modal -
+         wird ueber den Button "Probe Spielraum buchen"/"Buchen" oben in
+         der Navigation sowie den Hero-Button auf der Startseite
+         geoeffnet (beide per data-bs-target="#spielraumModal"). Liegt
+         hier zentral in base.html, damit es auf jeder Seite nur einmal
+         im DOM steht, unabhaengig davon, von welcher Seite/welchem
+         Button aus geoeffnet wird. -->
+    <div class="modal fade" id="spielraumModal" tabindex="-1" aria-labelledby="spielraumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h4 class="mb-1 fw-bold" id="spielraumModalLabel">Buche einen Probe Spielraum in deinem Unternehmen!</h4>
+                        <div class="text-secondary">Buche für dein Unternehmen einen MENSCH DENK AN DICH® firmeninternen Probe Spielraum.</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="_form_16"></div>
+                    <script src="https://smeo.activehosted.com/f/embed.php?id=16" type="text/javascript" charset="utf-8"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spiele-Coach-Anmeldung (ActiveCampaign-Formular ID 8) als Modal.
+         Ueberschrift/Untertitel wie im Formular selbst (ActiveCampaign).
+         Noch ohne eigenen Oeffnen-Button - vorbereitet wie
+         #spielraumModal, fuer eine spaetere Verknuepfung. -->
+    <div class="modal fade" id="spieleCoachModal" tabindex="-1" aria-labelledby="spieleCoachModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h4 class="mb-1 fw-bold" id="spieleCoachModalLabel">Melde dich zur Spiele Coach Zertifizierung an!</h4>
+                        <div class="text-secondary">Melde dich jetzt zur Spiele Coach Zertifizierung an und werde Teil der MENSCH DENK AN DICH® Spiele Coach Community – für mehr Resilienz, echte Begegnungen und wirkungsvolles Spielen in der Arbeitswelt.</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="_form_8"></div>
+                    <script src="https://smeo.activehosted.com/f/embed.php?id=8" type="text/javascript" charset="utf-8"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spiele-Event-Anmeldung (ActiveCampaign-Formular ID 11) als Modal.
+         Ueberschrift/Untertitel wie im Formular selbst (ActiveCampaign).
+         Noch ohne eigenen Oeffnen-Button - vorbereitet wie
+         #spielraumModal, fuer eine spaetere Verknuepfung. -->
+    <div class="modal fade" id="spieleEventModal" tabindex="-1" aria-labelledby="spieleEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h4 class="mb-1 fw-bold" id="spieleEventModalLabel">Sichere dir deinen Platz am Spieltisch!</h4>
+                        <div class="text-secondary">Melde dich jetzt zur Teilnahme an einem MENSCH DENK AN DICH® Spiele Event an und stärke deine Resilienz und Stresskompetenzen mit Freude am Spiel.</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="_form_11"></div>
+                    <script src="https://smeo.activehosted.com/f/embed.php?id=11" type="text/javascript" charset="utf-8"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter-Anmeldung (ActiveCampaign-Formular ID 14) als Modal.
+         Ueberschrift/Untertitel wie im Formular selbst (ActiveCampaign).
+         Wird ueber den Hero-Button "Newsletter bestellen" auf der
+         Startseite geoeffnet (data-bs-target="#newsletterModal"). -->
+    <div class="modal fade" id="newsletterModal" tabindex="-1" aria-labelledby="newsletterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h4 class="mb-1 fw-bold" id="newsletterModalLabel">Bleibe auf dem Laufenden!</h4>
+                        <div class="text-secondary">Melde dich jetzt für unseren Newsletter an und erhalte wertvolle Impulse rund um Resilienz, Playfulness und nachhaltige Stärke in der Arbeitswelt.</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="_form_14"></div>
+                    <script src="https://smeo.activehosted.com/f/embed.php?id=14" type="text/javascript" charset="utf-8"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <!-- Erzwingt einheitliches Styling fuer eingebettete AC-Formulare
+         (siehe static/css/ac-formulare.css) und blendet vergangene
+         Termine aus deren Auswahllisten aus. -->
+    <script src="{{ url_for('static', filename='js/ac-formulare.js') }}" defer></script>
 </body>
 </html>
