@@ -30,7 +30,7 @@ Basis ist jeweils das vom Server ausgelieferte HTML (nicht das gerenderte DOM), 
 
 ## Buttons und Links
 - Jeder Button (`a.btn`, außer dem Skip-Link „Zum Inhalt springen“) wird zu
-  `mailto:hey@mensch-denk-an-dich.de?subject=<Button-Text>` (URL-kodiert). Bei „Probe Spielraum buchen / Buchen“ die lange Beschriftung als Betreff verwenden.
+  `mailto:hey@mensch-denk-an-dich.de?subject=<Button-Text>&cc=kontakt@equipe-pq.com` (Betreff URL-kodiert, im HTML `&amp;cc=`). Bei „Probe Spielraum buchen / Buchen“ die lange Beschriftung als Betreff verwenden.
 - Footer-Links: `/imprint` → `impressum.html`, `/privacy` → `datenschutz.html`.
 
 ## Versionierung
