@@ -223,6 +223,28 @@
         </div>
     </div>
 
+    <!-- Webinar-Anmeldung (ActiveCampaign-Formular ID 22) als Modal.
+         Ueberschrift/Untertitel wie im Formular selbst (ActiveCampaign).
+         Noch ohne eigenen Oeffnen-Button - vorbereitet wie die anderen
+         Formular-Modals, fuer eine spaetere Verknuepfung. -->
+    <div class="modal fade" id="webinarModal" tabindex="-1" aria-labelledby="webinarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h4 class="mb-1 fw-bold" id="webinarModalLabel">Sichere dir deinen Platz im Webinar!</h4>
+                        <div class="text-secondary">Melde dich jetzt zur Teilnahme an einem MENSCH DENK AN DICH® Webinar an.</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="_form_22"></div>
+                    <script src="https://smeo.activehosted.com/f/embed.php?id=22" type="text/javascript" charset="utf-8"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <!-- Erzwingt einheitliches Styling fuer eingebettete AC-Formulare
          (siehe static/css/ac-formulare.css) und blendet vergangene

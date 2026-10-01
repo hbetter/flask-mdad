@@ -59,6 +59,17 @@ EVENT_CATEGORY_ICONS = {
     "trial": "dice-5",
 }
 
+# Bootstrap-Modal-ID je Kategorie, dessen zugehoeriges AC-Formular den
+# "Platz sichern"-Button auf der Startseite (templates/index.html) als
+# Modal statt als Sprung zu "#kontakt" oeffnet (siehe base.html fuer die
+# Modals selbst). Kategorien ohne Eintrag hier haben (noch) kein eigenes
+# Formular-Modal und behalten den Sprung zu "#kontakt".
+EVENT_CATEGORY_MODAL = {
+    "webinar": "webinarModal",
+    "certification": "spieleCoachModal",
+    "trial": "spieleEventModal",
+}
+
 DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4"
 RESIZED_IMAGE_WIDTH = 1280
 RESIZED_IMAGE_HEIGHT = 715
@@ -230,6 +241,11 @@ def eventcategorylabel(value):
 @app.template_filter("eventcategoryicon")
 def eventcategoryicon(value):
     return EVENT_CATEGORY_ICONS.get(value, "calendar-event")
+
+
+@app.template_filter("eventcategorymodal")
+def eventcategorymodal(value):
+    return EVENT_CATEGORY_MODAL.get(value)
 
 
 @app.template_filter("eventdaterange")

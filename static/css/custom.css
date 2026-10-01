@@ -855,6 +855,13 @@ footer.site-footer .sustainability-badge-link:hover {
     transform: translateY(-4px);
 }
 
+/* Ueberschrift der oeffentlichen Terminkarte in Portal-Dunkelrot statt
+   dem sonst ueblichen Dunkellila (h1-h3), seit das Kategorie-Badge dort
+   entfernt wurde. */
+.termin-title {
+    color: var(--sm-maroon);
+}
+
 /* Kategorie-Icon dezent im Hintergrund der Terminkarten (oeffentlicher
    Bereich: .termin-card: Dashboard: .dash-termin-card) - macht die
    Kategorie auch ohne Lesen des Badges auf einen Blick erkennbar. Liegt

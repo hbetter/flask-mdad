@@ -203,3 +203,12 @@ form._form ._submit:hover {
 .modal-body form._form_11 ._field_html {
   display: none !important;
 }
+
+/* Gleiches Prinzip fuer Formular 22 (Webinar-Anmeldung) - Titel und
+   Beschreibungstext stehen jetzt im Modal-Header (siehe base.html,
+   #webinarModal); hat wie die Formulare 8/14/16 einen "_field_header"-
+   Wrapper um den Titel. */
+.modal-body form._form_22 ._field_header,
+.modal-body form._form_22 ._field_html {
+  display: none !important;
+}

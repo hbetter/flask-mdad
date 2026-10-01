@@ -40,12 +40,19 @@
 
   <!-- TERMINE: dynamisch aus den im Dashboard gepflegten Terminen (views.py:
        index()), gleiche Sortierung wie im Dashboard (chronologisch). Darstellung
-       angelehnt an die Dashboard-Terminkarten (Kategorie als auffaelliges
-       Badge, Datum/Zeitspanne ueber eventdaterange), aber ohne die dort
-       gezeigten internen Angaben (ID, Erstellungsdatum) - hier oeffentlich,
-       kein Bearbeiten/Loeschen. Hintergrund der Karte (.termin-card) und der
-       "Platz sichern"-Button bleiben wie zuvor. Abschnitt erscheint nur, wenn
-       mindestens ein Termin existiert. -->
+       angelehnt an die Dashboard-Terminkarten (Datum/Zeitspanne ueber
+       eventdaterange), aber ohne die dort gezeigten internen Angaben (ID,
+       Erstellungsdatum) - hier oeffentlich, kein Bearbeiten/Loeschen. Das
+       rote Kategorie-Badge aus dem Dashboard wird hier bewusst NICHT
+       gezeigt (nur noch das dezente Hintergrund-Icon); die Kategorie
+       steckt stattdessen im Titel selbst, da dieser beim Anlegen eines
+       Termins mit der Eventkategorie vorausgefuellt wird (siehe
+       add_event.html). Hintergrund der Karte (.termin-card) bleibt wie
+       zuvor. "Platz sichern" oeffnet das zur Kategorie passende
+       Formular-Modal (siehe EVENT_CATEGORY_MODAL in views.py sowie die
+       Modals in base.html); Kategorien ohne Eintrag dort springen
+       weiterhin zu #kontakt. Abschnitt erscheint nur, wenn mindestens
+       ein Termin existiert. -->
   {% if events %}
   {% call m.section_card("Termine", "Risikofrei starten", id="termine") %}
           <div class="row g-3">
@@ -53,13 +60,17 @@
             <div class="col-sm-6 col-lg-3">
               <div class="termin-card">
                 <i class="bi bi-{{ item.category|eventcategoryicon }} category-icon-bg" aria-hidden="true"></i>
-                <span class="badge badge-page-tag">{{ item.category|eventcategorylabel }}</span>
-                <h3 class="h2 mb-1">{{ item.title }}</h3>
+                <h3 class="h3 mb-1 termin-title">{{ item.title }}</h3>
                 {% if item.subtitle %}
                 <p class="fs-5 text-muted mb-0">{{ item.subtitle }}</p>
                 {% endif %}
                 <p class="small text-muted mb-3"><i class="bi bi-calendar-event"></i> {{ item|eventdaterange }}</p>
+                {% set modal_id = item.category|eventcategorymodal %}
+                {% if modal_id %}
+                <button type="button" class="btn btn-outline-dark-sm btn-sm mt-auto" data-bs-toggle="modal" data-bs-target="#{{ modal_id }}">Platz sichern</button>
+                {% else %}
                 <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
+                {% endif %}
               </div>
             </div>
             {% endfor %}

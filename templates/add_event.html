@@ -9,11 +9,11 @@
                 <form method="POST">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Titel</label>
-                        <input type="text" name="title" class="form-control" required>
+                        <input type="text" name="title" id="title" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Eventkategorie</label>
-                        <select name="category" class="form-select" required>
+                        <select name="category" id="category" class="form-select" required>
                             {% for key, label in event_categories %}
                             <option value="{{ key }}">{{ label }}</option>
                             {% endfor %}
@@ -62,5 +62,35 @@
         </div>
     </div>
 </div>
-</div>
+
+<!-- Fuellt den Titel beim Anlegen eines Termins mit der gewaehlten
+     Eventkategorie vor (z. B. "Webinar") - ersetzt das im oeffentlichen
+     Bereich entfernte Kategorie-Badge (siehe index.html): die Kategorie
+     steckt dadurch stattdessen im Titel selbst. Ueberschreibt einen von
+     Hand getippten Titel nicht - nur solange das Feld leer ist oder noch
+     den zuletzt automatisch eingetragenen Wert enthaelt. -->
+<script>
+(function () {
+    var categorySelect = document.getElementById('category');
+    var titleInput = document.getElementById('title');
+    if (!categorySelect || !titleInput) return;
+
+    var lastAutoFill = '';
+
+    function currentCategoryLabel() {
+        var option = categorySelect.options[categorySelect.selectedIndex];
+        return option ? option.textContent : '';
+    }
+
+    function applyAutoFill() {
+        if (titleInput.value === '' || titleInput.value === lastAutoFill) {
+            lastAutoFill = currentCategoryLabel();
+            titleInput.value = lastAutoFill;
+        }
+    }
+
+    categorySelect.addEventListener('change', applyAutoFill);
+    applyAutoFill();
+})();
+</script>
 {% endblock %}
