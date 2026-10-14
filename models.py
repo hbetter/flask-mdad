@@ -23,6 +23,10 @@ class Article(db.Model):
     body = db.Column(db.Text, nullable=False)
     description = db.Column(db.String(300))
     image_filename = db.Column(db.String(255))
+    # Darstellung des Bildes in der Kachel: "cover" (fuellend zugeschnitten),
+    # "contain" (vollstaendig, fuer Logos) oder "blur" (vollstaendig vor
+    # unscharfem Hintergrund). Siehe images.py.
+    image_fit = db.Column(db.String(10), nullable=False, default="cover")
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     updated_at = db.Column(
         db.DateTime,

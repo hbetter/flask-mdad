@@ -30,6 +30,7 @@ from PIL import Image
 from flask import current_app
 
 from models import db, Article, Section, Event
+import images as image_tools
 
 BERLIN = ZoneInfo("Europe/Berlin")
 DELIMITER = ";"
@@ -44,11 +45,14 @@ FILES = (ARTICLE_FILE, SECTION_FILE, EVENT_FILE)
 
 # Spaltenreihenfolge der CSV-Dateien. "id" wird nur zur Orientierung
 # exportiert und beim Import ignoriert (es werden immer neue Datensaetze
-# angelegt). "image_orientation" ist wie im Upload-Formular kein Modellfeld:
+# angelegt).
+# Beitraege: "image_fit" = auto (oder leer) / cover / contain / blur; das Bild
+# wird nie zugeschnitten, nur verkleinert (siehe images.py).
+# Sektionen: "image_orientation" ist wie im Upload-Formular kein Modellfeld:
 # leer = Bild unveraendert uebernehmen, "landscape"/"portrait" = wie beim
 # Upload im Bedienfeld zuschneiden und als WebP speichern.
 ARTICLE_COLUMNS = [
-    "id", "title", "description", "body", "image_filename", "image_orientation",
+    "id", "title", "description", "body", "image_filename", "image_fit",
     "on_index", "on_consulting", "on_academy", "on_stories", "is_banner",
     "order_number", "col_size", "updated_at",
 ]
@@ -308,7 +312,7 @@ def export_to_dir(target_dir):
 
     articles = Article.query.order_by(Article.order_number.asc(), Article.id.asc()).all()
     _write_csv(os.path.join(target_dir, ARTICLE_FILE), ARTICLE_COLUMNS, [
-        [c.id, c.title, c.description or "", c.body, c.image_filename or "", "",
+        [c.id, c.title, c.description or "", c.body, c.image_filename or "", c.image_fit,
          _format_bool(c.on_index), _format_bool(c.on_consulting),
          _format_bool(c.on_academy), _format_bool(c.on_stories),
          _format_bool(c.is_banner), c.order_number, c.col_size,
@@ -406,6 +410,19 @@ class _ImageImporter:
         self.cache[key] = new_name
         return new_name
 
+    def store_article(self, name, fit):
+        # Beitragsbilder: nicht zuschneiden, nur verkleinern; Darstellung
+        # (image_fit) bei "auto" anhand des Bildes waehlen (images.py).
+        key = ("article", name, fit)
+        if key in self.cache:
+            return self.cache[key]
+        new_name, final_fit = image_tools.save_article_image(
+            os.path.join(self.source_dir, name), name, self.upload_folder, fit=fit
+        )
+        self.created.append(new_name)
+        self.cache[key] = (new_name, final_fit)
+        return new_name, final_fit
+
     def rollback(self):
         for name in self.created:
             try:
@@ -442,11 +459,18 @@ def _parse_articles(path, images, errors):
             title, body = _plain(row, "title"), _rich(row, "body")
             if not title or not body:
                 raise ValueError("title und body dürfen nicht leer sein")
-            image, orientation = _image_fields(row, images)
+            image = _text(row, "image_filename")
+            if image:
+                images.check(image)
+            # image_orientation wird bei Beitraegen ignoriert; stattdessen
+            # image_fit (leer = auto, siehe images.py).
+            fit = (_text(row, "image_fit") or "auto").lower()
+            if fit != "auto" and fit not in image_tools.FIT_VALUES:
+                raise ValueError(f"image_fit „{fit}“ muss leer, auto, cover, contain oder blur sein")
             parsed.append({
                 "title": title, "body": body,
                 "description": _plain(row, "description"),
-                "image": image, "orientation": orientation,
+                "image": image, "fit": fit,
                 "on_index": _parse_bool(row.get("on_index")),
                 "on_consulting": _parse_bool(row.get("on_consulting")),
                 "on_academy": _parse_bool(row.get("on_academy")),
@@ -570,9 +594,12 @@ def import_from_dir(source_dir, user):
 
     try:
         for c in articles:
+            image_filename, image_fit = (
+                images.store_article(c["image"], c["fit"]) if c["image"] else (None, "cover")
+            )
             db.session.add(Article(
                 title=c["title"], body=c["body"], description=c["description"],
-                image_filename=images.store(c["image"], c["orientation"]) if c["image"] else None,
+                image_filename=image_filename, image_fit=image_fit,
                 on_index=c["on_index"], on_consulting=c["on_consulting"],
                 on_academy=c["on_academy"], on_stories=c["on_stories"],
                 is_banner=c["is_banner"], order_number=c["order_number"],

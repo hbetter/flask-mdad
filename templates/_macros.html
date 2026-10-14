@@ -19,3 +19,12 @@
   </div>
 </section>
 {% endmacro %}
+
+{# Beitragsbild oben in der Kachel. Die Darstellung kommt aus article.image_fit
+   (cover / contain / blur, siehe images.py und custom.css .article-img). #}
+{% macro article_image(item) %}
+{%- set src = url_for('static', filename='uploads/' ~ item.image_filename) -%}
+<div class="article-img article-img-{{ item.image_fit or 'cover' }}" style="--article-img: url('{{ src }}')">
+    <img src="{{ src }}" alt="{{ item.title }}" loading="lazy">
+</div>
+{%- endmacro %}

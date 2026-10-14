@@ -73,13 +73,16 @@
                         <input type="file" name="image" class="form-control" accept="image/*">
                     </div>
                     <div class="mb-3">
-                        <label for="image_orientation" class="form-label fw-bold">Bildformat</label>
-                        <select name="image_orientation" id="image_orientation" class="form-select">
-                            <option value="landscape" selected>Waagerecht</option>
-                            <option value="portrait">Hochkant</option>
+                        <label for="image_fit" class="form-label fw-bold">Bilddarstellung</label>
+                        <select name="image_fit" id="image_fit" class="form-select">
+                            {% for value, label in image_fit_choices %}
+                            <option value="{{ value }}" {% if value == "auto" %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
                         </select>
                         <small class="text-muted">
-                            Waagerecht für kleine Beiträge, Hochkant für zweispaltige Beiträge.
+                            „Automatisch“ erkennt Logos und Grafiken und zeigt sie vollständig;
+                            Fotos füllen die Kachel, Hochkant-Fotos erscheinen vollständig vor
+                            unscharfem Hintergrund. Das Bild selbst wird nicht beschnitten.
                         </small>
                     </div>
                     <div class="d-grid gap-2">

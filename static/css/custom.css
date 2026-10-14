@@ -401,6 +401,55 @@ h1, h2, h3 {
     border-radius: 12px 12px 0 0;
 }
 
+/* Beitragsbild oben in der Kachel (Makro article_image in _macros.html).
+   Gleiches Seitenverhaeltnis wie .card-img-top; die Darstellung haengt von
+   Article.image_fit ab (siehe images.py):
+   - cover:   fuellend, Ausschnitt leicht nach oben verschoben (Gesichter)
+   - contain: vollstaendig mit Rand, fuer Logos/Grafiken
+   - blur:    vollstaendig vor unscharfem Hintergrund aus demselben Bild */
+.article-img {
+    position: relative;
+    aspect-ratio: 1280 / 715;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    background: #fff;
+}
+
+.article-img img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.article-img-cover img {
+    object-fit: cover;
+    object-position: 50% 33%;
+}
+
+.article-img-contain img {
+    object-fit: contain;
+    padding: 1.25rem;
+}
+
+.article-img-blur::before {
+    content: "";
+    position: absolute;
+    inset: -24px;
+    background: var(--article-img) center / cover no-repeat;
+    filter: blur(18px) brightness(.92);
+}
+
+.article-img-blur img {
+    object-fit: contain;
+}
+
+/* Vorschau im Bearbeiten-Formular: dort ohne abgerundete Ecken oben */
+.article-img-preview .article-img {
+    border-radius: 0;
+}
+
 .card-img-side {
     max-width: 100%;
     max-height: 320px;

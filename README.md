@@ -51,6 +51,7 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 - `app.py`: Startpunkt, importiert die App aus `views.py`.
 - `views.py`: Konfiguration, alle Routen, Bild-Upload und -Zuschnitt, Jinja-Filter sowie die Konstanten für Seiten-Tickboxen, Terminkategorien, Icons und Formular-Modals.
 - `models.py`: SQLAlchemy-Modelle `User`, `Article`, `Section`, `Event`.
+- `images.py`: Verarbeitung der Beitragsbilder (Verkleinern ohne Zuschnitt, Logo-Erkennung, Wahl der Darstellung) – genutzt vom Bedienfeld und vom CSV-Import.
 - `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine und Sektionen (siehe unten), auch als Kommandozeilenwerkzeug.
 - `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
 - `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder, Favicon sowie `uploads/` für Bilder aus dem Bedienfeld. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
@@ -69,7 +70,14 @@ Code-Bezeichner sind englisch, sichtbare Inhalte deutsch. Template-Dateinamen, V
 - Sektion (`Section`): wie ein Beitrag, zusätzlich mit Kicker und Bildposition (links/rechts), aber ohne Banner, Erfolgsgeschichten und Spaltenbreite. Sektionen werden je Seite in nummerierte Plätze („Slots") zwischen den festen Inhalten eingefügt (Indexseite 10, Beratung und Akademie je 3).
 - Termin (`Event`): Titel, Untertitel, Kategorie, Ort, Start und Ende (mit Uhrzeit oder ganztägig).
 
-Das Bildformat (Hoch- oder Querformat) wird nur beim Upload gewählt und nicht gespeichert. Es bestimmt den Zuschnitt: Querformat 1280 × 715, Hochformat 900 × 1200 Pixel. Erlaubt sind PNG, JPG, GIF und WebP bis 16 MB.
+**Beitragsbilder** werden nicht zugeschnitten, sondern nur auf höchstens 1600 px verkleinert und als WebP gespeichert (Transparenz bleibt erhalten). Wie ein Bild in der Kachel erscheint, legt das Feld `image_fit` fest – im Formular „Bilddarstellung“, jederzeit änderbar:
+
+- `cover` – Foto füllt die Kachel; der Ausschnitt sitzt leicht oberhalb der Mitte, wo meist Gesichter sind.
+- `contain` – Bild vollständig mit Rand, für Logos und Grafiken. Einfarbige oder transparente Ränder werden dabei entfernt, damit das Logo nicht zu klein wirkt.
+- `blur` – Foto vollständig vor einem unscharfen Hintergrund aus demselben Bild, für Hochkant- oder quadratische Fotos.
+- „Automatisch“ (Standard) wählt beim Speichern: Logo/Grafik (Transparenz, einfarbiger Rand, wenige Farben oder Dateiname mit „logo“, „award“, „preis“ …) → `contain`; Foto, das beim Zuschneiden mehr als 40 % verlieren würde → `blur`; sonst `cover`.
+
+**Sektionsbilder** werden weiterhin beim Upload zugeschnitten (Querformat 1280 × 715 oder Hochformat 900 × 1200). Erlaubt sind PNG, JPG, GIF und WebP bis 16 MB.
 
 ## Öffentliche Seiten
 
@@ -121,7 +129,7 @@ Regeln beim Import:
 - Höchstens ein Beitrag darf `is_banner = 1` haben, und nur wenn noch kein Banner existiert.
 - Sektionen werden über `slot_index_*`/`slot_position_*` in die Slots eingereiht. Sektionen, die schon im selben Slot stehen, bleiben davor.
 - Texte werden bereinigt: Im Inhalt (`body`) werden `<p>`, `<br>`, `<div>`, Überschriften und Listen durch Zeilenumbrüche ersetzt (Listenpunkte als „•“), alle übrigen Tags entfernt. Erhalten bleiben nur Fett (`<strong>`), Kursiv (`<em>`) und Links (`<a href>`). Titel, Untertitel, Kicker, Beschreibung und Ort werden zu reinem Text. Das `##` für den Anreißer steht danach in einer eigenen Zeile.
-- Bilder werden mit neuem Dateinamen nach `static/uploads` kopiert. Die optionale Spalte `image_orientation` (`landscape` oder `portrait`) schneidet das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export).
+- Bilder werden mit neuem Dateinamen nach `static/uploads` übernommen. Bei Beiträgen steuert die Spalte `image_fit` (`auto` bzw. leer, `cover`, `contain`, `blur`) die Darstellung wie im Formular; Bei Sektionen schneidet die optionale Spalte `image_orientation` (`landscape` oder `portrait`) das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export). Bei Beiträgen wird `image_orientation` ignoriert.
 - Autor der importierten Einträge ist der angemeldete Nutzer (Kommandozeile: `--user`, Standard `admin`).
 
 ## equipe-pq

@@ -18,6 +18,7 @@ from flask_migrate import Migrate
 
 from models import db, User, Article, Section, Event
 import csv_transfer
+import images
 
 
 # Jede Beitragkarte kann unabhängig auf mehreren dieser Seiten erscheinen
@@ -621,24 +622,20 @@ def add_article():
                 return redirect(url_for("dashboard"))
         file = request.files.get("image")
         image_filename = None
-        image_orientation = request.form.get("image_orientation", "landscape")
+        image_fit = "cover"
         if file and file.filename:
-            if image_orientation == "portrait":
-                image_filename = resize_and_save_image(
-                    file,
-                    app.config["UPLOAD_FOLDER"],
-                    target_width=PORTRAIT_WIDTH,
-                    target_height=PORTRAIT_HEIGHT,
+            # Beitragsbilder werden nicht zugeschnitten; die Darstellung
+            # (image_fit) waehlt bei "auto" images.py anhand des Bildes.
+            if not allowed_file(file.filename):
+                flash("Nur Bilddateien sind erlaubt: png, jpg, jpeg, gif, webp", "warning")
+                return redirect(url_for("add_article"))
+            try:
+                image_filename, image_fit = images.save_article_image(
+                    file.stream, file.filename, app.config["UPLOAD_FOLDER"],
+                    fit=request.form.get("image_fit", "auto"),
                 )
-            else:
-                image_filename = resize_and_save_image(
-                    file,
-                    app.config["UPLOAD_FOLDER"],
-                    target_width=LANDSCAPE_WIDTH,
-                    target_height=LANDSCAPE_HEIGHT,
-                )
-            if not image_filename:
-                flash("Nur Bilddateien sind erlaubt.", "warning")
+            except ValueError:
+                flash("Die Datei ist keine lesbare Bilddatei.", "warning")
                 return redirect(url_for("add_article"))
         order_number = int(request.form.get("order_number") or 0)
         col_size = request.form.get("col_size") or DEFAULT_COL_SIZE
@@ -655,6 +652,7 @@ def add_article():
             order_number=order_number,
             user_id=current_user.id,
             image_filename=image_filename,
+            image_fit=image_fit,
             col_size=col_size,
             updated_at=datetime.now(timezone.utc),
         )
@@ -663,7 +661,9 @@ def add_article():
         flash("Inhalt hinzugefügt!", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("add_article.html", article_flags=ARTICLE_FLAGS)
+    return render_template(
+        "add_article.html", article_flags=ARTICLE_FLAGS, image_fit_choices=images.FIT_CHOICES
+    )
 
 
 @app.route("/add-event", methods=["GET", "POST"])
@@ -1056,29 +1056,32 @@ def edit_article(article_id):
 
 
         file = request.files.get("image")
-        image_filename = None
-        image_orientation = request.form.get("image_orientation", "landscape")
+        # Fehlt image_fit im Formular (Schnellbearbeitungs-Modal im
+        # Bedienfeld), bleibt die bisherige Darstellung unveraendert.
+        fit_choice = request.form.get("image_fit")
         if file and file.filename:
-            if image_orientation == "portrait":
-                image_filename = resize_and_save_image(
-                    file,
-                    app.config["UPLOAD_FOLDER"],
-                    target_width=PORTRAIT_WIDTH,
-                    target_height=PORTRAIT_HEIGHT,
-                )
-            else:
-                image_filename = resize_and_save_image(
-                    file,
-                    app.config["UPLOAD_FOLDER"],
-                    target_width=LANDSCAPE_WIDTH,
-                    target_height=LANDSCAPE_HEIGHT,
-                )
-            if not image_filename:
+            if not allowed_file(file.filename):
                 flash("Nur Bilddateien sind erlaubt: png, jpg, jpeg, gif, webp", "warning")
+                return redirect(url_for("edit_article", article_id=item.id))
+            try:
+                image_filename, image_fit = images.save_article_image(
+                    file.stream, file.filename, app.config["UPLOAD_FOLDER"],
+                    fit=fit_choice or "auto",
+                )
+            except ValueError:
+                flash("Die Datei ist keine lesbare Bilddatei.", "warning")
                 return redirect(url_for("edit_article", article_id=item.id))
 
             delete_uploaded_image(item.image_filename)
             item.image_filename = image_filename
+            item.image_fit = image_fit
+        elif fit_choice in images.FIT_VALUES:
+            item.image_fit = fit_choice
+        elif fit_choice == "auto" and item.image_filename:
+            # "Automatisch" fuer das bereits gespeicherte Bild neu auswerten
+            item.image_fit = images.fit_for_stored_image(
+                os.path.join(app.config["UPLOAD_FOLDER"], item.image_filename)
+            )
 
         db.session.commit()
         flash("Beitrag aktualisiert.", "success")
@@ -1088,6 +1091,7 @@ def edit_article(article_id):
         "edit_article.html",
         article=item,
         article_flags=ARTICLE_FLAGS,
+        image_fit_choices=images.FIT_CHOICES,
         banner=get_banner_text(),
     )
 
