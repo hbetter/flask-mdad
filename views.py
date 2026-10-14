@@ -250,6 +250,24 @@ def eventcategorymodal(value):
     return EVENT_CATEGORY_MODAL.get(value)
 
 
+@app.template_filter("halfpreview")
+def halfpreview(value):
+    # Vorschautext fuer die Karten-Kacheln im Bedienfeld: HTML-Tags entfernen
+    # (Zeilenumbrueche bleiben erhalten) und den Text auf die Haelfte kuerzen,
+    # an einer Wortgrenze, mit "…" am Ende.
+    import re
+    text = re.sub(r"<br\s*/?>|</p>|</div>|</li>", "\n", value or "", flags=re.I)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    limit = len(text) // 2
+    if limit == 0 or len(text) < 80:
+        return text
+    cut = text.rfind(" ", 0, limit)
+    if cut < limit * 0.6:
+        cut = limit
+    return text[:cut].rstrip(" ,;:-–\n") + " …"
+
+
 @app.template_filter("eventdaterange")
 def eventdaterange(item):
     # Kompakte Anzeige von Start bis Ende eines Termins (Bedienfeld/Portal):

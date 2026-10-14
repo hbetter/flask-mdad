@@ -413,6 +413,19 @@ h1, h2, h3 {
     overflow-y: auto;
 }
 
+/* Liegt zwischen .modal-content und .modal-body/.modal-footer ein <form>
+   (Schnellbearbeitungs-Modals im Bedienfeld), unterbricht es sonst die
+   Flex-Kette von Bootstrap: der Body scrollt nicht, und der Footer mit den
+   Buttons rutscht aus dem sichtbaren Bereich. Das Formular uebernimmt hier
+   deshalb das Flex-Layout von .modal-content. */
+.modal-dialog-scrollable .modal-content > form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
 /* Weitere Kartentechnik-Bausteine der statischen Seite: eigenstaendige
    "card-sm"-Karten sowie die dezente Abgrenzung von Karten innerhalb
    von Karten. Das Verhalten von .card/.card:hover selbst bleibt

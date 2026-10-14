@@ -85,9 +85,14 @@
                         </p>
                     {% endif %}
 
-                    <div class="card-text preserve-lines body-preview">
-                        {{ item.body|safe }}
-                    </div>
+                    {# Wie auf der Stories-Seite (_cards_list.html) nur der Text vor
+                       "##", davon im Bedienfeld nochmals nur die Haelfte. #}
+                    {% set parts = item.body.split('##', 1) %}
+                    {% set preview = parts[0]|halfpreview %}
+                    <div class="card-text preserve-lines body-preview">{{ preview }}</div>
+                    {% if parts|length > 1 or preview.endswith(" …") %}
+                    <div class="small text-muted fst-italic mt-1">gekürzt, vollständiger Text unter „Bearbeiten“</div>
+                    {% endif %}
                 </div>
 
                 <div class="card-footer bg-white border-0 py-2">
@@ -193,7 +198,7 @@
 
                                     <div class="d-flex flex-wrap gap-2">
                                         {% for card in card_orders %}
-                                            <span class="badge text-bg-light border px-2 py-2">
+                                            <span class="badge text-bg-light border px-2 py-2 text-wrap text-start">
                                                 {{ card.order_number }} – {{ card.title }}
                                                 {% if card.id == item.id %}
                                                     <span class="ms-1 text-secondary">(aktuell)</span>
