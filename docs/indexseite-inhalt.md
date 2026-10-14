@@ -1,6 +1,6 @@
 # Indexseite – Seitenaufbau & Inhalte
 
-Dokumentation von Reihenfolge, Überschriften, Kickern, Untertiteln und Texten der aktuellen Flask-Indexseite (`templates/index.html` + `templates/base.html`, Stand dieser Sitzung), damit die Seite als eigenständige statische HTML-Seite nachgebaut werden kann. Reine Inhaltsangaben – Stil/Optik steht in `indexseite-stil.md`. Der Bereich „Weitere Beiträge" (datenbankgetriebene Karten aus dem Dashboard, inkl. Verweis auf die Unterseite „Erfolgsgeschichten") ist bewusst **weggelassen**, da er dynamisch aus der Datenbank gespeist wird und für eine statische Seite nicht sinnvoll übernommen werden kann.
+Dokumentation von Reihenfolge, Überschriften, Kickern, Untertiteln und Texten der aktuellen Flask-Indexseite (`templates/index.html` + `templates/base.html`, Stand dieser Sitzung), damit die Seite als eigenständige statische HTML-Seite nachgebaut werden kann. Reine Inhaltsangaben – Stil/Optik steht in `indexseite-stil.md`. Der Bereich „Weitere Beiträge" (datenbankgetriebene Karten aus dem Bedienfeld, inkl. Verweis auf die Unterseite „Erfolgsgeschichten") ist bewusst **weggelassen**, da er dynamisch aus der Datenbank gespeist wird und für eine statische Seite nicht sinnvoll übernommen werden kann.
 
 ## Meta-Angaben
 
@@ -11,7 +11,7 @@ Dokumentation von Reihenfolge, Überschriften, Kickern, Untertiteln und Texten d
 
 Menüpunkte (in dieser Reihenfolge): Beratung, Akademie, Erfolgsgeschichten, Über uns, Kontakt.
 
-CTA-Button rechts: „Probe-Spielraum buchen" (verlinkt auf `#kontakt`); für eingeloggte Nutzer stattdessen „Mein Bereich" (verlinkt auf das Dashboard – für die statische Seite ohne Login-Zustand irrelevant, dort reicht „Probe-Spielraum buchen").
+CTA-Button rechts: „Probe-Spielraum buchen" (verlinkt auf `#kontakt`); für eingeloggte Nutzer stattdessen „Mein Bereich" (verlinkt auf das Bedienfeld – für die statische Seite ohne Login-Zustand irrelevant, dort reicht „Probe-Spielraum buchen").
 
 ## 1. Hero
 

@@ -266,7 +266,7 @@ h1, h2, h3 {
     transform: translateY(-2px);
 }
 
-/* Schnellzugriff-Buttons im Dashboard ("Neue Karte erstellen", "Termin",
+/* Schnellzugriff-Buttons im Bedienfeld ("Neue Karte erstellen", "Termin",
    "Sektion") in dezenten Regenbogenfarben, damit die drei Aktionen auf
    einen Blick unterscheidbar sind. Gleiches Hover-/Schatten-Verhalten
    wie .btn-maroon, nur mit eigener Farbe je Button. */
@@ -859,7 +859,7 @@ footer.site-footer .sustainability-badge-link:hover {
 }
 
 /* Kategorie-Icon dezent im Hintergrund der Terminkarten (oeffentlicher
-   Bereich: .termin-card: Dashboard: .dash-termin-card) - macht die
+   Bereich: .termin-card: Bedienfeld: .dash-termin-card) - macht die
    Kategorie auch ohne Lesen des Badges auf einen Blick erkennbar. Liegt
    als grosses, blasses Icon in der oberen rechten Ecke hinter dem
    eigentlichen Karteninhalt. */
@@ -888,8 +888,8 @@ footer.site-footer .sustainability-badge-link:hover {
 }
 
 /* Kraeftig eingefaerbtes Badge fuer die Zuordnung/Kategorie, die oben auf
-   einer Karte erscheint (Termin-Kategorie im Dashboard und im oeffentlichen
-   Bereich, Seiten-Zuordnung bei Karten/Sektionen im Dashboard): bewusst
+   einer Karte erscheint (Termin-Kategorie im Bedienfeld und im oeffentlichen
+   Bereich, Seiten-Zuordnung bei Karten/Sektionen im Bedienfeld): bewusst
    auffaellig im Gegensatz zu den neutralen hellen Pill-Badges wie
    "Ganztaegig"/"Banner"/"Ohne Zuordnung". */
 .badge-page-tag {

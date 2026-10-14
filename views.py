@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 from PIL import Image
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, send_file, session
+from werkzeug.exceptions import RequestEntityTooLarge
 from flask_bcrypt import Bcrypt
 from flask_login import (
     LoginManager,
@@ -16,6 +17,7 @@ from flask_login import (
 from flask_migrate import Migrate
 
 from models import db, User, Card, Section, Event
+import csv_transfer
 
 
 # Jede Karte kann unabhängig auf mehreren dieser Seiten erscheinen
@@ -49,7 +51,7 @@ EVENT_CATEGORIES = [
 EVENT_CATEGORY_LABELS = dict(EVENT_CATEGORIES)
 
 # Bootstrap-Icons-Name (ohne "bi-"-Praefix) je Kategorie - wird dezent als
-# Hintergrundgrafik auf den Terminkarten dargestellt (Dashboard und
+# Hintergrundgrafik auf den Terminkarten dargestellt (Bedienfeld und
 # oeffentlicher Bereich), damit die Kategorie auch ohne Lesen des Badges
 # auf einen Blick erkennbar ist.
 EVENT_CATEGORY_ICONS = {
@@ -87,7 +89,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 5 MB
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg", "gif", "webp"}
 
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
@@ -250,7 +252,7 @@ def eventcategorymodal(value):
 
 @app.template_filter("eventdaterange")
 def eventdaterange(item):
-    # Kompakte Anzeige von Start bis Ende eines Termins (Dashboard/Portal):
+    # Kompakte Anzeige von Start bis Ende eines Termins (Bedienfeld/Portal):
     # ganztaegig -> nur Datum (nur einmal, wenn Start- und Endtag gleich
     # sind, sonst als Datumsspanne); mit Uhrzeit -> Datum + Uhrzeitspanne,
     # bzw. volle Datum-Uhrzeit-Spanne, wenn der Termin ueber Tage hinweg
@@ -389,7 +391,7 @@ def clear_section_slot(page_key, section):
 
 
 def section_slot_labels(sections):
-    # Fuer die Dashboard-Anzeige: pro Seite, auf der eine Sektion aktiv ist,
+    # Fuer die Bedienfeld-Anzeige: pro Seite, auf der eine Sektion aktiv ist,
     # ihr aktueller Slot (mit Buchstabe, falls dort mehrere Sektionen stehen).
     labels = {section.id: {} for section in sections}
     for page_key in PAGE_SLOT_COUNT:
@@ -418,7 +420,7 @@ def index():
         .all()
     )
     sections_in_slot = sections_by_slot("index")
-    # Alle Termine chronologisch, wie im Dashboard, aber ohne Filterung nach
+    # Alle Termine chronologisch, wie im Bedienfeld, aber ohne Filterung nach
     # user_id: die Indexseite ist oeffentlich und zeigt saemtliche Termine.
     events = (
         Event.query
@@ -506,6 +508,10 @@ def login():
 @login_required
 def dashboard():
     banner = get_banner_text()
+    # Fehler eines fehlgeschlagenen Imports (siehe import_data) werden im
+    # Import-Modal angezeigt, das dann automatisch geoeffnet wird.
+    import_errors = session.pop("import_errors", None)
+    open_import = bool(import_errors) or request.args.get("import") == "1"
     user_cards = (
         Card.query
         .filter_by(user_id=current_user.id)
@@ -556,6 +562,15 @@ def dashboard():
         transition_labels=transition_labels,
         section_slot_choices=section_slot_choices,
         events=user_events,
+        # Gesamtzahlen fuer die Rueckfrage vor dem Export (der Export umfasst
+        # alle Eintraege, nicht nur die des angemeldeten Nutzers).
+        export_counts={
+            "cards": Card.query.count(),
+            "sections": Section.query.count(),
+            "events": Event.query.count(),
+        },
+        import_errors=import_errors,
+        open_import=open_import,
     )
 
 
@@ -1042,6 +1057,120 @@ def delete_card(card_id):
         flash("Karte gelöscht.", "info")
 
     return redirect(url_for("dashboard"))
+
+
+# CSV-Export/-Import (Logik in csv_transfer.py). Der Export liefert ein ZIP
+# mit cards.csv, sections.csv, events.csv und den Bildern; der Import nimmt
+# einen ganzen Ordner (CSV-Dateien + Bilder im selben Ordner) oder dieses
+# ZIP entgegen.
+@app.route("/export")
+@login_required
+def export_data():
+    import io
+    import tempfile
+    import zipfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        counts, warnings = csv_transfer.export_to_dir(tmp)
+        if warnings:
+            with open(os.path.join(tmp, "export_hinweise.txt"), "w", encoding="utf-8") as f:
+                f.write("\n".join(warnings) + "\n")
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+            for name in sorted(os.listdir(tmp)):
+                zf.write(os.path.join(tmp, name), arcname=name)
+    buffer.seek(0)
+    stamp = datetime.now(ZoneInfo("Europe/Berlin")).strftime("%Y-%m-%d")
+    return send_file(
+        buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name=f"mdad-export-{stamp}.zip",
+    )
+
+
+def _safe_basename(name):
+    # Nur den Dateinamen ohne Ordnerpfad verwenden (beim Ordner-Upload
+    # schickt der Browser "ordner/datei.csv"); versteckte Dateien wie
+    # .DS_Store ueberspringen.
+    base = os.path.basename((name or "").replace("\\", "/"))
+    if not base or base.startswith("."):
+        return None
+    return base
+
+
+MAX_IMPORT_ERRORS_SHOWN = 20
+
+
+def _import_failed(errors):
+    # Fehler ueber die Session ans Bedienfeld weiterreichen (dort im
+    # Import-Modal angezeigt). Begrenzt, damit das Session-Cookie klein bleibt.
+    shown = errors[:MAX_IMPORT_ERRORS_SHOWN]
+    if len(errors) > MAX_IMPORT_ERRORS_SHOWN:
+        shown.append(f"… und {len(errors) - MAX_IMPORT_ERRORS_SHOWN} weitere Fehler.")
+    session["import_errors"] = shown
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/import", methods=["GET", "POST"])
+@login_required
+def import_data():
+    if request.method == "POST":
+        import tempfile
+        import zipfile
+
+        files = [f for f in request.files.getlist("files") if f and f.filename]
+        if not files:
+            return _import_failed(["Bitte einen Ordner oder eine ZIP-Datei auswählen."])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            for upload in files:
+                base = _safe_basename(upload.filename)
+                if base is None:
+                    continue
+                if base.lower().endswith(".zip"):
+                    zip_path = os.path.join(tmp, ".upload.zip")
+                    upload.save(zip_path)
+                    try:
+                        with zipfile.ZipFile(zip_path) as zf:
+                            for member in zf.infolist():
+                                member_base = _safe_basename(member.filename)
+                                if member.is_dir() or member_base is None:
+                                    continue
+                                with zf.open(member) as src, open(os.path.join(tmp, member_base), "wb") as dst:
+                                    dst.write(src.read())
+                    except zipfile.BadZipFile:
+                        return _import_failed([f"„{base}“ ist keine gültige ZIP-Datei."])
+                    finally:
+                        os.remove(zip_path)
+                else:
+                    upload.save(os.path.join(tmp, base))
+
+            try:
+                counts = csv_transfer.import_from_dir(tmp, current_user)
+            except csv_transfer.CsvImportError as exc:
+                return _import_failed(exc.errors)
+
+        flash(
+            f"Import abgeschlossen: {counts['cards']} Karten, {counts['sections']} Sektionen, "
+            f"{counts['events']} Termine, {counts['images']} Bilder.",
+            "success",
+        )
+        return redirect(url_for("dashboard"))
+
+    # Der Import ist ein Modal im Bedienfeld; ein direkter Aufruf von /import
+    # (z. B. nach einem zu grossen Upload) oeffnet dieses Modal.
+    return redirect(url_for("dashboard", **{"import": "1"}))
+
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_too_large(_error):
+    limit_mb = app.config["MAX_CONTENT_LENGTH"] // (1024 * 1024)
+    message = f"Die hochgeladenen Dateien sind zusammen größer als {limit_mb} MB."
+    if request.endpoint == "import_data":
+        return _import_failed([message + " Größere Bestände bitte über die Kommandozeile importieren (siehe README)."])
+    flash(message, "warning")
+    return redirect(request.url)
 
 
 @app.route("/imprint")

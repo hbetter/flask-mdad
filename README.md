@@ -51,6 +51,7 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 - `app.py`: Startpunkt, importiert die App aus `views.py`.
 - `views.py`: Konfiguration, alle Routen, Bild-Upload und -Zuschnitt, Jinja-Filter sowie die Konstanten für Seiten-Tickboxen, Terminkategorien, Icons und Formular-Modals.
 - `models.py`: SQLAlchemy-Modelle `User`, `Card`, `Section`, `Event`.
+- `csv_transfer.py`: CSV-Import und -Export für Karten, Sektionen und Termine (siehe unten), auch als Kommandozeilenwerkzeug.
 - `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_cards_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
 - `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder, Favicon sowie `uploads/` für Bilder aus dem Bedienfeld. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
 - `docs/`: Dokumentation der Indexseite (Inhalt und Stil) und Sicherung der Erfolgsgeschichten-Texte.
@@ -90,13 +91,42 @@ Fünf AC-Formulare sind als Bootstrap-Modals in `base.html` eingebunden und von 
 
 `templates/alle_ac_formulare.html` ist eine Sammelseite ohne Route, die direkt als Datei im Browser geöffnet wird. Sie bindet CSS und JS deshalb mit relativen Pfaden statt mit `url_for()` ein.
 
+## CSV-Import und -Export
+
+Karten, Sektionen und Termine lassen sich als CSV-Dateien exportieren und wieder importieren, etwa um Inhalte vor einem Neuaufbau der Datenbank zu sichern oder zwischen Entwicklung und Produktion zu übertragen. Die Logik steckt in `csv_transfer.py`.
+
+Ein Export-/Importordner enthält `cards.csv`, `sections.csv` und `events.csv` sowie alle Bilder, auf die die Spalte `image_filename` verweist – im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8 (mit BOM, damit Excel Umlaute korrekt zeigt). Ja/Nein-Felder als `1`/`0`, Datum und Uhrzeit in deutscher Ortszeit als `JJJJ-MM-TT HH:MM`.
+
+Im Bedienfeld:
+
+- **Export** zeigt zuerst eine Rückfrage mit der Anzahl der Karten, Sektionen und Termine und lädt nach Bestätigung ein ZIP mit allen drei CSV-Dateien und den Bildern herunter. Fehlt ein Bild in `static/uploads`, steht das in `export_hinweise.txt` im ZIP.
+- **Import** öffnet ein Fenster, in dem ein ganzer Ordner (CSV-Dateien und Bilder) oder ein Export-ZIP ausgewählt wird. Schlägt der Import fehl, öffnet sich das Fenster erneut mit den Fehlermeldungen. Uploads sind auf insgesamt 16 MB begrenzt.
+
+Auf der Kommandozeile (ohne Größenbegrenzung):
+
+```bash
+$ docker compose exec web python csv_transfer.py export export-ordner
+$ docker compose exec web python csv_transfer.py import export-ordner [--user admin]
+```
+
+Regeln beim Import:
+
+- Es werden immer neue Einträge angelegt, bestehende bleiben unverändert. Ein wiederholter Import erzeugt Duplikate. Die Spalte `id` dient nur zur Orientierung und wird ignoriert.
+- Alles oder nichts: Enthält eine Zeile einen Fehler, wird nichts gespeichert; die Fehlermeldungen nennen Datei und Zeile.
+- Pflichtspalten: `title` und `body` bei Karten und Sektionen; `title`, `category`, `starts_at`, `ends_at` und `location` bei Terminen. Alle übrigen Spalten dürfen fehlen. Fehlt eine der drei Dateien, wird sie übersprungen.
+- `category` ist einer der internen Werte `webinar`, `inhouse`, `certification`, `trial`.
+- Höchstens eine Karte darf `is_banner = 1` haben, und nur wenn noch kein Banner existiert.
+- Sektionen werden über `slot_index_*`/`slot_position_*` in die Slots eingereiht. Sektionen, die schon im selben Slot stehen, bleiben davor.
+- Bilder werden mit neuem Dateinamen nach `static/uploads` kopiert. Die optionale Spalte `image_orientation` (`landscape` oder `portrait`) schneidet das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export).
+- Autor der importierten Einträge ist der angemeldete Nutzer (Kommandozeile: `--user`, Standard `admin`).
+
 ## equipe-pq
 
 Der Ordner `equipe-pq/` enthält eine eigenständige statische Seite für equipe-pq.playfulfuture.de. Sie wird nicht von Flask, sondern direkt von Nginx ausgeliefert. Einrichtung, Rechte und HTTPS sind als Kommentar in `nginx/equipe-pq.playfulfuture.de.conf` beschrieben. Nginx gibt nur diesen Unterordner frei, der Rest des Repositorys bleibt unerreichbar.
 
 ## Datensicherung und Grenzen
 
-Regelmäßig sichern: den Datenbank-Dump (siehe oben) und den Ordner `static/uploads`. Der Dump enthält nur die Dateinamen der Bilder, nicht die Bilder selbst.
+Regelmäßig sichern: den Datenbank-Dump (siehe oben) und den Ordner `static/uploads`. Der Dump enthält nur die Dateinamen der Bilder, nicht die Bilder selbst. Der CSV-Export enthält Inhalte und Bilder, aber keine Nutzer und ersetzt daher kein vollständiges Backup.
 
 Vor einem öffentlichen Betrieb zu beachten:
 

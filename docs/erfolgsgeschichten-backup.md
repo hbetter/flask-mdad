@@ -1,7 +1,7 @@
 # Backup: Inhalte der Karten auf der Seite "Erfolgsgeschichten"
 
 Diese Datei sichert die Textinhalte aller Karten, die aktuell (Stand: 05.09.2026) über das
-Dashboard gepflegt werden und auf `/erfolgsgeschichten` sowie im Bereich "Weitere Beiträge"
+Bedienfeld gepflegt werden und auf `/erfolgsgeschichten` sowie im Bereich "Weitere Beiträge"
 auf der Startseite angezeigt werden. Hintergrund: geplante Neuanlage der Datenbank nach der
 Umbenennung der Model-Klassen.
 

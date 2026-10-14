@@ -1,6 +1,6 @@
 # Indexseite – Stil & grafische Elemente
 
-Dokumentation des visuellen Erscheinungsbilds der aktuellen Flask-Indexseite (`templates/index.html` + `templates/base.html`, Stand dieser Sitzung), damit die Seite als eigenständige statische HTML-Seite nachgebaut werden kann. Reine Stilangaben – Texte/Inhalte stehen in `indexseite-inhalt.md`. Der Bereich „Weitere Beiträge" (datenbankgetriebene Karten aus dem Dashboard) ist bewusst ausgeklammert, da er dynamisch ist und für eine statische Seite ohnehin entfällt.
+Dokumentation des visuellen Erscheinungsbilds der aktuellen Flask-Indexseite (`templates/index.html` + `templates/base.html`, Stand dieser Sitzung), damit die Seite als eigenständige statische HTML-Seite nachgebaut werden kann. Reine Stilangaben – Texte/Inhalte stehen in `indexseite-inhalt.md`. Der Bereich „Weitere Beiträge" (datenbankgetriebene Karten aus dem Bedienfeld) ist bewusst ausgeklammert, da er dynamisch ist und für eine statische Seite ohnehin entfällt.
 
 ## Technische Basis
 
@@ -65,7 +65,7 @@ Jede inhaltliche Sektion folgt demselben Muster:
 - Vertikales Innenpolster der Navbar reduziert: `padding: 0.25rem 0` (überschreibt Bootstraps Standard-Padding)
 - **Logo:** Höhe `56px` (mobil), ab `992px` Breakpoint `70px`, Breite automatisch
 - **Nav-Links:** Farbe `--sm-dark`, `font-weight: 600`, `font-size: 1rem`, horizontales Padding `1rem`; Hover/aktiv-Zustand: Farbe wechselt zu `--sm-maroon`
-- **CTA-Button rechts** (`.btn-maroon`, siehe Buttons unten): bei eingeloggten Nutzern „Mein Bereich" (Link zum Dashboard), sonst das eigentliche CTA (siehe Inhalts-Datei)
+- **CTA-Button rechts** (`.btn-maroon`, siehe Buttons unten): bei eingeloggten Nutzern „Mein Bereich" (Link zum Bedienfeld), sonst das eigentliche CTA (siehe Inhalts-Datei)
 - **Mobiles Klappmenü** (< 992px): kein vollbreites Ausklappen mehr, sondern eine eigenständige, rechtsbündige Dropdown-Box unterhalb der Hamburger-/Button-Gruppe:
   - `position: absolute; top: 100%; right: 0; min-width: 220px; max-width: calc(100vw - 2rem)`
   - Weiße Karten-Optik: `border-radius: .6rem`, Schatten `0 8px 24px rgba(40,19,81,.15)`, Innenabstand `.75rem 1rem`, `z-index: 1030`
