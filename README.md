@@ -1,6 +1,6 @@
 # MENSCH DENK AN DICH® – Playful Future (flask-mdad)
 
-Flask-Website für MENSCH DENK AN DICH® mit Bedienfeld zur Pflege von Karten, Sektionen und Terminen. Die Inhalte der öffentlichen Seiten sind teils fest in den Templates, teils werden sie über das Bedienfeld aus der Datenbank gespeist.
+Flask-Website für MENSCH DENK AN DICH® mit Bedienfeld zur Pflege von Beiträgen, Terminen und Sektionen. Die Inhalte der öffentlichen Seiten sind teils fest in den Templates, teils werden sie über das Bedienfeld aus der Datenbank gespeist.
 
 ## Start mit Docker
 
@@ -51,7 +51,7 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 - `app.py`: Startpunkt, importiert die App aus `views.py`.
 - `views.py`: Konfiguration, alle Routen, Bild-Upload und -Zuschnitt, Jinja-Filter sowie die Konstanten für Seiten-Tickboxen, Terminkategorien, Icons und Formular-Modals.
 - `models.py`: SQLAlchemy-Modelle `User`, `Card`, `Section`, `Event`.
-- `csv_transfer.py`: CSV-Import und -Export für Karten, Sektionen und Termine (siehe unten), auch als Kommandozeilenwerkzeug.
+- `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine und Sektionen (siehe unten), auch als Kommandozeilenwerkzeug.
 - `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_cards_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
 - `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder, Favicon sowie `uploads/` für Bilder aus dem Bedienfeld. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
 - `docs/`: Dokumentation der Indexseite (Inhalt und Stil) und Sicherung der Erfolgsgeschichten-Texte.
@@ -65,41 +65,43 @@ Code-Bezeichner sind englisch, sichtbare Inhalte deutsch. Template-Dateinamen, V
 ## Datenmodell
 
 - `User`: Benutzername und Passwort-Hash (bcrypt).
-- `Card`: Titel, Text, Beschreibung, optional ein Bild, Reihenfolge (`order_number`) und Spaltenbreite (`col_size`). Unabhängige Tickboxen `on_index`, `on_consulting`, `on_academy`, `on_stories` – eine Karte kann auf mehreren Seiten erscheinen. `is_banner` markiert höchstens eine Karte als Banner.
-- `Section`: wie `Card`, zusätzlich mit Kicker und Bildposition (links/rechts), aber ohne Banner, Erfolgsgeschichten und Spaltenbreite. Sektionen werden je Seite in nummerierte Plätze („Slots") zwischen den festen Inhalten eingefügt (Indexseite 10, Beratung und Akademie je 3).
-- `Event`: Termin mit Titel, Untertitel, Kategorie, Ort, Start und Ende (mit Uhrzeit oder ganztägig).
+- Beitrag (`Card`): Titel, Text, Beschreibung, optional ein Bild, Reihenfolge (`order_number`) und Spaltenbreite (`col_size`). Unabhängige Tickboxen `on_index`, `on_consulting`, `on_academy`, `on_stories` – ein Beitrag kann auf mehreren Seiten erscheinen. `is_banner` markiert höchstens einen Beitrag als Banner.
+- Sektion (`Section`): wie ein Beitrag, zusätzlich mit Kicker und Bildposition (links/rechts), aber ohne Banner, Erfolgsgeschichten und Spaltenbreite. Sektionen werden je Seite in nummerierte Plätze („Slots") zwischen den festen Inhalten eingefügt (Indexseite 10, Beratung und Akademie je 3).
+- Termin (`Event`): Titel, Untertitel, Kategorie, Ort, Start und Ende (mit Uhrzeit oder ganztägig).
 
 Das Bildformat (Hoch- oder Querformat) wird nur beim Upload gewählt und nicht gespeichert. Es bestimmt den Zuschnitt: Querformat 1280 × 715, Hochformat 900 × 1200 Pixel. Erlaubt sind PNG, JPG, GIF und WebP bis 16 MB.
 
 ## Öffentliche Seiten
 
-- `/` – Indexseite mit Terminen, Karten und Sektionen
-- `/consulting` (Beratung) und `/academy` (Akademie) – Hero, statische Platzhaltersektionen und die jeweils markierten Karten und Sektionen
-- `/stories` – Erfolgsgeschichten (Karten)
+- `/` – Indexseite mit Beiträgen, Terminen und Sektionen
+- `/consulting` (Beratung) und `/academy` (Akademie) – Hero, statische Platzhaltersektionen und die jeweils markierten Beiträge und Sektionen
+- `/stories` – Erfolgsgeschichten (Beiträge)
 - `/imprint`, `/privacy` – Impressum, Datenschutz
 - `/sitemap.xml`, `robots.txt`
 
 ## Bedienfeld
 
-Login unter `/login`, danach `/dashboard`. Oben stehen die Buttons zum Anlegen von Karten, Terminen und Sektionen, darunter Termine, Karten und Sektionen als Kacheln. Ein Klick auf eine Kachel öffnet ein Schnellbearbeitungs-Modal für die Platzierung auf den öffentlichen Seiten.
+Login unter `/login`, danach `/dashboard`. Das Bedienfeld hat drei Reiter – Beiträge, Termine und Sektionen –, jeweils mit eigenem Button zum Hinzufügen; Export und Import stehen daneben. Der zuletzt gewählte Reiter wird gemerkt und lässt sich auch direkt verlinken (`/dashboard#beitraege`, `#termine`, `#sektionen`). Ein Klick auf eine Kachel öffnet ein Schnellbearbeitungs-Modal für die Platzierung auf den öffentlichen Seiten.
 
-Terminkategorien: Webinar, Probe Spielraum, Spiele Coach Zertifizierung, Spiele Event. Jede Kategorie hat ein dezentes Hintergrund-Icon auf der Terminkarte. Beim Anlegen eines Termins wird der Titel mit der Kategorie vorbelegt, sofern noch kein eigener Titel eingetragen ist.
+Begriffe: Beiträge, Termine und Sektionen entsprechen im Code den Modellen `Card`, `Event` und `Section` und in den CSV-Dateien `cards.csv`, `events.csv` und `sections.csv`. In Code-Kommentaren heißen Beiträge „Beitragkarten“.
+
+Terminkategorien: Webinar, Probe Spielraum, Spiele Coach Zertifizierung, Spiele Event. Jede Kategorie hat in der Anzeige eines Termins ein dezentes Hintergrund-Icon. Beim Anlegen eines Termins wird der Titel mit der Kategorie vorbelegt, sofern noch kein eigener Titel eingetragen ist.
 
 ## ActiveCampaign-Formulare
 
-Fünf AC-Formulare sind als Bootstrap-Modals in `base.html` eingebunden und von jeder Seite aus aufrufbar: Spielraum (Formular 16), Spiele Coach (8), Spiele Event (11), Newsletter (14) und Webinar (22). Der Button „Platz sichern" auf einer Terminkarte öffnet je nach Kategorie das passende Formular. Für Kategorien ohne eigenes Formular springt er zum Kontaktbereich.
+Fünf AC-Formulare sind als Bootstrap-Modals in `base.html` eingebunden und von jeder Seite aus aufrufbar: Spielraum (Formular 16), Spiele Coach (8), Spiele Event (11), Newsletter (14) und Webinar (22). Der Button „Platz sichern" bei einem Termin öffnet je nach Kategorie das passende Formular. Für Kategorien ohne eigenes Formular springt er zum Kontaktbereich.
 
 `templates/alle_ac_formulare.html` ist eine Sammelseite ohne Route, die direkt als Datei im Browser geöffnet wird. Sie bindet CSS und JS deshalb mit relativen Pfaden statt mit `url_for()` ein.
 
 ## CSV-Import und -Export
 
-Karten, Sektionen und Termine lassen sich als CSV-Dateien exportieren und wieder importieren, etwa um Inhalte vor einem Neuaufbau der Datenbank zu sichern oder zwischen Entwicklung und Produktion zu übertragen. Die Logik steckt in `csv_transfer.py`.
+Beiträge, Termine und Sektionen lassen sich als CSV-Dateien exportieren und wieder importieren, etwa um Inhalte vor einem Neuaufbau der Datenbank zu sichern oder zwischen Entwicklung und Produktion zu übertragen. Die Logik steckt in `csv_transfer.py`.
 
 Ein Export-/Importordner enthält `cards.csv`, `sections.csv` und `events.csv` sowie alle Bilder, auf die die Spalte `image_filename` verweist – im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8 (mit BOM, damit Excel Umlaute korrekt zeigt). Ja/Nein-Felder als `1`/`0`, Datum und Uhrzeit in deutscher Ortszeit als `JJJJ-MM-TT HH:MM`.
 
 Im Bedienfeld:
 
-- **Export** zeigt zuerst eine Rückfrage mit der Anzahl der Karten, Sektionen und Termine und lädt nach Bestätigung ein ZIP mit allen drei CSV-Dateien und den Bildern herunter. Fehlt ein Bild in `static/uploads`, steht das in `export_hinweise.txt` im ZIP.
+- **Export** zeigt zuerst eine Rückfrage mit der Anzahl der Beiträge, Termine und Sektionen und lädt nach Bestätigung ein ZIP mit allen drei CSV-Dateien und den Bildern herunter. Fehlt ein Bild in `static/uploads`, steht das in `export_hinweise.txt` im ZIP.
 - **Import** öffnet ein Fenster, in dem ein ganzer Ordner (CSV-Dateien und Bilder) oder ein Export-ZIP ausgewählt wird. Schlägt der Import fehl, öffnet sich das Fenster erneut mit den Fehlermeldungen. Uploads sind auf insgesamt 16 MB begrenzt.
 
 Auf der Kommandozeile (ohne Größenbegrenzung):
@@ -113,9 +115,9 @@ Regeln beim Import:
 
 - Es werden immer neue Einträge angelegt, bestehende bleiben unverändert. Ein wiederholter Import erzeugt Duplikate. Die Spalte `id` dient nur zur Orientierung und wird ignoriert.
 - Alles oder nichts: Enthält eine Zeile einen Fehler, wird nichts gespeichert; die Fehlermeldungen nennen Datei und Zeile.
-- Pflichtspalten: `title` und `body` bei Karten und Sektionen; `title`, `category`, `starts_at`, `ends_at` und `location` bei Terminen. Alle übrigen Spalten dürfen fehlen. Fehlt eine der drei Dateien, wird sie übersprungen.
+- Pflichtspalten: `title` und `body` bei Beiträgen und Sektionen; `title`, `category`, `starts_at`, `ends_at` und `location` bei Terminen. Alle übrigen Spalten dürfen fehlen. Fehlt eine der drei Dateien, wird sie übersprungen.
 - `category` ist einer der internen Werte `webinar`, `inhouse`, `certification`, `trial`.
-- Höchstens eine Karte darf `is_banner = 1` haben, und nur wenn noch kein Banner existiert.
+- Höchstens ein Beitrag darf `is_banner = 1` haben, und nur wenn noch kein Banner existiert.
 - Sektionen werden über `slot_index_*`/`slot_position_*` in die Slots eingereiht. Sektionen, die schon im selben Slot stehen, bleiben davor.
 - Bilder werden mit neuem Dateinamen nach `static/uploads` kopiert. Die optionale Spalte `image_orientation` (`landscape` oder `portrait`) schneidet das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export).
 - Autor der importierten Einträge ist der angemeldete Nutzer (Kommandozeile: `--user`, Standard `admin`).

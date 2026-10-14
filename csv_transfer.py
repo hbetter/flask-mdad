@@ -1,4 +1,4 @@
-"""CSV-Import und -Export fuer Karten (Card), Sektionen (Section) und Termine (Event).
+"""CSV-Import und -Export fuer Beitragkarten (Card), Termine (Event) und Sektionen (Section).
 
 Ein Export-/Import-Ordner enthaelt bis zu drei CSV-Dateien (cards.csv,
 sections.csv, events.csv) sowie die darin per Dateiname referenzierten Bilder
@@ -162,7 +162,7 @@ def _upload_folder():
 # --------------------------------------------------------------------------
 
 def export_to_dir(target_dir):
-    """Schreibt alle Karten, Sektionen und Termine als CSV in target_dir und
+    """Schreibt alle Beitragkarten, Sektionen und Termine als CSV in target_dir und
     kopiert die referenzierten Bilder dazu. Liefert (Anzahlen, Hinweise)."""
     os.makedirs(target_dir, exist_ok=True)
     upload_folder = _upload_folder()
@@ -323,9 +323,9 @@ def _parse_cards(path, images, errors):
             errors.append(f"{CARD_FILE} Zeile {line}: {exc}")
     banners = sum(1 for c in parsed if c["is_banner"])
     if banners > 1:
-        errors.append(f"{CARD_FILE}: Es darf höchstens eine Karte als Banner markiert sein ({banners} gefunden).")
+        errors.append(f"{CARD_FILE}: Es darf höchstens ein Beitrag als Banner markiert sein ({banners} gefunden).")
     elif banners == 1 and Card.query.filter_by(is_banner=True).first():
-        errors.append(f"{CARD_FILE}: Es existiert bereits ein Banner – is_banner der importierten Karte auf 0 setzen oder das bestehende Banner vorher entfernen.")
+        errors.append(f"{CARD_FILE}: Es existiert bereits ein Banner – is_banner des importierten Beitrags auf 0 setzen oder das bestehende Banner vorher entfernen.")
     return parsed
 
 
@@ -483,7 +483,7 @@ def main(argv):
     from views import app
     from models import User
 
-    parser = argparse.ArgumentParser(description="CSV-Import/-Export für Karten, Sektionen und Termine")
+    parser = argparse.ArgumentParser(description="CSV-Import/-Export für Beiträge, Sektionen und Termine")
     sub = parser.add_subparsers(dest="command", required=True)
     p_exp = sub.add_parser("export", help="Daten und Bilder in einen Ordner exportieren")
     p_exp.add_argument("directory")
@@ -497,7 +497,7 @@ def main(argv):
             counts, warnings = export_to_dir(args.directory)
             for w in warnings:
                 print(f"Hinweis: {w}")
-            print(f"Exportiert: {counts['cards']} Karten, {counts['sections']} Sektionen, "
+            print(f"Exportiert: {counts['cards']} Beiträge, {counts['sections']} Sektionen, "
                   f"{counts['events']} Termine, {counts['images']} Bilder → {args.directory}")
             return 0
 
@@ -512,7 +512,7 @@ def main(argv):
             for e in exc.errors:
                 print(f"  - {e}", file=sys.stderr)
             return 1
-        print(f"Importiert: {counts['cards']} Karten, {counts['sections']} Sektionen, "
+        print(f"Importiert: {counts['cards']} Beiträge, {counts['sections']} Sektionen, "
               f"{counts['events']} Termine, {counts['images']} Bilder")
         return 0
 

@@ -2,27 +2,6 @@
 
 {% block content %}
 <div class="container py-3">
-<div class="d-flex justify-content-end flex-wrap gap-2 mb-3">
-    <a href="{{ url_for('add_card') }}" class="btn btn-add-card shadow-sm px-4">
-        <i class="bi bi-card-text"></i> Karte
-    </a>
-    <a href="{{ url_for('add_event') }}" class="btn btn-add-event shadow-sm px-4">
-        <i class="bi bi-calendar-plus"></i> Termin
-    </a>
-    <a href="{{ url_for('add_section') }}" class="btn btn-add-section shadow-sm px-4">
-        <i class="bi bi-layout-text-window"></i> Sektion
-    </a>
-    <button type="button" class="btn btn-outline-secondary shadow-sm px-4"
-            data-bs-toggle="modal" data-bs-target="#exportConfirmModal">
-        <i class="bi bi-download"></i> Export
-    </button>
-    <button type="button" class="btn btn-outline-secondary shadow-sm px-4"
-            data-bs-toggle="modal" data-bs-target="#importModal">
-        <i class="bi bi-upload"></i> Import
-    </button>
-</div>
-
-<h2 class="fw-bold text-dark mb-3">Karten</h2>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -35,6 +14,53 @@
   {% endif %}
 {% endwith %}
 
+{# Reiter fuer Beitragkarten, Termine und Sektionen. Der zuletzt gewaehlte Reiter
+   wird per URL-Hash bzw. localStorage gemerkt (siehe Skript unten), damit
+   man nach dem Speichern wieder im selben Reiter landet. #}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 border-bottom mb-3">
+    <ul class="nav nav-tabs dashboard-tabs border-0" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-cards-btn" data-bs-toggle="tab" data-bs-target="#tab-cards"
+                    type="button" role="tab" aria-controls="tab-cards" aria-selected="true" data-tab="beitraege">
+                <i class="bi bi-card-text"></i> Beiträge
+                <span class="badge rounded-pill text-bg-light border ms-1">{{ cards|length }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-events-btn" data-bs-toggle="tab" data-bs-target="#tab-events"
+                    type="button" role="tab" aria-controls="tab-events" aria-selected="false" data-tab="termine">
+                <i class="bi bi-calendar-event"></i> Termine
+                <span class="badge rounded-pill text-bg-light border ms-1">{{ events|length }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-sections-btn" data-bs-toggle="tab" data-bs-target="#tab-sections"
+                    type="button" role="tab" aria-controls="tab-sections" aria-selected="false" data-tab="sektionen">
+                <i class="bi bi-layout-text-window"></i> Sektionen
+                <span class="badge rounded-pill text-bg-light border ms-1">{{ sections|length }}</span>
+            </button>
+        </li>
+    </ul>
+    <div class="d-flex flex-wrap gap-2 mb-2">
+        <button type="button" class="btn btn-outline-secondary shadow-sm px-4"
+                data-bs-toggle="modal" data-bs-target="#exportConfirmModal">
+            <i class="bi bi-download"></i> Export
+        </button>
+        <button type="button" class="btn btn-outline-secondary shadow-sm px-4"
+                data-bs-toggle="modal" data-bs-target="#importModal">
+            <i class="bi bi-upload"></i> Import
+        </button>
+    </div>
+</div>
+
+<div class="tab-content">
+
+<div class="tab-pane fade show active" id="tab-cards" role="tabpanel" aria-labelledby="tab-cards-btn" tabindex="0">
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ url_for('add_card') }}" class="btn btn-add-card shadow-sm px-4">
+        <i class="bi bi-plus-lg"></i> Beitrag hinzufügen
+    </a>
+</div>
 <div class="row g-3">
     {% for item in cards %}
         <div class="col-md-6 col-lg-4">
@@ -106,7 +132,7 @@
                               method="POST"
                               style="display: inline;"
                               onclick="event.stopPropagation();"
-                              onsubmit="return confirm('Möchtest du diese Karte wirklich löschen?');">
+                              onsubmit="return confirm('Möchtest du diesen Beitrag wirklich löschen?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger ms-2 px-3 border-1">
                                 Löschen
                             </button>
@@ -122,7 +148,7 @@
 
                     <div class="modal-header">
                         <h5 class="modal-title" id="editModalLabel{{ item.id }}">
-                            Positionierung der Karte im öffentlichen Bereich
+                            Positionierung des Beitrags im öffentlichen Bereich
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
                     </div>
@@ -160,7 +186,7 @@
                                         {% if item.is_banner %}checked{% endif %}
                                     >
                                     <label class="form-check-label" for="is_banner-{{ item.id }}">
-                                        Banner auf der Startseite (nur eine Karte gleichzeitig möglich)
+                                        Banner auf der Startseite (nur ein Beitrag gleichzeitig möglich)
                                     </label>
                                 </div>
                             </div>
@@ -176,7 +202,7 @@
                                     >
                                 </div>
                                 <div class="col-md-6" id="col-size-wrapper-{{ item.id }}">
-                                    <label class="form-label fw-bold mb-1">Breite der Karte</label>
+                                    <label class="form-label fw-bold mb-1">Breite des Beitrags</label>
                                     <select name="col_size" class="form-select form-select-sm">
                                         <option value="col-12 col-md-6 col-lg-4" {% if item.col_size == "col-12 col-md-6 col-lg-4" %}selected{% endif %}>
                                             Normale Breite
@@ -215,7 +241,7 @@
                                 href="{{ url_for('edit_card', card_id=item.id) }}"
                                 class="btn btn-primary me-auto"
                             >
-                                Karte vollständig bearbeiten
+                                Beitrag vollständig bearbeiten
                             </a>
 
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
@@ -232,11 +258,14 @@
         </div>
     {% endfor %}
 </div>
-
-<div class="d-flex justify-content-between align-items-center mb-3 mt-4 pt-4 border-top">
-    <h2 class="fw-bold text-dark">Termine</h2>
 </div>
 
+<div class="tab-pane fade" id="tab-events" role="tabpanel" aria-labelledby="tab-events-btn" tabindex="0">
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ url_for('add_event') }}" class="btn btn-add-event shadow-sm px-4">
+        <i class="bi bi-plus-lg"></i> Termin hinzufügen
+    </a>
+</div>
 <div class="row g-3">
     {% for item in events %}
         <div class="col-md-6 col-lg-4">
@@ -287,11 +316,14 @@
         </div>
     {% endfor %}
 </div>
-
-<div class="d-flex justify-content-between align-items-center mb-3 mt-4 pt-4 border-top">
-    <h2 class="fw-bold text-dark">Sektionen</h2>
 </div>
 
+<div class="tab-pane fade" id="tab-sections" role="tabpanel" aria-labelledby="tab-sections-btn" tabindex="0">
+<div class="d-flex justify-content-end mb-3">
+    <a href="{{ url_for('add_section') }}" class="btn btn-add-section shadow-sm px-4">
+        <i class="bi bi-plus-lg"></i> Sektion hinzufügen
+    </a>
+</div>
 <div class="row g-3">
     {% for item in sections %}
         <div class="col-md-6 col-lg-4">
@@ -448,6 +480,9 @@
         </div>
     {% endfor %}
 </div>
+</div>
+
+</div>
 
 </div>
 
@@ -522,7 +557,7 @@
             <div class="modal-body">
                 <p>Es wird ein ZIP-Archiv mit allen Inhalten heruntergeladen:</p>
                 <ul>
-                    <li>{{ export_counts.cards }} Karten</li>
+                    <li>{{ export_counts.cards }} Beiträge</li>
                     <li>{{ export_counts.sections }} Sektionen</li>
                     <li>{{ export_counts.events }} Termine</li>
                     <li>alle zugehörigen Bilder</li>
@@ -544,6 +579,27 @@
     // Modal nach dem Klick schliessen, der Download laeuft im Hintergrund weiter.
     document.getElementById("exportConfirmButton").addEventListener("click", function () {
         bootstrap.Modal.getInstance(document.getElementById("exportConfirmModal")).hide();
+    });
+</script>
+
+<script>
+    // Reiter merken: #beitraege / #termine / #sektionen in der URL hat Vorrang,
+    // sonst der zuletzt gewaehlte Reiter (localStorage, falls verfuegbar).
+    document.addEventListener("DOMContentLoaded", function () {
+        var buttons = document.querySelectorAll("#dashboardTabs [data-tab]");
+        var wanted = (location.hash || "").replace("#", "");
+        if (!wanted) {
+            try { wanted = localStorage.getItem("dashboardTab") || ""; } catch (e) { wanted = ""; }
+        }
+        buttons.forEach(function (btn) {
+            if (btn.dataset.tab === wanted) {
+                bootstrap.Tab.getOrCreateInstance(btn).show();
+            }
+            btn.addEventListener("shown.bs.tab", function () {
+                try { localStorage.setItem("dashboardTab", btn.dataset.tab); } catch (e) {}
+                history.replaceState(null, "", location.pathname + location.search + "#" + btn.dataset.tab);
+            });
+        });
     });
 </script>
 

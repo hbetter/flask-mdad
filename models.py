@@ -33,9 +33,9 @@ class Card(db.Model):
     col_size = db.Column(db.String(50), nullable=False, default="col-12 col-md-6 col-lg-4")
 
 
-# Wie Card, aber für ganze Sektionen (statt Karten in einem Grid) auf den drei
+# Wie Card, aber für ganze Sektionen (statt Beitragkarten in einem Grid) auf den drei
 # Seiten Indexseite, Beratung und Akademie. Kein Banner- oder Erfolgsgeschichten-
-# Häkchen (dort gibt es keine Sektionen) und keine Kartenbreite (col_size), da
+# Häkchen (dort gibt es keine Sektionen) und keine Breite der Beitragkarten (col_size), da
 # jede Sektion ohnehin die volle Breite einnimmt.
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)

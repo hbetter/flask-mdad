@@ -20,7 +20,7 @@ from models import db, User, Card, Section, Event
 import csv_transfer
 
 
-# Jede Karte kann unabhängig auf mehreren dieser Seiten erscheinen
+# Jede Beitragkarte kann unabhängig auf mehreren dieser Seiten erscheinen
 # (daher Tickboxen statt eines einzelnen Typs). "Banner" ist bewusst kein
 # Listeneintrag hier, sondern ein eigenes Feld (is_banner), weil es nur
 # einmal gleichzeitig vergeben werden darf.
@@ -252,7 +252,7 @@ def eventcategorymodal(value):
 
 @app.template_filter("halfpreview")
 def halfpreview(value):
-    # Vorschautext fuer die Karten-Kacheln im Bedienfeld: HTML-Tags entfernen
+    # Vorschautext fuer die Beitragkarten-Kacheln im Bedienfeld: HTML-Tags entfernen
     # (Zeilenumbrueche bleiben erhalten) und den Text auf die Haelfte kuerzen,
     # an einer Wortgrenze, mit "…" am Ende.
     import re
@@ -1052,7 +1052,7 @@ def edit_card(card_id):
             item.image_filename = image_filename
 
         db.session.commit()
-        flash("Karte aktualisiert.", "success")
+        flash("Beitrag aktualisiert.", "success")
         return redirect(url_for("dashboard"))
 
     return render_template(
@@ -1072,7 +1072,7 @@ def delete_card(card_id):
         delete_uploaded_image(item.image_filename)
         db.session.delete(item)
         db.session.commit()
-        flash("Karte gelöscht.", "info")
+        flash("Beitrag gelöscht.", "info")
 
     return redirect(url_for("dashboard"))
 
@@ -1170,7 +1170,7 @@ def import_data():
                 return _import_failed(exc.errors)
 
         flash(
-            f"Import abgeschlossen: {counts['cards']} Karten, {counts['sections']} Sektionen, "
+            f"Import abgeschlossen: {counts['cards']} Beiträge, {counts['sections']} Sektionen, "
             f"{counts['events']} Termine, {counts['images']} Bilder.",
             "success",
         )

@@ -266,8 +266,8 @@ h1, h2, h3 {
     transform: translateY(-2px);
 }
 
-/* Schnellzugriff-Buttons im Bedienfeld ("Neue Karte erstellen", "Termin",
-   "Sektion") in dezenten Regenbogenfarben, damit die drei Aktionen auf
+/* Schnellzugriff-Buttons im Bedienfeld ("Beitrag hinzufügen", "Termin
+   hinzufügen", "Sektion hinzufügen") in dezenten Regenbogenfarben, damit die drei Aktionen auf
    einen Blick unterscheidbar sind. Gleiches Hover-/Schatten-Verhalten
    wie .btn-maroon, nur mit eigener Farbe je Button. */
 .btn-add-card,
@@ -902,7 +902,7 @@ footer.site-footer .sustainability-badge-link:hover {
 
 /* Kraeftig eingefaerbtes Badge fuer die Zuordnung/Kategorie, die oben auf
    einer Karte erscheint (Termin-Kategorie im Bedienfeld und im oeffentlichen
-   Bereich, Seiten-Zuordnung bei Karten/Sektionen im Bedienfeld): bewusst
+   Bereich, Seiten-Zuordnung bei Beitragkarten/Sektionen im Bedienfeld): bewusst
    auffaellig im Gegensatz zu den neutralen hellen Pill-Badges wie
    "Ganztaegig"/"Banner"/"Ohne Zuordnung". */
 .badge-page-tag {
@@ -970,4 +970,25 @@ body.hide-dev-labels .dev-label {
 .section-flags-toggle:has(input[name="on_consulting"]:checked) ~ .position-field-on_consulting,
 .section-flags-toggle:has(input[name="on_academy"]:checked) ~ .position-field-on_academy {
     display: block;
+}
+
+/* Reiter im Bedienfeld (Beiträge / Termine / Sektionen) */
+.dashboard-tabs .nav-link {
+    color: var(--sm-muted);
+    font-weight: 600;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: .6rem 1rem;
+    background: transparent;
+}
+
+.dashboard-tabs .nav-link:hover {
+    color: var(--sm-ink);
+    border-bottom-color: var(--sm-line);
+}
+
+.dashboard-tabs .nav-link.active {
+    color: var(--sm-maroon);
+    background: transparent;
+    border-bottom-color: var(--sm-maroon);
 }
