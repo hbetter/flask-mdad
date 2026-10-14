@@ -586,7 +586,7 @@ footer.site-footer .sustainability-badge-link:hover {
     border-top-color: #fff;
 }
 
-.sustainability-tooltip h4 {
+.sustainability-tooltip .sustainability-tooltip-title {
     font-size: .95rem;
     color: var(--sm-dark);
     font-weight: 800;
@@ -1153,4 +1153,77 @@ body.hide-dev-labels .dev-label {
 /* Bildausschnitt Portraet Dr. Sigrun Fritz: Kopf hoeher im Kreis */
 .oton-portrait-fritz {
     object-position: center 25%;
+}
+
+/* =========================================================
+   Barrierefreiheit
+   ========================================================= */
+
+/* "Zum Inhalt springen": ausserhalb des Bildschirms, bei Tastaturfokus
+   oben links sichtbar */
+.skip-link {
+    position: absolute;
+    top: .5rem;
+    left: -9999px;
+    z-index: 2000;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+    left: .5rem;
+}
+
+/* Sichtbarer Tastaturfokus fuer alle Buttons (die eigenen Button-Farben
+   hatten den Bootstrap-Fokusrahmen ausgeschaltet) */
+.btn:focus-visible,
+.oton-card:focus-visible {
+    outline: 3px solid var(--sm-dark);
+    outline-offset: 3px;
+    box-shadow: none;
+}
+
+/* Bootstrap setzt bei :focus-visible Hintergrund/Farbe ueber eigene
+   Variablen, die die Markenbuttons nicht definieren - Farben hier fixieren */
+.btn-maroon:focus-visible {
+    background-color: var(--sm-maroon);
+    border-color: var(--sm-maroon);
+    color: #fff;
+}
+
+.btn-outline-dark-sm:focus-visible {
+    background-color: var(--sm-dark);
+    color: #fff;
+}
+
+.skip-link:focus-visible {
+    outline-color: #fff;
+    box-shadow: 0 0 0 6px var(--sm-dark);
+}
+
+/* Textlinks im Inhalt: dunkleres Blau fuer Kontrast >= 4,5:1 auf #FCFCFC */
+main p a:not(.btn),
+main li a:not(.btn) {
+    color: #0a58ca;
+}
+
+/* Weniger Bewegung, wenn im Betriebssystem so eingestellt */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+
+    .btn:hover,
+    .btn-primary:hover,
+    .btn-maroon:hover,
+    .btn-outline-dark-sm:hover,
+    .card.cursor-pointer:hover,
+    .card-sm:hover,
+    .termin-card:hover {
+        transform: none;
+    }
 }
