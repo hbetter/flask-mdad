@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 from PIL import Image
 from flask import Flask, render_template, redirect, url_for, request, flash, send_file, session
 from werkzeug.exceptions import RequestEntityTooLarge
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_bcrypt import Bcrypt
 from flask_login import (
     LoginManager,
@@ -85,6 +86,11 @@ PORTRAIT_WIDTH = 900
 PORTRAIT_HEIGHT = 1200
 
 app = Flask(__name__)
+# Hinter Nginx (nginx/playfulfuture.de.conf): X-Forwarded-Proto/-Host/-For
+# des vorgeschalteten Proxys uebernehmen, damit url_for(..., _external=True)
+# (z. B. sitemap.xml) https://playfulfuture.de statt http:// erzeugt. Ohne
+# Proxy (Entwicklung) fehlen die Header, dann aendert sich nichts.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 app.config["SECRET_KEY"] = "entwicklungs-schluessel-123"
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL", "sqlite:///app.db"

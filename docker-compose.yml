@@ -17,6 +17,7 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql+psycopg2://flaskuser:flaskpass@db:5432/flaskdb
-    ports:
-      - "5001:5000"
+    # Ports stehen bewusst nur in docker-compose.override.yml (Entwicklung) bzw.
+    # docker-compose.prod.yml (Produktion): Docker Compose fuegt Port-Listen
+    # aus mehreren Dateien zusammen statt sie zu ersetzen.
     command: python app.py
