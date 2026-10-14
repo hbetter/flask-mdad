@@ -7,12 +7,12 @@ Flask-Website für MENSCH DENK AN DICH® mit Bedienfeld zur Pflege von Beiträge
 PostgreSQL-Container (`db`, Postgres 15) und App-Container (`web`). Die App ist unter http://127.0.0.1:5001 erreichbar (Host-Port 5001 → Container-Port 5000).
 
 ```bash
+## debug mode, uses docker-compose.yml and docker-compose.override.yml
 $ docker build -t flask-mdad:latest .
 $ docker compose up -d
-# debug mode, uses docker-compose.yml and docker-compose.override.yml
 
-$ docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 # production mode (gunicorn)
+$ docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 
 $ docker compose exec web python init_db.py
 ```
@@ -50,9 +50,9 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 
 - `app.py`: Startpunkt, importiert die App aus `views.py`.
 - `views.py`: Konfiguration, alle Routen, Bild-Upload und -Zuschnitt, Jinja-Filter sowie die Konstanten für Seiten-Tickboxen, Terminkategorien, Icons und Formular-Modals.
-- `models.py`: SQLAlchemy-Modelle `User`, `Card`, `Section`, `Event`.
+- `models.py`: SQLAlchemy-Modelle `User`, `Article`, `Section`, `Event`.
 - `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine und Sektionen (siehe unten), auch als Kommandozeilenwerkzeug.
-- `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_cards_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
+- `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
 - `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder, Favicon sowie `uploads/` für Bilder aus dem Bedienfeld. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
 - `docs/`: Dokumentation der Indexseite (Inhalt und Stil) und Sicherung der Erfolgsgeschichten-Texte.
 - `equipe-pq/` und `nginx/`: eigenständige statische Landingpage für equipe-pq.playfulfuture.de samt Nginx-Konfiguration (siehe unten).
@@ -65,7 +65,7 @@ Code-Bezeichner sind englisch, sichtbare Inhalte deutsch. Template-Dateinamen, V
 ## Datenmodell
 
 - `User`: Benutzername und Passwort-Hash (bcrypt).
-- Beitrag (`Card`): Titel, Text, Beschreibung, optional ein Bild, Reihenfolge (`order_number`) und Spaltenbreite (`col_size`). Unabhängige Tickboxen `on_index`, `on_consulting`, `on_academy`, `on_stories` – ein Beitrag kann auf mehreren Seiten erscheinen. `is_banner` markiert höchstens einen Beitrag als Banner.
+- Beitrag (`Article`): Titel, Text, Beschreibung, optional ein Bild, Reihenfolge (`order_number`) und Spaltenbreite (`col_size`). Unabhängige Tickboxen `on_index`, `on_consulting`, `on_academy`, `on_stories` – ein Beitrag kann auf mehreren Seiten erscheinen. `is_banner` markiert höchstens einen Beitrag als Banner.
 - Sektion (`Section`): wie ein Beitrag, zusätzlich mit Kicker und Bildposition (links/rechts), aber ohne Banner, Erfolgsgeschichten und Spaltenbreite. Sektionen werden je Seite in nummerierte Plätze („Slots") zwischen den festen Inhalten eingefügt (Indexseite 10, Beratung und Akademie je 3).
 - Termin (`Event`): Titel, Untertitel, Kategorie, Ort, Start und Ende (mit Uhrzeit oder ganztägig).
 
@@ -81,9 +81,9 @@ Das Bildformat (Hoch- oder Querformat) wird nur beim Upload gewählt und nicht g
 
 ## Bedienfeld
 
-Login unter `/login`, danach `/dashboard`. Das Bedienfeld hat drei Reiter – Beiträge, Termine und Sektionen –, jeweils mit eigenem Button zum Hinzufügen; Export und Import stehen daneben. Der zuletzt gewählte Reiter wird gemerkt und lässt sich auch direkt verlinken (`/dashboard#beitraege`, `#termine`, `#sektionen`). Ein Klick auf eine Kachel öffnet ein Schnellbearbeitungs-Modal für die Platzierung auf den öffentlichen Seiten.
+Login unter `/login`, danach `/dashboard`. Das Bedienfeld hat drei Reiter – Beiträge, Termine und Sektionen –, jeweils mit eigenem Button zum Hinzufügen; Export und Import stehen daneben. Der zuletzt gewählte Reiter wird gemerkt und lässt sich auch direkt verlinken (`/dashboard#articles`, `#events`, `#sections`). Ein Klick auf eine Kachel öffnet ein Schnellbearbeitungs-Modal für die Platzierung auf den öffentlichen Seiten.
 
-Begriffe: Beiträge, Termine und Sektionen entsprechen im Code den Modellen `Card`, `Event` und `Section` und in den CSV-Dateien `cards.csv`, `events.csv` und `sections.csv`. In Code-Kommentaren heißen Beiträge „Beitragkarten“.
+Begriffe: Beiträge, Termine und Sektionen entsprechen im Code den Modellen `Article`, `Event` und `Section` und in den CSV-Dateien `articles.csv`, `events.csv` und `sections.csv`. In Code-Kommentaren heißen Beiträge „Beitragkarten“.
 
 Terminkategorien: Webinar, Probe Spielraum, Spiele Coach Zertifizierung, Spiele Event. Jede Kategorie hat in der Anzeige eines Termins ein dezentes Hintergrund-Icon. Beim Anlegen eines Termins wird der Titel mit der Kategorie vorbelegt, sofern noch kein eigener Titel eingetragen ist.
 
@@ -97,7 +97,7 @@ Fünf AC-Formulare sind als Bootstrap-Modals in `base.html` eingebunden und von 
 
 Beiträge, Termine und Sektionen lassen sich als CSV-Dateien exportieren und wieder importieren, etwa um Inhalte vor einem Neuaufbau der Datenbank zu sichern oder zwischen Entwicklung und Produktion zu übertragen. Die Logik steckt in `csv_transfer.py`.
 
-Ein Export-/Importordner enthält `cards.csv`, `sections.csv` und `events.csv` sowie alle Bilder, auf die die Spalte `image_filename` verweist – im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8 (mit BOM, damit Excel Umlaute korrekt zeigt). Ja/Nein-Felder als `1`/`0`, Datum und Uhrzeit in deutscher Ortszeit als `JJJJ-MM-TT HH:MM`.
+Ein Export-/Importordner enthält `articles.csv`, `sections.csv` und `events.csv` sowie alle Bilder, auf die die Spalte `image_filename` verweist – im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8 (mit BOM, damit Excel Umlaute korrekt zeigt). Ja/Nein-Felder als `1`/`0`, Datum und Uhrzeit in deutscher Ortszeit als `JJJJ-MM-TT HH:MM`.
 
 Im Bedienfeld:
 
@@ -117,6 +117,7 @@ Regeln beim Import:
 - Alles oder nichts: Enthält eine Zeile einen Fehler, wird nichts gespeichert; die Fehlermeldungen nennen Datei und Zeile.
 - Pflichtspalten: `title` und `body` bei Beiträgen und Sektionen; `title`, `category`, `starts_at`, `ends_at` und `location` bei Terminen. Alle übrigen Spalten dürfen fehlen. Fehlt eine der drei Dateien, wird sie übersprungen.
 - `category` ist einer der internen Werte `webinar`, `inhouse`, `certification`, `trial`.
+- Ordnungsnummern von Beiträgen werden in 10er-Schritten neu vergeben (10, 20, 30, …), damit dazwischen Platz für spätere Beiträge bleibt. Die Reihenfolge folgt der `order_number` in der CSV (bei Gleichstand der Zeilenreihenfolge); importierte Beiträge werden hinter die vorhandenen gestellt.
 - Höchstens ein Beitrag darf `is_banner = 1` haben, und nur wenn noch kein Banner existiert.
 - Sektionen werden über `slot_index_*`/`slot_position_*` in die Slots eingereiht. Sektionen, die schon im selben Slot stehen, bleiben davor.
 - Texte werden bereinigt: Im Inhalt (`body`) werden `<p>`, `<br>`, `<div>`, Überschriften und Listen durch Zeilenumbrüche ersetzt (Listenpunkte als „•“), alle übrigen Tags entfernt. Erhalten bleiben nur Fett (`<strong>`), Kursiv (`<em>`) und Links (`<a href>`). Titel, Untertitel, Kicker, Beschreibung und Ort werden zu reinem Text. Das `##` für den Anreißer steht danach in einer eigenen Zeile.

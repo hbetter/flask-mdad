@@ -20,7 +20,7 @@
                 voluptate velit esse cillum dolore eu fugiat nulla pariatur.
               </p>
               <div class="d-flex flex-wrap gap-3">
-                <a href="#kontakt" class="btn btn-maroon btn-lg">Spiele Coach werden</a>
+                <a href="#contact" class="btn btn-maroon btn-lg">Spiele Coach werden</a>
               </div>
             </div>
             <div class="col-lg-6">
@@ -105,7 +105,7 @@
                 necessitatibus saepe eveniet ut et voluptates repudiandae sint et
                 molestiae non recusandae.
               </p>
-              <a href="#kontakt" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
+              <a href="#contact" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
             </div>
           </div>
   {% endcall %}
@@ -115,10 +115,10 @@
 
   <!-- BEITRAGKARTEN: datenbankgetriebene Beitragkarten (Bedienfeld-Verwaltung) mit angehaktem
        "Akademie"-Häkchen. Section erscheint nur, wenn es mindestens eine gibt. -->
-  {% if cards %}
+  {% if articles %}
   {% call m.section_card("Einblicke", "Neuigkeiten aus der Akademie") %}
           <div class="row g-3">
-            {% include "_cards_list.html" %}
+            {% include "_articles_list.html" %}
           </div>
   {% endcall %}
   {% endif %}

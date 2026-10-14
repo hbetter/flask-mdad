@@ -51,10 +51,10 @@
        zuvor. "Platz sichern" oeffnet das zur Kategorie passende
        Formular-Modal (siehe EVENT_CATEGORY_MODAL in views.py sowie die
        Modals in base.html); Kategorien ohne Eintrag dort springen
-       weiterhin zu #kontakt. Abschnitt erscheint nur, wenn mindestens
+       weiterhin zu #contact. Abschnitt erscheint nur, wenn mindestens
        ein Termin existiert. -->
   {% if events %}
-  {% call m.section_card("Termine", "Risikofrei starten", id="termine") %}
+  {% call m.section_card("Termine", "Risikofrei starten", id="events") %}
           <div class="row g-3">
             {% for item in events %}
             <div class="col-sm-6 col-lg-3">
@@ -69,7 +69,7 @@
                 {% if modal_id %}
                 <button type="button" class="btn btn-outline-dark-sm btn-sm mt-auto" data-bs-toggle="modal" data-bs-target="#{{ modal_id }}">Platz sichern</button>
                 {% else %}
-                <a href="#kontakt" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
+                <a href="#contact" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
                 {% endif %}
               </div>
             </div>
@@ -391,11 +391,11 @@
        Hinweis: Diese Beitragkarten dürfen in der äußeren Karten-Hülle liegen, weil beim Hover jetzt nur
        noch echte klickbare Karten "anheben" (siehe custom.css) – sonst würde sich die Hülle beim
        Hovern mit anheben und die Modals würden beim Öffnen an der falschen Stelle erscheinen.
-       Section erscheint nur, wenn es mindestens eine Beitragkarte gibt (cards aus views.py). -->
-  {% if cards %}
+       Section erscheint nur, wenn es mindestens eine Beitragkarte gibt (articles aus views.py). -->
+  {% if articles %}
   {% call m.section_card("Erfolgsgeschichten", "Neuigkeiten") %}
           <div class="row g-3">
-            {% include "_cards_list.html" %}
+            {% include "_articles_list.html" %}
           </div>
   {% endcall %}
   {% endif %}

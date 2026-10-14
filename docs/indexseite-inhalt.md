@@ -11,7 +11,7 @@ Dokumentation von Reihenfolge, Überschriften, Kickern, Untertiteln und Texten d
 
 Menüpunkte (in dieser Reihenfolge): Beratung, Akademie, Erfolgsgeschichten, Über uns, Kontakt.
 
-CTA-Button rechts: „Probe-Spielraum buchen" (verlinkt auf `#kontakt`); für eingeloggte Nutzer stattdessen „Mein Bereich" (verlinkt auf das Bedienfeld – für die statische Seite ohne Login-Zustand irrelevant, dort reicht „Probe-Spielraum buchen").
+CTA-Button rechts: „Probe-Spielraum buchen" (verlinkt auf `#contact`); für eingeloggte Nutzer stattdessen „Mein Bereich" (verlinkt auf das Bedienfeld – für die statische Seite ohne Login-Zustand irrelevant, dort reicht „Probe-Spielraum buchen").
 
 ## 1. Hero
 

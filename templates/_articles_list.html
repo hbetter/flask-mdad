@@ -1,10 +1,10 @@
-{% for item in cards %}
+{% for item in articles %}
     <div class="{{ item.col_size }}">
         <div
             class="card h-100 shadow-sm cursor-pointer"
             role="button"
             data-bs-toggle="modal"
-            data-bs-target="#indexCardModal{{ item.id }}">
+            data-bs-target="#articleModal{{ item.id }}">
             {% if "col-lg-8" in item.col_size or item.col_size == "col-12" %}
                 <div class="row g-0 h-100 align-items-stretch">
                     <div class="{% if item.image_filename %}col-md-6 order-2 order-md-1{% else %}col-12{% endif %}">
@@ -25,9 +25,9 @@
 
                             <button
                                 type="button"
-                                class="btn btn-outline-primary btn-sm mt-2"
+                                class="btn btn-sm btn-outline-blue px-3 border-1 mt-2"
                                 data-bs-toggle="modal"
-                                data-bs-target="#indexCardModal{{ item.id }}">
+                                data-bs-target="#articleModal{{ item.id }}">
                                 Weiterlesen
                             </button>
 
@@ -75,9 +75,9 @@
 
                     <button
                         type="button"
-                        class="btn btn-outline-primary btn-sm mt-2"
+                        class="btn btn-sm btn-outline-blue px-3 border-1 mt-2"
                         data-bs-toggle="modal"
-                        data-bs-target="#indexCardModal{{ item.id }}">
+                        data-bs-target="#articleModal{{ item.id }}">
                         Weiterlesen
                     </button>
 
@@ -88,12 +88,12 @@
         </div>
     </div>
 
-    <div class="modal fade" id="indexCardModal{{ item.id }}" tabindex="-1" aria-labelledby="indexCardModalLabel{{ item.id }}" aria-hidden="true">
+    <div class="modal fade" id="articleModal{{ item.id }}" tabindex="-1" aria-labelledby="articleModalLabel{{ item.id }}" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <h4 class="modal-title mb-1" id="indexCardModalLabel{{ item.id }}">
+                        <h4 class="modal-title mb-1" id="articleModalLabel{{ item.id }}">
                             {{ item.title }}
                         </h4>
                         {% if item.description %}

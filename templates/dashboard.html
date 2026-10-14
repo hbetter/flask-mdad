@@ -20,22 +20,22 @@
 <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 border-bottom mb-3">
     <ul class="nav nav-tabs dashboard-tabs border-0" id="dashboardTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab-cards-btn" data-bs-toggle="tab" data-bs-target="#tab-cards"
-                    type="button" role="tab" aria-controls="tab-cards" aria-selected="true" data-tab="beitraege">
+            <button class="nav-link active" id="tab-articles-btn" data-bs-toggle="tab" data-bs-target="#tab-articles"
+                    type="button" role="tab" aria-controls="tab-articles" aria-selected="true" data-tab="articles">
                 <i class="bi bi-card-text"></i> Beiträge
-                <span class="badge rounded-pill text-bg-light border ms-1">{{ cards|length }}</span>
+                <span class="badge rounded-pill text-bg-light border ms-1">{{ articles|length }}</span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-events-btn" data-bs-toggle="tab" data-bs-target="#tab-events"
-                    type="button" role="tab" aria-controls="tab-events" aria-selected="false" data-tab="termine">
+                    type="button" role="tab" aria-controls="tab-events" aria-selected="false" data-tab="events">
                 <i class="bi bi-calendar-event"></i> Termine
                 <span class="badge rounded-pill text-bg-light border ms-1">{{ events|length }}</span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-sections-btn" data-bs-toggle="tab" data-bs-target="#tab-sections"
-                    type="button" role="tab" aria-controls="tab-sections" aria-selected="false" data-tab="sektionen">
+                    type="button" role="tab" aria-controls="tab-sections" aria-selected="false" data-tab="sections">
                 <i class="bi bi-layout-text-window"></i> Sektionen
                 <span class="badge rounded-pill text-bg-light border ms-1">{{ sections|length }}</span>
             </button>
@@ -55,14 +55,14 @@
 
 <div class="tab-content">
 
-<div class="tab-pane fade show active" id="tab-cards" role="tabpanel" aria-labelledby="tab-cards-btn" tabindex="0">
+<div class="tab-pane fade show active" id="tab-articles" role="tabpanel" aria-labelledby="tab-articles-btn" tabindex="0">
 <div class="d-flex justify-content-end mb-3">
-    <a href="{{ url_for('add_card') }}" class="btn btn-add-card shadow-sm px-4">
+    <a href="{{ url_for('add_article') }}" class="btn btn-add-article shadow-sm px-4">
         <i class="bi bi-plus-lg"></i> Beitrag hinzufügen
     </a>
 </div>
 <div class="row g-3">
-    {% for item in cards %}
+    {% for item in articles %}
         <div class="col-md-6 col-lg-4">
             <div
                 class="card h-100 shadow-sm border-0 cursor-pointer"
@@ -80,7 +80,7 @@
                 <div class="card-header bg-white border-0 pt-3 pb-2">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="d-flex flex-wrap align-items-center gap-1">
-                            {% for key, label in card_flags %}
+                            {% for key, label in article_flags %}
                                 {% if item[key] %}
                                 <span class="badge badge-page-tag">{{ label }}</span>
                                 {% endif %}
@@ -111,7 +111,7 @@
                         </p>
                     {% endif %}
 
-                    {# Wie auf der Stories-Seite (_cards_list.html) nur der Text vor
+                    {# Wie auf der Stories-Seite (_articles_list.html) nur der Text vor
                        "##", davon im Bedienfeld nochmals nur die Haelfte. #}
                     {% set parts = item.body.split('##', 1) %}
                     {% set preview = parts[0]|halfpreview %}
@@ -123,12 +123,12 @@
 
                 <div class="card-footer bg-white border-0 py-2">
                     <div class="btn-group">
-                        <a href="{{ url_for('edit_card', card_id=item.id) }}"
+                        <a href="{{ url_for('edit_article', article_id=item.id) }}"
                            class="btn btn-sm btn-outline-secondary px-3 border-1"
                            onclick="event.stopPropagation();">
                             Bearbeiten
                         </a>
-                        <form action="{{ url_for('delete_card', card_id=item.id) }}"
+                        <form action="{{ url_for('delete_article', article_id=item.id) }}"
                               method="POST"
                               style="display: inline;"
                               onclick="event.stopPropagation();"
@@ -155,13 +155,13 @@
 
                     <form
                         method="POST"
-                        action="{{ url_for('edit_card', card_id=item.id) }}"
+                        action="{{ url_for('edit_article', article_id=item.id) }}"
                         enctype="multipart/form-data"
                     >
                         <div class="modal-body flex-grow-1 overflow-auto">
                             <div class="mb-3">
                                 <label class="form-label fw-bold d-block mb-1">Anzeigen auf</label>
-                                {% for key, label in card_flags %}
+                                {% for key, label in article_flags %}
                                 <div class="form-check form-check-inline">
                                     <input
                                         class="form-check-input"
@@ -223,10 +223,10 @@
                                     </div>
 
                                     <div class="d-flex flex-wrap gap-2">
-                                        {% for card in card_orders %}
+                                        {% for other in article_orders %}
                                             <span class="badge text-bg-light border px-2 py-2 text-wrap text-start">
-                                                {{ card.order_number }} – {{ card.title }}
-                                                {% if card.id == item.id %}
+                                                {{ other.order_number }} – {{ other.title }}
+                                                {% if other.id == item.id %}
                                                     <span class="ms-1 text-secondary">(aktuell)</span>
                                                 {% endif %}
                                             </span>
@@ -238,7 +238,7 @@
                         </div>
                         <div class="modal-footer">
                             <a
-                                href="{{ url_for('edit_card', card_id=item.id) }}"
+                                href="{{ url_for('edit_article', article_id=item.id) }}"
                                 class="btn btn-primary me-auto"
                             >
                                 Beitrag vollständig bearbeiten
@@ -512,7 +512,7 @@
                 {% endif %}
 
                 <p>
-                    Importiert werden <code>cards.csv</code>, <code>sections.csv</code> und
+                    Importiert werden <code>articles.csv</code>, <code>sections.csv</code> und
                     <code>events.csv</code> (soweit vorhanden). Bilder, auf die die Spalte
                     <code>image_filename</code> verweist, müssen im selben Ordner liegen.
                     Alle Einträge werden neu angelegt; bestehende Inhalte bleiben unverändert.
@@ -594,7 +594,7 @@
             <div class="modal-body">
                 <p>Es wird ein ZIP-Archiv mit allen Inhalten heruntergeladen:</p>
                 <ul>
-                    <li>{{ export_counts.cards }} Beiträge</li>
+                    <li>{{ export_counts.articles }} Beiträge</li>
                     <li>{{ export_counts.sections }} Sektionen</li>
                     <li>{{ export_counts.events }} Termine</li>
                     <li>alle zugehörigen Bilder</li>
@@ -620,7 +620,7 @@
 </script>
 
 <script>
-    // Reiter merken: #beitraege / #termine / #sektionen in der URL hat Vorrang,
+    // Reiter merken: #articles / #events / #sections in der URL hat Vorrang,
     // sonst der zuletzt gewaehlte Reiter (localStorage, falls verfuegbar).
     document.addEventListener("DOMContentLoaded", function () {
         var buttons = document.querySelectorAll("#dashboardTabs [data-tab]");

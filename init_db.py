@@ -1,5 +1,5 @@
 from views import app, bcrypt
-from models import db, User, Card
+from models import db, User, Article
 
 with app.app_context():
     db.create_all()

@@ -9,7 +9,7 @@
                 <form method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label class="form-label fw-bold d-block">Anzeigen auf</label>
-                        {% for key, label in card_flags %}
+                        {% for key, label in article_flags %}
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" name="{{ key }}" id="{{ key }}" value="1">
                             <label class="form-check-label" for="{{ key }}">{{ label }}</label>

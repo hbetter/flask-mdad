@@ -241,6 +241,26 @@ h1, h2, h3 {
     border-color: var(--brand-red) !important;
 }
 
+/* "Weiterlesen"-Button der Beitragkarten: gleiche Optik wie der
+   "Loeschen"-Button im Bedienfeld (btn-outline-danger), nur in Blau.
+   Eigene Klasse, weil btn-outline-primary oben auf Markenrot umgefaerbt ist. */
+.btn-outline-blue {
+    --bs-btn-color: #0d6efd;
+    --bs-btn-border-color: #0d6efd;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #0d6efd;
+    --bs-btn-hover-border-color: #0d6efd;
+    --bs-btn-focus-shadow-rgb: 13, 110, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0d6efd;
+    --bs-btn-active-border-color: #0d6efd;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #0d6efd;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #0d6efd;
+    --bs-gradient: none;
+}
+
 .btn.text-nowrap {
     font-size: 0.95rem;
 }
@@ -270,7 +290,7 @@ h1, h2, h3 {
    hinzufügen", "Sektion hinzufügen") in dezenten Regenbogenfarben, damit die drei Aktionen auf
    einen Blick unterscheidbar sind. Gleiches Hover-/Schatten-Verhalten
    wie .btn-maroon, nur mit eigener Farbe je Button. */
-.btn-add-card,
+.btn-add-article,
 .btn-add-event,
 .btn-add-section {
     color: #fff;
@@ -280,11 +300,11 @@ h1, h2, h3 {
     transition: box-shadow .3s ease, transform .3s ease, background-color .3s ease;
 }
 
-.btn-add-card {
+.btn-add-article {
     background-color: #B25444;
 }
 
-.btn-add-card:hover {
+.btn-add-article:hover {
     background-color: #C96257;
     color: #fff;
     box-shadow: 0 4px 12px rgba(178, 84, 68, .35);

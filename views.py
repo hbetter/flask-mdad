@@ -16,7 +16,7 @@ from flask_login import (
 )
 from flask_migrate import Migrate
 
-from models import db, User, Card, Section, Event
+from models import db, User, Article, Section, Event
 import csv_transfer
 
 
@@ -24,7 +24,7 @@ import csv_transfer
 # (daher Tickboxen statt eines einzelnen Typs). "Banner" ist bewusst kein
 # Listeneintrag hier, sondern ein eigenes Feld (is_banner), weil es nur
 # einmal gleichzeitig vergeben werden darf.
-CARD_FLAGS = [
+ARTICLE_FLAGS = [
     ("on_index", "Indexseite"),
     ("on_consulting", "Beratung"),
     ("on_academy", "Akademie"),
@@ -63,9 +63,9 @@ EVENT_CATEGORY_ICONS = {
 
 # Bootstrap-Modal-ID je Kategorie, dessen zugehoeriges AC-Formular den
 # "Platz sichern"-Button auf der Startseite (templates/index.html) als
-# Modal statt als Sprung zu "#kontakt" oeffnet (siehe base.html fuer die
+# Modal statt als Sprung zu "#contact" oeffnet (siehe base.html fuer die
 # Modals selbst). Kategorien ohne Eintrag hier haben (noch) kein eigenes
-# Formular-Modal und behalten den Sprung zu "#kontakt".
+# Formular-Modal und behalten den Sprung zu "#contact".
 EVENT_CATEGORY_MODAL = {
     "webinar": "webinarModal",
     "certification": "spieleCoachModal",
@@ -158,7 +158,7 @@ def delete_uploaded_image(filename):
 
 
 def get_banner_text():
-    banner = Card.query.filter_by(is_banner=True).first()
+    banner = Article.query.filter_by(is_banner=True).first()
     return banner.description if banner else None
 
 
@@ -439,10 +439,10 @@ def load_user(user_id):
 @app.route("/")
 def index():
     banner = get_banner_text()
-    cards = (
-        Card.query
+    articles = (
+        Article.query
         .filter_by(on_index=True)
-        .order_by(Card.order_number.asc(), Card.id.asc())
+        .order_by(Article.order_number.asc(), Article.id.asc())
         .all()
     )
     sections_in_slot = sections_by_slot("index")
@@ -455,7 +455,7 @@ def index():
     )
     return render_template(
         "index.html",
-        cards=cards,
+        articles=articles,
         sections_in_slot=sections_in_slot,
         events=events,
         banner=banner,
@@ -465,15 +465,15 @@ def index():
 @app.route("/stories")
 def stories():
     banner = get_banner_text()
-    cards = (
-        Card.query
+    articles = (
+        Article.query
         .filter_by(on_stories=True)
-        .order_by(Card.order_number.asc(), Card.id.asc())
+        .order_by(Article.order_number.asc(), Article.id.asc())
         .all()
     )
     return render_template(
         "stories.html",
-        cards=cards,
+        articles=articles,
         banner=banner,
     )
 
@@ -481,16 +481,16 @@ def stories():
 @app.route("/consulting")
 def consulting():
     banner = get_banner_text()
-    cards = (
-        Card.query
+    articles = (
+        Article.query
         .filter_by(on_consulting=True)
-        .order_by(Card.order_number.asc(), Card.id.asc())
+        .order_by(Article.order_number.asc(), Article.id.asc())
         .all()
     )
     sections_in_slot = sections_by_slot("consulting")
     return render_template(
         "consulting.html",
-        cards=cards,
+        articles=articles,
         sections_in_slot=sections_in_slot,
         banner=banner,
     )
@@ -499,16 +499,16 @@ def consulting():
 @app.route("/academy")
 def academy():
     banner = get_banner_text()
-    cards = (
-        Card.query
+    articles = (
+        Article.query
         .filter_by(on_academy=True)
-        .order_by(Card.order_number.asc(), Card.id.asc())
+        .order_by(Article.order_number.asc(), Article.id.asc())
         .all()
     )
     sections_in_slot = sections_by_slot("academy")
     return render_template(
         "academy.html",
-        cards=cards,
+        articles=articles,
         sections_in_slot=sections_in_slot,
         banner=banner,
     )
@@ -538,15 +538,15 @@ def dashboard():
     # Import-Modal angezeigt, das dann automatisch geoeffnet wird.
     import_errors = session.pop("import_errors", None)
     open_import = bool(import_errors) or request.args.get("import") == "1"
-    user_cards = (
-        Card.query
+    user_articles = (
+        Article.query
         .filter_by(user_id=current_user.id)
-        .order_by(Card.order_number.asc(), Card.id.asc())
+        .order_by(Article.order_number.asc(), Article.id.asc())
         .all()
     )
-    card_orders = (
-        Card.query
-        .order_by(Card.order_number.asc(), Card.id.asc())
+    article_orders = (
+        Article.query
+        .order_by(Article.order_number.asc(), Article.id.asc())
         .all()
     )
     user_sections = (
@@ -579,10 +579,10 @@ def dashboard():
     )
     return render_template(
         "dashboard.html",
-        cards=user_cards,
-        card_flags=CARD_FLAGS,
+        articles=user_articles,
+        article_flags=ARTICLE_FLAGS,
         banner=banner,
-        card_orders=card_orders,
+        article_orders=article_orders,
         sections=user_sections,
         section_flags=SECTION_FLAGS,
         transition_labels=transition_labels,
@@ -591,7 +591,7 @@ def dashboard():
         # Gesamtzahlen fuer die Rueckfrage vor dem Export (der Export umfasst
         # alle Eintraege, nicht nur die des angemeldeten Nutzers).
         export_counts={
-            "cards": Card.query.count(),
+            "articles": Article.query.count(),
             "sections": Section.query.count(),
             "events": Event.query.count(),
         },
@@ -601,9 +601,9 @@ def dashboard():
     )
 
 
-@app.route("/add", methods=["GET", "POST"])
+@app.route("/add-article", methods=["GET", "POST"])
 @login_required
-def add_card():
+def add_article():
     if request.method == "POST":
         on_index = request.form.get("on_index") == "1"
         on_consulting = request.form.get("on_consulting") == "1"
@@ -612,7 +612,7 @@ def add_card():
         is_banner = request.form.get("is_banner") == "1"
 
         if is_banner:
-            existing_banner = Card.query.filter_by(is_banner=True).first()
+            existing_banner = Article.query.filter_by(is_banner=True).first()
             if existing_banner:
                 flash(
                     "Ein Banner existiert bereits und kann nicht erneut angelegt werden.",
@@ -639,11 +639,11 @@ def add_card():
                 )
             if not image_filename:
                 flash("Nur Bilddateien sind erlaubt.", "warning")
-                return redirect(url_for("add_card"))
+                return redirect(url_for("add_article"))
         order_number = int(request.form.get("order_number") or 0)
         col_size = request.form.get("col_size") or DEFAULT_COL_SIZE
 
-        new_item = Card(
+        new_item = Article(
             on_index=on_index,
             on_consulting=on_consulting,
             on_academy=on_academy,
@@ -663,7 +663,7 @@ def add_card():
         flash("Inhalt hinzugefügt!", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("add_card.html", card_flags=CARD_FLAGS)
+    return render_template("add_article.html", article_flags=ARTICLE_FLAGS)
 
 
 @app.route("/add-event", methods=["GET", "POST"])
@@ -794,7 +794,7 @@ def delete_past_events():
         flash(f"{count} vergangene{'r' if count == 1 else ''} Termin{'' if count == 1 else 'e'} gelöscht.", "info")
     else:
         flash("Es gibt keine vergangenen Termine.", "info")
-    return redirect(url_for("dashboard", _anchor="termine"))
+    return redirect(url_for("dashboard", _anchor="events"))
 
 
 @app.route("/add-section", methods=["GET", "POST"])
@@ -1004,10 +1004,10 @@ def delete_section(section_id):
     return redirect(url_for("dashboard"))
 
 
-@app.route("/edit/<int:card_id>", methods=["GET", "POST"])
+@app.route("/edit-article/<int:article_id>", methods=["GET", "POST"])
 @login_required
-def edit_card(card_id):
-    item = Card.query.get_or_404(card_id)
+def edit_article(article_id):
+    item = Article.query.get_or_404(article_id)
 
     if item.author != current_user:
         return redirect(url_for("dashboard"))
@@ -1016,9 +1016,9 @@ def edit_card(card_id):
         new_is_banner = request.form.get("is_banner") == "1"
 
         if new_is_banner:
-            existing_banner = Card.query.filter(
-                Card.is_banner == True,
-                Card.id != item.id,
+            existing_banner = Article.query.filter(
+                Article.is_banner == True,
+                Article.id != item.id,
             ).first()
             if existing_banner:
                 flash("Ein Banner existiert bereits.", "warning")
@@ -1075,7 +1075,7 @@ def edit_card(card_id):
                 )
             if not image_filename:
                 flash("Nur Bilddateien sind erlaubt: png, jpg, jpeg, gif, webp", "warning")
-                return redirect(url_for("edit_card", card_id=item.id))
+                return redirect(url_for("edit_article", article_id=item.id))
 
             delete_uploaded_image(item.image_filename)
             item.image_filename = image_filename
@@ -1085,17 +1085,17 @@ def edit_card(card_id):
         return redirect(url_for("dashboard"))
 
     return render_template(
-        "edit_card.html",
-        card=item,
-        card_flags=CARD_FLAGS,
+        "edit_article.html",
+        article=item,
+        article_flags=ARTICLE_FLAGS,
         banner=get_banner_text(),
     )
 
 
-@app.route("/delete/<int:card_id>", methods=["POST"])
+@app.route("/delete-article/<int:article_id>", methods=["POST"])
 @login_required
-def delete_card(card_id):
-    item = Card.query.get_or_404(card_id)
+def delete_article(article_id):
+    item = Article.query.get_or_404(article_id)
 
     if item.author == current_user:
         delete_uploaded_image(item.image_filename)
@@ -1107,7 +1107,7 @@ def delete_card(card_id):
 
 
 # CSV-Export/-Import (Logik in csv_transfer.py). Der Export liefert ein ZIP
-# mit cards.csv, sections.csv, events.csv und den Bildern; der Import nimmt
+# mit articles.csv, sections.csv, events.csv und den Bildern; der Import nimmt
 # einen ganzen Ordner (CSV-Dateien + Bilder im selben Ordner) oder dieses
 # ZIP entgegen.
 @app.route("/export")
@@ -1199,7 +1199,7 @@ def import_data():
                 return _import_failed(exc.errors)
 
         flash(
-            f"Import abgeschlossen: {counts['cards']} Beiträge, {counts['sections']} Sektionen, "
+            f"Import abgeschlossen: {counts['articles']} Beiträge, {counts['sections']} Sektionen, "
             f"{counts['events']} Termine, {counts['images']} Bilder.",
             "success",
         )

@@ -1,6 +1,6 @@
-"""CSV-Import und -Export fuer Beitragkarten (Card), Termine (Event) und Sektionen (Section).
+"""CSV-Import und -Export fuer Beitragkarten (Article), Termine (Event) und Sektionen (Section).
 
-Ein Export-/Import-Ordner enthaelt bis zu drei CSV-Dateien (cards.csv,
+Ein Export-/Import-Ordner enthaelt bis zu drei CSV-Dateien (articles.csv,
 sections.csv, events.csv) sowie die darin per Dateiname referenzierten Bilder
 im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8
 mit BOM (damit Excel Umlaute korrekt anzeigt). Datum/Uhrzeit in lokaler Zeit
@@ -29,24 +29,25 @@ from zoneinfo import ZoneInfo
 from PIL import Image
 from flask import current_app
 
-from models import db, Card, Section, Event
+from models import db, Article, Section, Event
 
 BERLIN = ZoneInfo("Europe/Berlin")
 DELIMITER = ";"
 ENCODING = "utf-8-sig"
 DATETIME_FORMAT = "%Y-%m-%d %H:%M"
 
-CARD_FILE = "cards.csv"
+ARTICLE_FILE = "articles.csv"
+ORDER_STEP = 10  # Abstand der Ordnungsnummern beim Import
 SECTION_FILE = "sections.csv"
 EVENT_FILE = "events.csv"
-FILES = (CARD_FILE, SECTION_FILE, EVENT_FILE)
+FILES = (ARTICLE_FILE, SECTION_FILE, EVENT_FILE)
 
 # Spaltenreihenfolge der CSV-Dateien. "id" wird nur zur Orientierung
 # exportiert und beim Import ignoriert (es werden immer neue Datensaetze
 # angelegt). "image_orientation" ist wie im Upload-Formular kein Modellfeld:
 # leer = Bild unveraendert uebernehmen, "landscape"/"portrait" = wie beim
 # Upload im Bedienfeld zuschneiden und als WebP speichern.
-CARD_COLUMNS = [
+ARTICLE_COLUMNS = [
     "id", "title", "description", "body", "image_filename", "image_orientation",
     "on_index", "on_consulting", "on_academy", "on_stories", "is_banner",
     "order_number", "col_size", "updated_at",
@@ -305,16 +306,16 @@ def export_to_dir(target_dir):
     warnings = []
     images = set()
 
-    cards = Card.query.order_by(Card.order_number.asc(), Card.id.asc()).all()
-    _write_csv(os.path.join(target_dir, CARD_FILE), CARD_COLUMNS, [
+    articles = Article.query.order_by(Article.order_number.asc(), Article.id.asc()).all()
+    _write_csv(os.path.join(target_dir, ARTICLE_FILE), ARTICLE_COLUMNS, [
         [c.id, c.title, c.description or "", c.body, c.image_filename or "", "",
          _format_bool(c.on_index), _format_bool(c.on_consulting),
          _format_bool(c.on_academy), _format_bool(c.on_stories),
          _format_bool(c.is_banner), c.order_number, c.col_size,
          _format_datetime(c.updated_at)]
-        for c in cards
+        for c in articles
     ])
-    images.update(c.image_filename for c in cards if c.image_filename)
+    images.update(c.image_filename for c in articles if c.image_filename)
 
     sections = Section.query.order_by(Section.id.asc()).all()
     section_rows = []
@@ -346,7 +347,7 @@ def export_to_dir(target_dir):
         else:
             warnings.append(f"Bild „{name}“ fehlt in static/uploads und wurde nicht exportiert.")
 
-    counts = {"cards": len(cards), "sections": len(sections), "events": len(events),
+    counts = {"articles": len(articles), "sections": len(sections), "events": len(events),
               "images": len(images) - len(warnings)}
     return counts, warnings
 
@@ -431,9 +432,9 @@ def _image_fields(row, images):
     return name, orientation
 
 
-def _parse_cards(path, images, errors):
+def _parse_articles(path, images, errors):
     fieldnames, rows = _read_csv(path)
-    if not _check_columns(CARD_FILE, fieldnames, ["title", "body"], errors):
+    if not _check_columns(ARTICLE_FILE, fieldnames, ["title", "body"], errors):
         return []
     parsed = []
     for line, row in rows:
@@ -456,12 +457,12 @@ def _parse_cards(path, images, errors):
                 "updated_at": _parse_datetime(row["updated_at"]) if _text(row, "updated_at") else None,
             })
         except ValueError as exc:
-            errors.append(f"{CARD_FILE} Zeile {line}: {exc}")
+            errors.append(f"{ARTICLE_FILE} Zeile {line}: {exc}")
     banners = sum(1 for c in parsed if c["is_banner"])
     if banners > 1:
-        errors.append(f"{CARD_FILE}: Es darf höchstens ein Beitrag als Banner markiert sein ({banners} gefunden).")
-    elif banners == 1 and Card.query.filter_by(is_banner=True).first():
-        errors.append(f"{CARD_FILE}: Es existiert bereits ein Banner – is_banner des importierten Beitrags auf 0 setzen oder das bestehende Banner vorher entfernen.")
+        errors.append(f"{ARTICLE_FILE}: Es darf höchstens ein Beitrag als Banner markiert sein ({banners} gefunden).")
+    elif banners == 1 and Article.query.filter_by(is_banner=True).first():
+        errors.append(f"{ARTICLE_FILE}: Es existiert bereits ein Banner – is_banner des importierten Beitrags auf 0 setzen oder das bestehende Banner vorher entfernen.")
     return parsed
 
 
@@ -536,7 +537,7 @@ def _parse_events(path, errors):
 
 
 def import_from_dir(source_dir, user):
-    """Liest cards.csv, sections.csv und events.csv (soweit vorhanden) aus
+    """Liest articles.csv, sections.csv und events.csv (soweit vorhanden) aus
     source_dir und legt die Eintraege neu an, mit user als Autor. Alles oder
     nichts: bei einem Fehler wird nichts gespeichert und CsvImportError
     ausgeloest. Liefert die Anzahlen der angelegten Datensaetze."""
@@ -548,16 +549,28 @@ def import_from_dir(source_dir, user):
 
     images = _ImageImporter(source_dir)
     errors = []
-    cards = _parse_cards(os.path.join(source_dir, CARD_FILE), images, errors) if CARD_FILE in present else []
+    articles = _parse_articles(os.path.join(source_dir, ARTICLE_FILE), images, errors) if ARTICLE_FILE in present else []
     sections = _parse_sections(os.path.join(source_dir, SECTION_FILE), images, errors) if SECTION_FILE in present else []
     events = _parse_events(os.path.join(source_dir, EVENT_FILE), errors) if EVENT_FILE in present else []
     if errors:
         raise CsvImportError(errors)
 
     now = datetime.now(timezone.utc)
+
+    # Ordnungsnummern beim Import in 10er-Schritten neu vergeben (10, 20, 30, ...),
+    # damit spaeter Beitraege dazwischen eingeordnet werden koennen. Die
+    # Reihenfolge ergibt sich aus der order_number der CSV, bei Gleichstand
+    # aus der Zeilenreihenfolge. Importierte Beitraege kommen hinter die
+    # bereits vorhandenen.
+    max_existing = db.session.query(db.func.max(Article.order_number)).scalar() or 0
+    next_number = (max_existing // ORDER_STEP + 1) * ORDER_STEP
+    ordered = sorted(enumerate(articles), key=lambda t: (t[1]["order_number"], t[0]))
+    for offset, (_index, item) in enumerate(ordered):
+        item["order_number"] = next_number + offset * ORDER_STEP
+
     try:
-        for c in cards:
-            db.session.add(Card(
+        for c in articles:
+            db.session.add(Article(
                 title=c["title"], body=c["body"], description=c["description"],
                 image_filename=images.store(c["image"], c["orientation"]) if c["image"] else None,
                 on_index=c["on_index"], on_consulting=c["on_consulting"],
@@ -607,7 +620,7 @@ def import_from_dir(source_dir, user):
         images.rollback()
         raise
 
-    return {"cards": len(cards), "sections": len(sections), "events": len(events),
+    return {"articles": len(articles), "sections": len(sections), "events": len(events),
             "images": len(images.created)}
 
 
@@ -634,7 +647,7 @@ def main(argv):
             counts, warnings = export_to_dir(args.directory)
             for w in warnings:
                 print(f"Hinweis: {w}")
-            print(f"Exportiert: {counts['cards']} Beiträge, {counts['sections']} Sektionen, "
+            print(f"Exportiert: {counts['articles']} Beiträge, {counts['sections']} Sektionen, "
                   f"{counts['events']} Termine, {counts['images']} Bilder → {args.directory}")
             return 0
 
@@ -649,7 +662,7 @@ def main(argv):
             for e in exc.errors:
                 print(f"  - {e}", file=sys.stderr)
             return 1
-        print(f"Importiert: {counts['cards']} Beiträge, {counts['sections']} Sektionen, "
+        print(f"Importiert: {counts['articles']} Beiträge, {counts['sections']} Sektionen, "
               f"{counts['events']} Termine, {counts['images']} Bilder")
         return 0
 

@@ -7,12 +7,12 @@ db = SQLAlchemy()
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    cards = db.relationship('Card', backref='author', lazy=True)
+    articles = db.relationship('Article', backref='author', lazy=True)
     sections = db.relationship('Section', backref='author', lazy=True)
     events = db.relationship('Event', backref='author', lazy=True)
     password_hash = db.Column(db.String(255), nullable=False)
 
-class Card(db.Model):
+class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     on_index = db.Column(db.Boolean, nullable=False, default=False)
     on_consulting = db.Column(db.Boolean, nullable=False, default=False)
@@ -33,7 +33,7 @@ class Card(db.Model):
     col_size = db.Column(db.String(50), nullable=False, default="col-12 col-md-6 col-lg-4")
 
 
-# Wie Card, aber für ganze Sektionen (statt Beitragkarten in einem Grid) auf den drei
+# Wie Article, aber für ganze Sektionen (statt Beitragkarten in einem Grid) auf den drei
 # Seiten Indexseite, Beratung und Akademie. Kein Banner- oder Erfolgsgeschichten-
 # Häkchen (dort gibt es keine Sektionen) und keine Breite der Beitragkarten (col_size), da
 # jede Sektion ohnehin die volle Breite einnimmt.
@@ -70,7 +70,7 @@ class Section(db.Model):
     slot_position_academy = db.Column(db.Integer)
 
 
-# Termine (Events): eigenstaendiges Modell, unabhaengig von Card/Section, da
+# Termine (Events): eigenstaendiges Modell, unabhaengig von Article/Section, da
 # Termine keine Platzierung auf den statischen Seiten haben, sondern ueber
 # Titel, Art, Untertitel, Zeitpunkt und Ort verwaltet werden.
 class Event(db.Model):
