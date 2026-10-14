@@ -15,11 +15,14 @@ als Ordner-Upload (/import).
 """
 
 import csv
+import html
 import io
 import os
+import re
 import shutil
 import sys
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
@@ -125,6 +128,139 @@ def _parse_int(value, default=None):
 def _text(row, key):
     v = (row.get(key) or "").strip()
     return v or None
+
+
+# --------------------------------------------------------------------------
+# Bereinigung von HTML beim Import
+# --------------------------------------------------------------------------
+# Texte werden auf der Website mit "white-space: pre-line" ausgegeben, d. h.
+# Zeilenumbrueche im Text sind sichtbar. HTML fuer Absaetze und Umbrueche ist
+# deshalb unnoetig: <p>, <div>, Ueberschriften, Listen und <br> werden beim
+# Import durch Zeilenumbrueche ersetzt, alle uebrigen Tags entfernt. Erhalten
+# bleiben nur Hervorhebungen und Links.
+KEEP_TAGS = {"strong": "strong", "b": "strong", "em": "em", "i": "em", "a": "a"}
+PARAGRAPH_TAGS = {"p", "div", "section", "article", "blockquote", "ul", "ol",
+                  "table", "h1", "h2", "h3", "h4", "h5", "h6"}
+DROP_CONTENT_TAGS = {"script", "style", "head", "title"}
+LINK_PROTOCOLS = ("http://", "https://", "mailto:", "tel:", "/", "#")
+
+
+class _HtmlCleaner(HTMLParser):
+    def __init__(self, collapse_whitespace):
+        super().__init__(convert_charrefs=True)
+        self.collapse = collapse_whitespace
+        self.out = []
+        self.open_tags = []
+        self.skip_depth = 0
+
+    def _break(self, newlines):
+        self.out.append("\x00" * newlines)  # Platzhalter, spaeter aufgeloest
+
+    def handle_starttag(self, tag, attrs):
+        if tag in DROP_CONTENT_TAGS:
+            self.skip_depth += 1
+            return
+        if tag == "br":
+            self._break(1)
+        elif tag in PARAGRAPH_TAGS:
+            self._break(2)
+        elif tag == "li":
+            self._break(1)
+            self.out.append("• ")
+        elif tag == "tr":
+            self._break(1)
+        elif tag in KEEP_TAGS:
+            name = KEEP_TAGS[tag]
+            if name == "a":
+                href = (dict(attrs).get("href") or "").strip()
+                if not href.lower().startswith(LINK_PROTOCOLS):
+                    self.open_tags.append(None)  # Link ohne gueltiges Ziel: nur Text
+                    return
+                extra = ""
+                if dict(attrs).get("target") == "_blank":
+                    extra = ' target="_blank" rel="noopener"'
+                self.out.append(f'<a href="{html.escape(href)}"{extra}>')
+            else:
+                self.out.append(f"<{name}>")
+            self.open_tags.append(name)
+
+    def handle_startendtag(self, tag, attrs):
+        if tag == "br":
+            self._break(1)
+
+    def handle_endtag(self, tag):
+        if tag in DROP_CONTENT_TAGS:
+            self.skip_depth = max(0, self.skip_depth - 1)
+            return
+        if tag in PARAGRAPH_TAGS:
+            self._break(2)
+        elif tag in ("td", "th"):
+            self.out.append(" ")
+        elif tag in KEEP_TAGS:
+            name = KEEP_TAGS[tag]
+            # zum passenden offenen Tag schliessen (verschachtelte Fehler tolerieren)
+            if name in self.open_tags or (name == "a" and None in self.open_tags):
+                while self.open_tags:
+                    top = self.open_tags.pop()
+                    if top:
+                        self.out.append(f"</{top}>")
+                    if top == name or (name == "a" and top is None):
+                        break
+
+    def handle_data(self, data):
+        if self.skip_depth:
+            return
+        data = data.replace("\xa0", " ")
+        if self.collapse:
+            data = re.sub(r"\s+", " ", data)
+        self.out.append(html.escape(data, quote=False))
+
+    def result(self):
+        for top in reversed(self.open_tags):
+            if top:
+                self.out.append(f"</{top}>")
+        text = "".join(self.out)
+        # Zeilenumbruch-Platzhalter: mehrere hintereinander -> max. eine Leerzeile
+        text = re.sub(r"\x00+", lambda m: "\n" if len(m.group()) == 1 else "\n\n", text)
+        text = re.sub(r"[ \t]+\n", "\n", text)
+        text = re.sub(r"\n[ \t]+", "\n", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        # Leere Hervorhebungen entfernen (<strong></strong> nach dem Bereinigen)
+        text = re.sub(r"<(strong|em)>\s*</\1>", "", text)
+        return text.strip()
+
+
+def clean_html(value):
+    """Entfernt unnoetiges HTML aus einem Inhaltstext (siehe oben). Reiner
+    Text ohne Tags bleibt bis auf Leerraum am Rand unveraendert."""
+    if not value:
+        return value
+    looks_like_html = re.search(r"<\s*/?\s*(p|br|div|h[1-6]|li|ul|ol|table)\b", value, re.I)
+    cleaner = _HtmlCleaner(collapse_whitespace=bool(looks_like_html))
+    cleaner.feed(value)
+    cleaner.close()
+    text = cleaner.result()
+    # "##" (Grenze Anreisser/Weiterlesen) in eine eigene Zeile ohne Leerraum drumherum
+    text = re.sub(r"\s*##\s*", "\n##\n", text, count=1)
+    return text.strip() or None
+
+
+def plain_text(value):
+    """Fuer einzeilige Felder (Titel, Untertitel, Kicker, Ort): alle Tags
+    entfernen, Entities aufloesen, Leerraum zusammenfassen."""
+    if not value:
+        return value
+    text = re.sub(r"<[^>]+>", " ", value)
+    text = html.unescape(text).replace("\xa0", " ")
+    return re.sub(r"\s+", " ", text).strip() or None
+
+
+def _rich(row, key):
+    return clean_html(_text(row, key))
+
+
+def _plain(row, key):
+    return plain_text(_text(row, key))
 
 
 def _write_csv(path, columns, rows):
@@ -302,13 +438,13 @@ def _parse_cards(path, images, errors):
     parsed = []
     for line, row in rows:
         try:
-            title, body = _text(row, "title"), _text(row, "body")
+            title, body = _plain(row, "title"), _rich(row, "body")
             if not title or not body:
                 raise ValueError("title und body dürfen nicht leer sein")
             image, orientation = _image_fields(row, images)
             parsed.append({
                 "title": title, "body": body,
-                "description": _text(row, "description"),
+                "description": _plain(row, "description"),
                 "image": image, "orientation": orientation,
                 "on_index": _parse_bool(row.get("on_index")),
                 "on_consulting": _parse_bool(row.get("on_consulting")),
@@ -337,7 +473,7 @@ def _parse_sections(path, images, errors):
     parsed = []
     for line, row in rows:
         try:
-            title, body = _text(row, "title"), _text(row, "body")
+            title, body = _plain(row, "title"), _rich(row, "body")
             if not title or not body:
                 raise ValueError("title und body dürfen nicht leer sein")
             image, orientation = _image_fields(row, images)
@@ -345,8 +481,8 @@ def _parse_sections(path, images, errors):
             if position not in ("left", "right"):
                 raise ValueError(f"image_position „{position}“ muss left oder right sein")
             item = {
-                "title": title, "body": body, "kicker": _text(row, "kicker"),
-                "description": _text(row, "description"),
+                "title": title, "body": body, "kicker": _plain(row, "kicker"),
+                "description": _plain(row, "description"),
                 "image": image, "orientation": orientation, "image_position": position,
                 "updated_at": _parse_datetime(row["updated_at"]) if _text(row, "updated_at") else None,
                 "pages": {},
@@ -376,7 +512,8 @@ def _parse_events(path, errors):
     for line, row in rows:
         try:
             for key in required:
-                if not _text(row, key):
+                value = _plain(row, key) if key in ("title", "location") else _text(row, key)
+                if not value:
                     raise ValueError(f"{key} darf nicht leer sein")
             category = _text(row, "category")
             if category not in EVENT_CATEGORY_LABELS:
@@ -386,11 +523,11 @@ def _parse_events(path, errors):
             if ends_at < starts_at:
                 raise ValueError("ends_at liegt vor starts_at")
             parsed.append({
-                "title": _text(row, "title"), "category": category,
-                "subtitle": _text(row, "subtitle"),
+                "title": _plain(row, "title"), "category": category,
+                "subtitle": _plain(row, "subtitle"),
                 "all_day": _parse_bool(row.get("all_day")),
                 "starts_at": starts_at, "ends_at": ends_at,
-                "location": _text(row, "location"),
+                "location": _plain(row, "location"),
                 "updated_at": _parse_datetime(row["updated_at"]) if _text(row, "updated_at") else None,
             })
         except ValueError as exc:

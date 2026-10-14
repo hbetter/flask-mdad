@@ -119,6 +119,7 @@ Regeln beim Import:
 - `category` ist einer der internen Werte `webinar`, `inhouse`, `certification`, `trial`.
 - Höchstens ein Beitrag darf `is_banner = 1` haben, und nur wenn noch kein Banner existiert.
 - Sektionen werden über `slot_index_*`/`slot_position_*` in die Slots eingereiht. Sektionen, die schon im selben Slot stehen, bleiben davor.
+- Texte werden bereinigt: Im Inhalt (`body`) werden `<p>`, `<br>`, `<div>`, Überschriften und Listen durch Zeilenumbrüche ersetzt (Listenpunkte als „•“), alle übrigen Tags entfernt. Erhalten bleiben nur Fett (`<strong>`), Kursiv (`<em>`) und Links (`<a href>`). Titel, Untertitel, Kicker, Beschreibung und Ort werden zu reinem Text. Das `##` für den Anreißer steht danach in einer eigenen Zeile.
 - Bilder werden mit neuem Dateinamen nach `static/uploads` kopiert. Die optionale Spalte `image_orientation` (`landscape` oder `portrait`) schneidet das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export).
 - Autor der importierten Einträge ist der angemeldete Nutzer (Kommandozeile: `--user`, Standard `admin`).
 

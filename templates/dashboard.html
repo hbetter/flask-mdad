@@ -261,7 +261,13 @@
 </div>
 
 <div class="tab-pane fade" id="tab-events" role="tabpanel" aria-labelledby="tab-events-btn" tabindex="0">
-<div class="d-flex justify-content-end mb-3">
+<div class="d-flex justify-content-end flex-wrap gap-2 mb-3">
+    <button type="button" class="btn btn-outline-danger shadow-sm px-4"
+            data-bs-toggle="modal" data-bs-target="#deletePastEventsModal"
+            {% if not past_event_count %}disabled title="Keine vergangenen Termine vorhanden"{% endif %}>
+        <i class="bi bi-calendar-x"></i> Vergangene Termine löschen
+        {% if past_event_count %}<span class="badge rounded-pill text-bg-light border ms-1">{{ past_event_count }}</span>{% endif %}
+    </button>
     <a href="{{ url_for('add_event') }}" class="btn btn-add-event shadow-sm px-4">
         <i class="bi bi-plus-lg"></i> Termin hinzufügen
     </a>
@@ -545,6 +551,37 @@
     });
 </script>
 {% endif %}
+
+<!-- Rueckfrage vor dem Loeschen vergangener Termine (Ende liegt in der Vergangenheit). -->
+<div class="modal fade" id="deletePastEventsModal" tabindex="-1" aria-labelledby="deletePastEventsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePastEventsLabel">Vergangene Termine löschen?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    {% if past_event_count == 1 %}1 Termin ist{% else %}{{ past_event_count }} Termine sind{% endif %}
+                    bereits vorbei (das Enddatum liegt in der Vergangenheit) und
+                    {% if past_event_count == 1 %}wird{% else %}werden{% endif %} endgültig gelöscht.
+                </p>
+                <p class="small text-muted mb-0">
+                    Das lässt sich nicht rückgängig machen. Wer die Termine aufheben möchte,
+                    sichert sie vorher über „Export“.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <form method="POST" action="{{ url_for('delete_past_events') }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Endgültig löschen
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Rueckfrage vor dem Export: der Download startet erst ueber den Button im Modal. -->
 <div class="modal fade" id="exportConfirmModal" tabindex="-1" aria-labelledby="exportConfirmLabel" aria-hidden="true">

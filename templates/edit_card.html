@@ -64,7 +64,14 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Inhalt</label>
-                        <textarea name="body" class="form-control" rows="20" required>{{ card.body }}</textarea>
+                        <textarea name="body" class="form-control" aria-describedby="body-help" rows="20" required>{{ card.body }}</textarea>
+                        <div id="body-help" class="form-text">
+                            Mit <code>##</code> trennst du den Anreißer vom restlichen Text:
+                            Nur der Text <strong>vor</strong> <code>##</code> erscheint auf der Kachel,
+                            der vollständige Text im Fenster nach Klick auf „Weiterlesen“.
+                            Ohne <code>##</code> steht der ganze Text auf der Kachel.
+                            Tipp: <code>##</code> nach ein bis drei Sätzen setzen.
+                        </div>
                     </div>
                     {% if card.image_filename %}
                     <div class="mb-3">

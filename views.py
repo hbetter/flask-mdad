@@ -73,6 +73,7 @@ EVENT_CATEGORY_MODAL = {
 }
 
 DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4"
+PREVIEW_MIN_CHARS = 200  # Mindestlaenge der Textvorschau im Bedienfeld
 RESIZED_IMAGE_WIDTH = 1280
 RESIZED_IMAGE_HEIGHT = 715
 
@@ -252,16 +253,23 @@ def eventcategorymodal(value):
 
 @app.template_filter("halfpreview")
 def halfpreview(value):
-    # Vorschautext fuer die Beitragkarten-Kacheln im Bedienfeld: HTML-Tags entfernen
-    # (Zeilenumbrueche bleiben erhalten) und den Text auf die Haelfte kuerzen,
-    # an einer Wortgrenze, mit "…" am Ende.
+    # Vorschautext fuer die Beitragkarten-Kacheln im Bedienfeld: HTML-Tags
+    # entfernen (Absaetze, Zeilenumbrueche und Ueberschriften werden zu
+    # Zeilenumbruechen) und lange Texte auf die Haelfte kuerzen, an einer
+    # Wortgrenze, mit "…" am Ende. Kurze Anreisser (bis PREVIEW_MIN_CHARS
+    # Zeichen) bleiben vollstaendig, und auch bei laengeren Texten wird nie
+    # unter PREVIEW_MIN_CHARS gekuerzt - sonst bliebe bei einem einzeiligen
+    # Anreisser vor "##" kaum etwas uebrig.
+    import html
     import re
-    text = re.sub(r"<br\s*/?>|</p>|</div>|</li>", "\n", value or "", flags=re.I)
+    text = re.sub(r"<br\s*/?>|</(?:p|div|li|h[1-6])\s*>", "\n", value or "", flags=re.I)
     text = re.sub(r"<[^>]+>", "", text)
+    text = html.unescape(text).replace("\xa0", " ")
+    text = re.sub(r"[ \t]+\n", "\n", text)
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
-    limit = len(text) // 2
-    if limit == 0 or len(text) < 80:
+    if len(text) <= PREVIEW_MIN_CHARS:
         return text
+    limit = max(len(text) // 2, PREVIEW_MIN_CHARS)
     cut = text.rfind(" ", 0, limit)
     if cut < limit * 0.6:
         cut = limit
@@ -588,6 +596,7 @@ def dashboard():
             "events": Event.query.count(),
         },
         import_errors=import_errors,
+        past_event_count=past_events_query().count(),
         open_import=open_import,
     )
 
@@ -766,6 +775,26 @@ def delete_event(event_id):
         flash("Termin gelöscht.", "info")
 
     return redirect(url_for("dashboard"))
+
+
+def past_events_query():
+    # Termine des angemeldeten Nutzers, deren Ende in der Vergangenheit liegt.
+    # Gespeichert wird in UTC ohne Zeitzonenangabe, daher hier ebenfalls
+    # "naive" UTC-Zeit vergleichen.
+    now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+    return Event.query.filter(Event.user_id == current_user.id, Event.ends_at < now_utc)
+
+
+@app.route("/delete-past-events", methods=["POST"])
+@login_required
+def delete_past_events():
+    count = past_events_query().delete(synchronize_session=False)
+    db.session.commit()
+    if count:
+        flash(f"{count} vergangene{'r' if count == 1 else ''} Termin{'' if count == 1 else 'e'} gelöscht.", "info")
+    else:
+        flash("Es gibt keine vergangenen Termine.", "info")
+    return redirect(url_for("dashboard", _anchor="termine"))
 
 
 @app.route("/add-section", methods=["GET", "POST"])
