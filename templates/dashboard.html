@@ -149,7 +149,7 @@
                     <div class="col-md-6 order-1 order-md-2 d-flex align-items-stretch justify-content-center p-3">
                         <div class="w-100 d-flex justify-content-center align-items-center h-100">
                             <img
-                                src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
+                                src="{{ url_for('uploaded_file', filename=item.image_filename) }}"
                                 class="card-img-side"
                                 alt="{{ item.title }}"
                                 loading="lazy"
@@ -366,7 +366,7 @@
             >
                 {% if item.image_filename %}
                     <img
-                        src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
+                        src="{{ url_for('uploaded_file', filename=item.image_filename) }}"
                         alt="{{ item.title }}"
                         class="card-img-top"
                     >

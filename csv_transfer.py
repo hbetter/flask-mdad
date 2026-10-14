@@ -349,7 +349,7 @@ def export_to_dir(target_dir):
         if os.path.isfile(src):
             shutil.copy2(src, os.path.join(target_dir, name))
         else:
-            warnings.append(f"Bild „{name}“ fehlt in static/uploads und wurde nicht exportiert.")
+            warnings.append(f"Bild „{name}“ fehlt in data/uploads und wurde nicht exportiert.")
 
     counts = {"articles": len(articles), "sections": len(sections), "events": len(events),
               "images": len(images) - len(warnings)}
@@ -361,7 +361,7 @@ def export_to_dir(target_dir):
 # --------------------------------------------------------------------------
 
 class _ImageImporter:
-    """Kopiert/konvertiert Bilder aus dem Importordner nach static/uploads und
+    """Kopiert/konvertiert Bilder aus dem Importordner nach data/uploads und
     merkt sich die neuen Dateien, um sie bei einem Abbruch wieder zu entfernen."""
 
     def __init__(self, source_dir):

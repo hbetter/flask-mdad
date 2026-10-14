@@ -11,7 +11,7 @@ PostgreSQL-Container (`db`, Postgres 15) und App-Container (`web`). Die App ist 
 $ docker build -t flask-mdad:latest .
 $ docker compose up -d
 
-# production mode (gunicorn)
+## production mode (gunicorn)
 $ docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 
 $ docker compose exec web python init_db.py
@@ -21,7 +21,7 @@ Im Debug-Modus wird der Projektordner in den Container eingebunden (`.:/app`), �
 
 `init_db.py` legt bei einer leeren Datenbank alle Tabellen an und erzeugt den Nutzer `admin` mit dem Passwort `pw`. Nur einmal bei einer frischen Datenbank ausführen – ein zweiter Aufruf scheitert, weil es den Nutzer `admin` dann schon gibt. `change_pw.py` setzt das Passwort von `admin` wieder auf `pw` zurück.
 
-Die Datenbank liegt in `data/postgres`, hochgeladene Bilder in `static/uploads`. Beide Ordner sind nicht im Git-Repository.
+Die Datenbank liegt in `data/postgres`, hochgeladene Bilder in `data/uploads` (ausgeliefert unter `/uploads/<dateiname>`). Beide Ordner sind nicht im Git-Repository und werden nicht ins Docker-Image kopiert (`.dockerignore`); im Produktionsmodus ist `data/uploads` als Volume eingebunden, damit Bilder Neustarts überstehen und Nginx sie direkt ausliefern kann.
 
 Ohne gesetzte `DATABASE_URL` (also beim Start ohne Docker mit `python app.py`) verwendet die App eine lokale SQLite-Datei `app.db`.
 
@@ -54,7 +54,7 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 - `images.py`: Verarbeitung der Beitragsbilder (Verkleinern ohne Zuschnitt, Logo-Erkennung, Wahl der Darstellung) – genutzt vom Bedienfeld und vom CSV-Import.
 - `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine und Sektionen (siehe unten), auch als Kommandozeilenwerkzeug.
 - `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
-- `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder, Favicon sowie `uploads/` für Bilder aus dem Bedienfeld. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
+- `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder und Favicon. Bilder aus dem Bedienfeld liegen nicht hier, sondern in `data/uploads`. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
 - `docs/`: Dokumentation der Indexseite (Inhalt und Stil) und Sicherung der Erfolgsgeschichten-Texte.
 - `equipe-pq/` und `nginx/`: eigenständige statische Landingpage für equipe-pq.playfulfuture.de samt Nginx-Konfiguration (siehe unten).
 - `logos_download/`: Hilfsskripte zum Herunterladen der „Bekannt aus"-Logos und zum Erzeugen des Logo-Banners.
@@ -129,7 +129,7 @@ Regeln beim Import:
 - Höchstens ein Beitrag darf `is_banner = 1` haben, und nur wenn noch kein Banner existiert.
 - Sektionen werden über `slot_index_*`/`slot_position_*` in die Slots eingereiht. Sektionen, die schon im selben Slot stehen, bleiben davor.
 - Texte werden bereinigt: Im Inhalt (`body`) werden `<p>`, `<br>`, `<div>`, Überschriften und Listen durch Zeilenumbrüche ersetzt (Listenpunkte als „•“), alle übrigen Tags entfernt. Erhalten bleiben nur Fett (`<strong>`), Kursiv (`<em>`) und Links (`<a href>`). Titel, Untertitel, Kicker, Beschreibung und Ort werden zu reinem Text. Das `##` für den Anreißer steht danach in einer eigenen Zeile.
-- Bilder werden mit neuem Dateinamen nach `static/uploads` übernommen. Bei Beiträgen steuert die Spalte `image_fit` (`auto` bzw. leer, `cover`, `contain`, `blur`) die Darstellung wie im Formular; Bei Sektionen schneidet die optionale Spalte `image_orientation` (`landscape` oder `portrait`) das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export). Bei Beiträgen wird `image_orientation` ignoriert.
+- Bilder werden mit neuem Dateinamen nach `data/uploads` übernommen. Bei Beiträgen steuert die Spalte `image_fit` (`auto` bzw. leer, `cover`, `contain`, `blur`) die Darstellung wie im Formular; Bei Sektionen schneidet die optionale Spalte `image_orientation` (`landscape` oder `portrait`) das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export). Bei Beiträgen wird `image_orientation` ignoriert.
 - Autor der importierten Einträge ist der angemeldete Nutzer (Kommandozeile: `--user`, Standard `admin`).
 
 ## equipe-pq
@@ -138,7 +138,7 @@ Der Ordner `equipe-pq/` enthält eine eigenständige statische Seite für equipe
 
 ## Datensicherung und Grenzen
 
-Regelmäßig sichern: den Datenbank-Dump (siehe oben) und den Ordner `static/uploads`. Der Dump enthält nur die Dateinamen der Bilder, nicht die Bilder selbst. Der CSV-Export enthält Inhalte und Bilder, aber keine Nutzer und ersetzt daher kein vollständiges Backup.
+Regelmäßig sichern: den Datenbank-Dump (siehe oben) und den Ordner `data/uploads`. Der Dump enthält nur die Dateinamen der Bilder, nicht die Bilder selbst. Der CSV-Export enthält Inhalte und Bilder, aber keine Nutzer und ersetzt daher kein vollständiges Backup.
 
 Vor einem öffentlichen Betrieb zu beachten:
 

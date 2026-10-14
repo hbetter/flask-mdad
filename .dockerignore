@@ -1,0 +1,7 @@
+# Nicht ins Docker-Image kopieren: Daten (Datenbank, Uploads, Importe) werden
+# per Volume eingebunden bzw. gehoeren nicht ins Image.
+data/
+.git/
+__pycache__/
+*.pyc
+.DS_Store

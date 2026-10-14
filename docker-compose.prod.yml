@@ -4,4 +4,8 @@ services:
     # (nginx/playfulfuture.de.conf, proxy_pass http://127.0.0.1:5001).
     ports:
       - "127.0.0.1:5001:5000"
+    # Hochgeladene Bilder auf dem Server ablegen statt nur im Container:
+    # bleiben bei Neustart/Neubau erhalten und Nginx kann sie ausliefern.
+    volumes:
+      - ./data/uploads:/app/data/uploads
     command: gunicorn -b 0.0.0.0:5000 app:app

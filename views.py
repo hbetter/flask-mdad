@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 from PIL import Image
-from flask import Flask, render_template, redirect, url_for, request, flash, send_file, session
+from flask import Flask, render_template, redirect, url_for, request, flash, send_file, send_from_directory, session
 from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_bcrypt import Bcrypt
@@ -96,7 +96,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL", "sqlite:///app.db"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")
+# Hochgeladene Bilder liegen ausserhalb von static/ in data/uploads (wie die
+# Datenbank in data/postgres nicht im Repository und im Produktionsbetrieb
+# per Volume eingebunden, siehe docker-compose.prod.yml). Ausgeliefert ueber
+# die Route /uploads/<dateiname> bzw. in Produktion direkt von Nginx.
+app.config["UPLOAD_FOLDER"] = os.path.join("data", "uploads")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg", "gif", "webp"}
 
@@ -1228,6 +1232,13 @@ def handle_too_large(_error):
         return _import_failed([message + " Größere Bestände bitte über die Kommandozeile importieren (siehe README)."])
     flash(message, "warning")
     return redirect(request.url)
+
+
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+    return send_from_directory(
+        os.path.abspath(app.config["UPLOAD_FOLDER"]), filename, max_age=7 * 24 * 3600
+    )
 
 
 @app.route("/imprint")
