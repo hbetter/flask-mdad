@@ -177,6 +177,7 @@ form._form ._submit:hover {
   background-color: transparent !important;
   box-shadow: none !important;
   padding: 0 !important;
+  margin: 0 !important;   /* AC setzt margin-top: 25px */
 }
 
 /* Spielraum-Formular im Modal (ID 16): Titel und Beschreibungstext
@@ -212,3 +213,122 @@ form._form ._submit:hover {
 .modal-body form._form_22 ._field_html {
   display: none !important;
 }
+
+/* ============================================================
+   KOMPAKTE, HANDYFREUNDLICHE ANORDNUNG DER FELDER
+   ============================================================
+   Die Felder liegen in einem 6-spaltigen Raster. Standardmaessig nimmt
+   jedes Feld die volle Breite ein; ac-formulare.js vergibt anhand des
+   Feldnamens Layout-Klassen, damit kurze, zusammengehoerige Felder
+   nebeneinander stehen:
+     ac-half     Vorname | Nachname           (immer nebeneinander)
+     ac-half-md  E-Mail  | Telefon            (ab 576 px nebeneinander)
+     ac-zip      PLZ (1/3) | ac-city Stadt (2/3)  (immer nebeneinander)
+   Abstaende kommen aus "gap" statt aus margin-bottom der Felder. */
+form._form:not(#_) ._form-content {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  column-gap: .75rem !important;
+  row-gap: .75rem !important;
+}
+form._form:not(#_) ._form-content > * {
+  grid-column: 1 / -1 !important;
+  float: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+form._form:not(#_) ._form-content > ._clear-element { display: none !important; }
+form._form:not(#_) ._form-content > .ac-half { grid-column: span 3 !important; }
+form._form:not(#_) ._form-content > .ac-zip  { grid-column: span 2 !important; }
+form._form:not(#_) ._form-content > .ac-city { grid-column: span 4 !important; }
+@media (min-width: 576px) {
+  form._form:not(#_) ._form-content > .ac-half-md { grid-column: span 3 !important; }
+}
+
+/* Beschriftung naeher ans Feld, Eingaben mind. 44 px hoch (Fingertipp)
+   und 16 px Schrift (sonst zoomt iOS beim Antippen hinein). */
+form._form:not(#_) label,
+form._form:not(#_) legend._form-label {
+  margin-bottom: .25rem !important;
+  font-size: .9rem !important;
+}
+form._form:not(#_) :is(input[type="text"], input[type="email"], input[type="tel"],
+                        input[type="date"], input[type="number"], select, textarea) {
+  min-height: 44px !important;
+  font-size: 16px !important;
+}
+form._form:not(#_) .iti { width: 100% !important; display: block !important; }
+/* Laenderauswahl nur so hoch wie das Eingabefeld: die Fehlermeldung
+   steht innerhalb von .iti und wuerde die Flagge sonst nach unten ziehen. */
+form._form:not(#_) .iti__country-container {
+  bottom: auto !important;
+  height: 44px !important;
+}
+
+/* Im Modal: Absende-Button bleibt beim Scrollen unten sichtbar */
+/* bottom/padding gleichen das Innenpolster von .modal-body aus, sonst
+   scrollen Felder unterhalb des Buttons sichtbar durch. */
+.modal-body form._form:not(#_) ._button-wrapper {
+  position: sticky !important;
+  bottom: calc(-1 * var(--bs-modal-padding, 1rem)) !important;
+  z-index: 3 !important;
+  background: #fff !important;
+  padding: .75rem 0 var(--bs-modal-padding, 1rem) !important;
+  margin-top: .25rem !important;
+  margin-bottom: calc(-1 * var(--bs-modal-padding, 1rem)) !important;
+  box-shadow: 0 -10px 12px -10px rgba(40, 19, 81, .18) !important;
+}
+
+/* Formular-Modals auf dem Smartphone (modal-fullscreen-sm-down in
+   base.html): wirklich bildschirmfuellend - custom.css begrenzt die
+   Hoehe scrollbarer Modals sonst auf 100vh - 2rem - und kompakter Kopf,
+   damit die Felder mehr Platz bekommen. */
+@media (max-width: 575.98px) {
+  .modal-fullscreen-sm-down .modal-content {
+    max-height: none;
+    height: 100%;
+  }
+  .modal-fullscreen-sm-down .modal-header {
+    padding: .75rem 1rem;
+  }
+  .modal-fullscreen-sm-down .modal-header h4 {
+    font-size: 1.15rem;
+  }
+  .modal-fullscreen-sm-down .modal-header .text-secondary {
+    font-size: .85rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Fehlermeldungen von ActiveCampaign ("Bitte fuellen Sie ...") nicht als
+   schwebende Sprechblase ueber Beschriftung und Nachbarfeld, sondern
+   als kurze Zeile direkt unter dem Feld. */
+form._form:not(#_) ._error {
+  position: static !important;
+  display: block !important;
+  width: auto !important;
+  margin: .25rem 0 0 !important;
+  transform: none !important;
+}
+form._form:not(#_) ._error-arrow { display: none !important; }
+form._form:not(#_) ._error-inner {
+  position: static !important;
+  display: block !important;
+  font-family: var(--ac-font) !important;
+  font-size: .8rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  text-align: left !important;
+  color: #b02a37 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+form._form:not(#_) ._error-inner::before,
+form._form:not(#_) ._error-icon { display: none !important; }

@@ -79,7 +79,44 @@
         }
       }
 
+      /* Layout-Klassen (siehe ac-formulare.css, "Kompakte, handy-
+         freundliche Anordnung") und passende Tastatur/Autovervoll-
+         staendigung je Feld. Erkannt wird ueber den Feldnamen, weil die
+         CSS-Klassen der Felder bei ActiveCampaign je Formular variieren.
+         field[9]..field[13] sind in allen Formularen Firma, Strasse,
+         PLZ und Stadt. */
+      var FIELD_SETUP = {
+        'firstname':  { layout: 'ac-half', autocomplete: 'given-name' },
+        'lastname':   { layout: 'ac-half', autocomplete: 'family-name' },
+        // type bewusst NICHT aendern: ActiveCampaign erkennt E-Mail- und
+        // Telefonfeld am type="text" und meldet sonst beim Absenden
+        // "Formulare muessen ein E-Mail-Feld oder ein Telefonfeld enthalten".
+        // inputmode reicht fuer die passende Handy-Tastatur.
+        'email':      { layout: 'ac-half-md', inputmode: 'email', autocomplete: 'email' },
+        'phone-iti':  { layout: 'ac-half-md', inputmode: 'tel', autocomplete: 'tel' },
+        'field[9]':   { autocomplete: 'organization' },
+        'field[10]':  { autocomplete: 'street-address' },
+        'field[12]':  { layout: 'ac-zip', inputmode: 'numeric', autocomplete: 'postal-code' },
+        'field[13]':  { layout: 'ac-city', autocomplete: 'address-level2' },
+      };
+
+      function setupFields(root) {
+        root.querySelectorAll('input[name]').forEach(function (input) {
+          var setup = FIELD_SETUP[input.name];
+          // Versteckte Hilfsfelder (z. B. das von intl-tel-input befuellte
+          // "phone") nie anfassen - ein geaenderter type macht sie sichtbar.
+          if (!setup || input.type === 'hidden' || input.dataset.fieldSetup) return;
+          input.dataset.fieldSetup = '1';
+          if (setup.type) input.type = setup.type;
+          if (setup.inputmode) input.setAttribute('inputmode', setup.inputmode);
+          if (setup.autocomplete) input.setAttribute('autocomplete', setup.autocomplete);
+          var wrapper = input.closest('._form_element');
+          if (wrapper && setup.layout) wrapper.classList.add(setup.layout);
+        });
+      }
+
       function applyBrandStyles(root) {
+        setupFields(root);
         root.querySelectorAll('select').forEach(filterPastDates);
         root.querySelectorAll('._submit').forEach(styleSubmit);
         root.querySelectorAll(

@@ -7,6 +7,7 @@ Flask-Website für MENSCH DENK AN DICH® mit Bedienfeld zur Pflege von Beiträge
 PostgreSQL-Container (`db`, Postgres 15) und App-Container (`web`). Die App ist unter http://127.0.0.1:5001 erreichbar (Host-Port 5001 → Container-Port 5000). Im Produktionsmodus ist der Port nur lokal freigegeben (`127.0.0.1:5001`); von außen ist die App ausschließlich über Nginx erreichbar (`nginx/playfulfuture.de.conf`).
 
 ```bash
+
 ## debug mode, uses docker-compose.yml and docker-compose.override.yml
 $ docker build -t flask-mdad:latest .
 $ docker compose up -d
@@ -15,6 +16,7 @@ $ docker compose up -d
 $ docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 
 $ docker compose exec web python init_db.py
+
 ```
 
 Im Debug-Modus wird der Projektordner in den Container eingebunden (`.:/app`), Änderungen an Code und Templates sind daher ohne Neubau sofort wirksam.
