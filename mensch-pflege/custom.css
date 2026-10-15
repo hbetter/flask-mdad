@@ -1227,3 +1227,37 @@ main li a:not(.btn) {
         transform: none;
     }
 }
+
+/* Stimmen aus den Einrichtungen (Aufbau wie Kundenstimmen im Hauptportal):
+   Zitat mit Anfuehrungszeichen-Icon, darunter Foto + Name + Einrichtung */
+.testimonial-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.testimonial-quote {
+    font-style: italic;
+    margin-bottom: 0;
+}
+
+.testimonial-quote strong {
+    font-style: italic;
+}
+
+.testimonial-person {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    margin-top: auto;
+    padding-top: 1.25rem;
+}
+
+.testimonial-name {
+    font-weight: 600;
+    color: var(--sm-dark);
+}
+
+/* Platzhaltertext in den Feedback-Modals */
+.oton-quote-text {
+    font-style: italic;
+}
