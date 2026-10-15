@@ -104,19 +104,20 @@
 </section>
 
   
-  <!-- O-TÖNE AUS DEN EINRICHTUNGEN: drei Karten (Foto der Einrichtung + Zeilen zur Person),
-       ein Klick öffnet jeweils ein Modal mit Foto der Person und dem Zitat.
-       Quelle: MENSCH PFLEGE Intervention.pdf -->
+  <!-- DIE 3 HÄUSER: drei Karten (Name + Foto der Einrichtung, darunter
+       Platzhaltertext), ein Klick öffnet jeweils ein Modal mit
+       Platzhaltertext (Lorem ipsum, Inhalte folgen).
+       Fotos der Häuser: MENSCH PFLEGE Intervention.pdf -->
 
 <section class="py-3 py-lg-4">
   <div class="container">
     <div class="card shadow-sm">
       <div class="card-body p-4 p-lg-5">
-        <p class="kicker mb-2">Stimmen aus der Praxis</p>
+        <p class="kicker mb-2">Die 3 Häuser</p>
         <h2 class="display-5 mb-4">Feedback aus den Einrichtungen</h2>
         <div class="row row-cols-1 row-cols-md-3 g-3">
           <div class="col">
-            <button type="button" class="card-sm oton-card" data-bs-toggle="modal" data-bs-target="#otonGanzmann">
+            <button type="button" class="card-sm oton-card" data-bs-toggle="modal" data-bs-target="#houseBadWaldsee">
               <span class="oton-house">Spital zum Heiligen Geist</span>
               <img src="haus-bad-waldsee.jpg" alt="Spital zum Heiligen Geist in Bad Waldsee" class="oton-card-img">
               <span class="oton-card-body">
@@ -127,7 +128,7 @@
             </button>
           </div>
           <div class="col">
-            <button type="button" class="card-sm oton-card" data-bs-toggle="modal" data-bs-target="#otonFritz">
+            <button type="button" class="card-sm oton-card" data-bs-toggle="modal" data-bs-target="#houseDresden">
               <span class="oton-house">Haus Elbwiesen</span>
               <img src="haus-dresden.jpg" alt="Haus Elbwiesen in Dresden" class="oton-card-img">
               <span class="oton-card-body">
@@ -138,7 +139,7 @@
             </button>
           </div>
           <div class="col">
-            <button type="button" class="card-sm oton-card" data-bs-toggle="modal" data-bs-target="#otonAbel">
+            <button type="button" class="card-sm oton-card" data-bs-toggle="modal" data-bs-target="#houseBerlin">
               <span class="oton-house">Pflegewohnen Am Kreuzberg</span>
               <img src="haus-berlin.jpg" alt="Pflegewohnen Am Kreuzberg in Berlin" class="oton-card-img">
               <span class="oton-card-body">
@@ -153,12 +154,12 @@
     </div>
   </div>
 
-  <!-- Modals zu den O-Tönen -->
-  <div class="modal fade" id="otonGanzmann" tabindex="-1" aria-labelledby="otonGanzmannLabel" aria-hidden="true">
+  <!-- Modals zu den drei Häusern -->
+  <div class="modal fade" id="houseBadWaldsee" tabindex="-1" aria-labelledby="houseBadWaldseeLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title h5" id="otonGanzmannLabel">Feedback aus dem Spital zum Heiligen Geist</h3>
+          <h3 class="modal-title h5" id="houseBadWaldseeLabel">Feedback aus dem Spital zum Heiligen Geist</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
         </div>
         <div class="modal-body p-4">
@@ -171,11 +172,11 @@
     </div>
   </div>
 
-  <div class="modal fade" id="otonFritz" tabindex="-1" aria-labelledby="otonFritzLabel" aria-hidden="true">
+  <div class="modal fade" id="houseDresden" tabindex="-1" aria-labelledby="houseDresdenLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title h5" id="otonFritzLabel">Feedback aus dem Haus Elbwiesen</h3>
+          <h3 class="modal-title h5" id="houseDresdenLabel">Feedback aus dem Haus Elbwiesen</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
         </div>
         <div class="modal-body p-4">
@@ -188,11 +189,11 @@
     </div>
   </div>
 
-  <div class="modal fade" id="otonAbel" tabindex="-1" aria-labelledby="otonAbelLabel" aria-hidden="true">
+  <div class="modal fade" id="houseBerlin" tabindex="-1" aria-labelledby="houseBerlinLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title h5" id="otonAbelLabel">Feedback vom Pflegewohnen Am Kreuzberg</h3>
+          <h3 class="modal-title h5" id="houseBerlinLabel">Feedback vom Pflegewohnen Am Kreuzberg</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
         </div>
         <div class="modal-body p-4">
@@ -206,16 +207,16 @@
   </div>
 </section>
 
-  <!-- STIMMEN AUS DEN EINRICHTUNGEN: Zitate mit Foto und Namen, Aufbau wie
-       die Kundenstimmen im flask-mdad-Hauptportal (card-sm testimonial-card).
-       Quelle: MENSCH PFLEGE Intervention.pdf -->
+  <!-- PROZESSBERATUNG: Eindrücke der Prozessberaterinnen – Zitate mit
+       Foto und Namen, Aufbau wie die Kundenstimmen im flask-mdad-Hauptportal
+       (card-sm testimonial-card). Quelle: MENSCH PFLEGE Intervention.pdf -->
 
 <section class="py-3 py-lg-4">
   <div class="container">
     <div class="card shadow-sm">
       <div class="card-body p-4 p-lg-5">
-        <p class="kicker mb-2">Referenzen</p>
-        <h2 class="display-5 mb-4">Stimmen aus den Einrichtungen</h2>
+        <p class="kicker mb-2">Die Prozessberatung</p>
+        <h2 class="display-5 mb-4">Eindrücke der Prozessberaterinnen</h2>
         <div class="row g-3">
           <div class="col-lg-4">
             <figure class="card-sm testimonial-card mb-0">
