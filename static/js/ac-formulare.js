@@ -115,7 +115,61 @@
         });
       }
 
-      function applyBrandStyles(root) {
+      /* Doppelte IDs vermeiden: Alle AC-Formulare stehen gleichzeitig auf
+         jeder Seite (base.html) und verwenden dieselben IDs ("firstname",
+         "email", "phone", die Laenderauswahl "iti-0__..."). Dann zeigt
+         <label for="email"> im Webinar-Formular auf das Feld im Spielraum-
+         Formular - Screenreader lesen falsche Bezuege vor, ein Klick auf die
+         Beschriftung springt ins falsche Formular. Jede ID, die im Dokument
+         mehrfach vorkommt, bekommt deshalb das Formular als Praefix; Verweise
+         darauf (label[for], aria-*) innerhalb des Formulars werden mitgezogen.
+         Laeuft bei jeder Aenderung erneut, damit auch spaeter eingefuegte
+         Elemente (Fehlermeldungen, Laenderliste) erfasst werden. */
+      var REF_ATTRS = ['aria-controls', 'aria-describedby', 'aria-labelledby',
+                       'aria-owns', 'aria-activedescendant', 'list'];
+
+      // idCounts: Anzahl je ID im ganzen Dokument, einmal pro Durchlauf
+      // gezaehlt (sonst muesste fuer jedes der ~250 Elemente der
+      // Laenderliste das ganze Dokument durchsucht werden).
+      function countIds() {
+        var counts = Object.create(null);
+        document.querySelectorAll('[id]').forEach(function (el) {
+          counts[el.id] = (counts[el.id] || 0) + 1;
+        });
+        return counts;
+      }
+
+      function uniquifyIds(form, index, idCounts) {
+        var prefix = (form.id || ('acform' + index)).replace(/[^A-Za-z0-9_-]/g, '');
+        var renamed = Object.create(null);
+        form.querySelectorAll('[id]').forEach(function (el) {
+          var id = el.id;
+          if (!id || id.indexOf(prefix + '-') === 0 || (idCounts[id] || 0) < 2) return;
+          var newId = prefix + '-' + id;
+          el.id = newId;
+          idCounts[id] -= 1;
+          idCounts[newId] = 1;
+          renamed[id] = newId;
+        });
+        if (!Object.keys(renamed).length) return;
+        form.querySelectorAll('label[for]').forEach(function (label) {
+          if (renamed[label.htmlFor]) label.htmlFor = renamed[label.htmlFor];
+        });
+        REF_ATTRS.forEach(function (attr) {
+          form.querySelectorAll('[' + attr + ']').forEach(function (ref) {
+            var parts = ref.getAttribute(attr).split(/\s+/);
+            var changed = false;
+            parts = parts.map(function (p) {
+              if (renamed[p]) { changed = true; return renamed[p]; }
+              return p;
+            });
+            if (changed) ref.setAttribute(attr, parts.join(' '));
+          });
+        });
+      }
+
+      function applyBrandStyles(root, index, idCounts) {
+        uniquifyIds(root, index, idCounts);
         setupFields(root);
         root.querySelectorAll('select').forEach(filterPastDates);
         root.querySelectorAll('._submit').forEach(styleSubmit);
@@ -129,15 +183,20 @@
       /* Alle AC-Formulare der Seite erfassen - auch solche, die
          ActiveCampaign erst nach dem Laden einsetzt. Kein Pflegen einer
          Formularliste nötig. Mehrere Änderungen in kurzer Folge werden
-         zu einem Durchlauf pro Frame zusammengefasst. */
+         zu einem Durchlauf zusammengefasst. */
       function applyAll() {
-        document.querySelectorAll('form._form').forEach(applyBrandStyles);
+        var idCounts = countIds();
+        document.querySelectorAll('form._form').forEach(function (form, index) {
+          applyBrandStyles(form, index, idCounts);
+        });
       }
       var scheduled = false;
       new MutationObserver(function () {
         if (scheduled) return;
         scheduled = true;
-        requestAnimationFrame(function () { scheduled = false; applyAll(); });
+        // setTimeout statt requestAnimationFrame: laeuft auch in Hintergrund-
+        // Tabs, wo die Formulare von ActiveCampaign ebenfalls nachladen.
+        setTimeout(function () { scheduled = false; applyAll(); }, 50);
       }).observe(document.body, { childList: true, subtree: true });
       applyAll();
     })();

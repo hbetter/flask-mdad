@@ -37,7 +37,7 @@
       </div>
     {% endif %}
 
-    <a class="skip-link btn btn-maroon" href="#main" style="position:absolute;left:-999px;top:0;z-index:2000;">Zum Inhalt springen</a>
+    <a class="skip-link btn btn-maroon" href="#main">Zum Inhalt springen</a>
 
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
         <div class="container">
@@ -68,7 +68,11 @@
         </div>
     </nav>
 
+    {# Hauptbereich fuer alle Seiten (Sprungziel von "Zum Inhalt springen").
+       tabindex="-1", damit der Fokus beim Sprung wirklich dorthin wechselt. #}
+    <main id="main" tabindex="-1">
     {% block content %}{% endblock %}
+    </main>
 
     <footer class="site-footer pt-5 pb-4" id="contact">
         <div class="container">
@@ -121,7 +125,7 @@
                     </a>
                     <div class="sustainability-tooltip" role="tooltip">
                         <div class="sustainability-tooltip-inner">
-                            <h4>Nachhaltiges Webdesign</h4>
+                            <p class="sustainability-tooltip-title">Nachhaltiges Webdesign</p>
                             <p>Diese Website wurde nicht mit WordPress gebaut, sondern bewusst mit schlankem, sauberem Code umgesetzt – ganz ohne unnötige Plugins, externe Skripte und Datenballast. Jeder Seitenaufruf verbraucht dadurch deutlich weniger Energie: Während eine durchschnittliche Website weltweit rund 0,8 Gramm CO2 pro Aufruf erzeugt, setzen wir gezielt auf Reduktion statt Aufblähung.</p>
                             <p>Betrieben wird die Seite auf einem Cloudserver von Hetzner, deren Rechenzentren bereits seit 2008 zu 100&nbsp;% mit Strom aus Wasserkraft laufen, bei einem PUE-Wert von 1,13, einem der besten der Branche.</p>
                             <p>Neugierig, wie grün eine Website wirklich ist? Mit Tools wie dem <a href="https://www.websitecarbon.com/" target="_blank" rel="noopener">Website Carbon Calculator</a> oder dem <a href="https://www.thegreenwebfoundation.org/green-web-check/" target="_blank" rel="noopener">Green Web Check</a> lässt sich der CO2-Fußabdruck jeder beliebigen Seite überprüfen – auch dieser hier.</p>
@@ -144,7 +148,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <h4 class="mb-1 fw-bold" id="spielraumModalLabel">Spiele mit uns in deinem Unternehnem!</h4>
+                        <h2 class="h4 mb-1 fw-bold" id="spielraumModalLabel">Spiele mit uns in deinem Unternehnem!</h2>
                         <div class="text-secondary">Buche für dein Unternehmen einen MENSCH DENK AN DICH® firmeninternen Probe Spielraum.</div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -166,7 +170,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <h4 class="mb-1 fw-bold" id="spieleCoachModalLabel">Lasse dich als Spiele Coach zertifizieren!</h4>
+                        <h2 class="h4 mb-1 fw-bold" id="spieleCoachModalLabel">Lasse dich als Spiele Coach zertifizieren!</h2>
                         <div class="text-secondary">Melde dich an und werde Teil der MENSCH DENK AN DICH® Spiele Coach Community.</div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -188,7 +192,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <h4 class="mb-1 fw-bold" id="spieleEventModalLabel">Sichere dir deinen Platz am Spieltisch!</h4>
+                        <h2 class="h4 mb-1 fw-bold" id="spieleEventModalLabel">Sichere dir deinen Platz am Spieltisch!</h2>
                         <div class="text-secondary">Melde dich jetzt zur Teilnahme an einem MENSCH DENK AN DICH® Spiele Event an.</div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -210,7 +214,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <h4 class="mb-1 fw-bold" id="newsletterModalLabel">Bleibe auf dem Laufenden!</h4>
+                        <h2 class="h4 mb-1 fw-bold" id="newsletterModalLabel">Bleibe auf dem Laufenden!</h2>
                         <div class="text-secondary">Melde dich jetzt für unseren Newsletter an.</div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -232,7 +236,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <h4 class="mb-1 fw-bold" id="webinarModalLabel">Sichere dir deinen Platz im Webinar!</h4>
+                        <h2 class="h4 mb-1 fw-bold" id="webinarModalLabel">Sichere dir deinen Platz im Webinar!</h2>
                         <div class="text-secondary">Melde dich jetzt zur Teilnahme an einem MENSCH DENK AN DICH® Webinar an.</div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
@@ -246,6 +250,18 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        // Beitragskacheln (_articles_list.html): Klick auf die Kachel oeffnet
+        // das Beitragsfenster. Bewusst kein role="button" auf der Kachel -
+        // per Tastatur geht das ueber den "Weiterlesen"-Button; Kacheln ohne
+        // "##" zeigen ihren Text ohnehin vollstaendig.
+        document.addEventListener("click", function (event) {
+            var card = event.target.closest("[data-article-modal]");
+            if (!card || event.target.closest("a, button, input, select, textarea, label")) { return; }
+            var modal = document.querySelector(card.dataset.articleModal);
+            if (modal) { bootstrap.Modal.getOrCreateInstance(modal).show(); }
+        });
+    </script>
     <!-- Erzwingt einheitliches Styling fuer eingebettete AC-Formulare
          (siehe static/css/ac-formulare.css) und blendet vergangene
          Termine aus deren Auswahllisten aus. -->

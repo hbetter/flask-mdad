@@ -25,6 +25,8 @@
 {% macro article_image(item) %}
 {%- set src = url_for('uploaded_file', filename=item.image_filename) -%}
 <div class="article-img article-img-{{ item.image_fit or 'cover' }}" style="--article-img: url('{{ src }}')">
-    <img src="{{ src }}" alt="{{ item.title }}" loading="lazy">
+    {# alt leer: der Titel steht direkt unter dem Bild, sonst liest ein
+       Screenreader ihn doppelt vor #}
+    <img src="{{ src }}" alt="" loading="lazy">
 </div>
 {%- endmacro %}
