@@ -1,0 +1,107 @@
+{# Beitragskachel und Lese-Modal, gemeinsam genutzt von _articles_list.html
+   (Start, Beratung, Akademie, Stories) und dem Bedienfeld, damit die Kacheln
+   ueberall exakt gleich aussehen.
+
+   article_tile(item, heading, click_target, top, bottom)
+     heading       Ueberschriftenebene des Kacheltitels ("h2"/"h3")
+     click_target  Modal, das ein Klick auf die Kachel oeffnet
+                   (Standard: das Lese-Modal des Beitrags)
+     top/bottom    zusaetzliches Markup ueber dem Titel bzw. unter dem Text
+                   (im Bedienfeld: Infos/Badges und Bearbeiten/Loeschen) #}
+{% from "_macros.html" import article_image %}
+
+{% macro _article_text(item, heading) -%}
+    <{{ heading }} class="card-title h5">{{ item.title }}</{{ heading }}>
+    {% if item.description %}
+    <p class="card-subtitle mb-2 text-secondary h6">
+        {{ item.description }}
+    </p>
+    {% endif %}
+    {% set parts = item.body.split('##', 1) %}
+    <div class="card-text preserve-lines mb-0">
+        {{ parts[0]|safe }}
+    </div>
+    {% if parts|length > 1 %}
+    <div class="mt-2">
+        <button
+            type="button"
+            class="btn btn-sm btn-outline-blue px-3 border-1 mt-2"
+            data-bs-toggle="modal"
+            data-bs-target="#articleModal{{ item.id }}">
+            Weiterlesen
+        </button>
+    </div>
+    {% endif %}
+{%- endmacro %}
+
+{% macro article_tile(item, heading="h3", click_target=None, top="", bottom="") -%}
+{%- set wide = "col-lg-8" in item.col_size or item.col_size == "col-12" -%}
+<div class="{{ item.col_size or 'col-12 col-md-6 col-lg-4' }}">
+    <div
+        class="card h-100 shadow-sm cursor-pointer"
+        data-article-modal="{{ click_target or '#articleModal' ~ item.id }}">
+        {% if wide %}
+            <div class="row g-0 h-100 align-items-stretch">
+                <div class="{% if item.image_filename %}col-md-6 order-2 order-md-1{% else %}col-12{% endif %} d-flex flex-column">
+                    {{ top }}
+                    <div class="card-body d-flex flex-column flex-grow-1">
+                        {{ _article_text(item, heading) }}
+                    </div>
+                    {{ bottom }}
+                </div>
+
+                {% if item.image_filename %}
+                    <div class="col-md-6 order-1 order-md-2 d-flex align-items-stretch justify-content-center p-3">
+                        <div class="w-100 d-flex justify-content-center align-items-center h-100">
+                            <img
+                                src="{{ url_for('uploaded_file', filename=item.image_filename) }}"
+                                class="card-img-side"
+                                alt=""
+                            >
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            {% if item.image_filename %}
+            {{ article_image(item) }}
+            {% endif %}
+            {{ top }}
+            <div class="card-body d-flex flex-column">
+                {{ _article_text(item, heading) }}
+            </div>
+            {{ bottom }}
+        {% endif %}
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro article_modal(item) -%}
+<div class="modal fade" id="articleModal{{ item.id }}" tabindex="-1" aria-labelledby="articleModalLabel{{ item.id }}" aria-hidden="true">
+    {# Wie die Formular-Modals: auf Smartphones bildschirmfuellend, geschlossen
+       wird ueber das Kreuz oben rechts (kein zusaetzlicher Button unten). #}
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    {# Fenstertitel als h2: Ein Dialog ist ein eigener Abschnitt; h4
+                       wuerde nach dem Kacheltitel (h2/h3) Ebenen ueberspringen. #}
+                    <h2 class="modal-title h4 mb-1" id="articleModalLabel{{ item.id }}">
+                        {{ item.title }}
+                    </h2>
+                    {% if item.description %}
+                    <div class="text-secondary">
+                        {{ item.description }}
+                    </div>
+                    {% endif %}
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+            </div>
+            <div class="modal-body">
+                {% set item_body = item.body.replace('##', '') %}
+                <div class="card-text preserve-lines">{{ item_body|safe }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}

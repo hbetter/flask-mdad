@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_macros.html" import article_image %}
+{% from "_article_tile.html" import article_tile, article_modal %}
 
 {% block content %}
 <div class="container py-3">
@@ -64,10 +64,11 @@
 </div>
 <div class="row g-3">
     {% for item in articles %}
-        {# Breite wie im oeffentlichen Bereich (col_size). Mehrspaltige Beitraege
-           zeigen wie dort Text links und Bild rechts (auf Mobilgeraeten Bild oben). #}
-        {% set wide = "col-lg-8" in item.col_size or item.col_size == "col-12" %}
-        {% set tile_content %}
+        {# Kachel exakt wie im oeffentlichen Bereich (_article_tile.html); nur
+           die Infos ueber dem Titel und Bearbeiten/Loeschen kommen hinzu. Ein
+           Klick auf die Kachel oeffnet die Positionierung, "Weiterlesen" den
+           vollstaendigen Text wie auf der Stories-Seite. #}
+        {% set top %}
                 <div class="card-header bg-white border-0 pt-3 pb-2">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="d-flex flex-wrap align-items-center gap-1">
@@ -92,27 +93,9 @@
                         </small>
                     </div>
                 </div>
-
-                <div class="card-body py-2">
-                    <h5 class="card-title mb-1">{{ item.title }}</h5>
-
-                    {% if item.description %}
-                        <p class="card-subtitle small text-secondary mb-2">
-                            {{ item.description }}
-                        </p>
-                    {% endif %}
-
-                    {# Wie auf der Stories-Seite (_articles_list.html) nur der Text vor
-                       "##", davon im Bedienfeld nochmals nur die Haelfte. #}
-                    {% set parts = item.body.split('##', 1) %}
-                    {% set preview = parts[0]|halfpreview %}
-                    <div class="card-text preserve-lines body-preview">{{ preview }}</div>
-                    {% if parts|length > 1 or preview.endswith(" …") %}
-                    <div class="small text-muted fst-italic mt-1">gekürzt, vollständiger Text unter „Bearbeiten“</div>
-                    {% endif %}
-                </div>
-
-                <div class="card-footer bg-white border-0 py-2">
+        {% endset %}
+        {% set bottom %}
+                <div class="card-footer bg-white border-0 py-2 mt-auto">
                     <div class="btn-group">
                         <a href="{{ url_for('edit_article', article_id=item.id) }}"
                            class="btn btn-sm btn-outline-secondary px-3 border-1"
@@ -131,41 +114,8 @@
                     </div>
                 </div>
         {% endset %}
-        <div class="{{ item.col_size or 'col-12 col-md-6 col-lg-4' }}">
-            <div
-                class="card h-100 shadow-sm border-0 cursor-pointer"
-                role="button"
-                data-bs-toggle="modal"
-                data-bs-target="#editModal{{ item.id }}"
-            >
-                {% if wide %}
-                <div class="row g-0 h-100">
-                    <div class="{% if item.image_filename %}col-md-6 order-2 order-md-1{% else %}col-12{% endif %} d-flex flex-column">
-                        {{ tile_content }}
-                    </div>
-                    {% if item.image_filename %}
-                    {# Gleiche Darstellung wie in _articles_list.html (Stories usw.):
-                       Bild vollstaendig, max. 320 px hoch, nicht zugeschnitten. #}
-                    <div class="col-md-6 order-1 order-md-2 d-flex align-items-stretch justify-content-center p-3">
-                        <div class="w-100 d-flex justify-content-center align-items-center h-100">
-                            <img
-                                src="{{ url_for('uploaded_file', filename=item.image_filename) }}"
-                                class="card-img-side"
-                                alt="{{ item.title }}"
-                                loading="lazy"
-                            >
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                {% else %}
-                {% if item.image_filename %}
-                    {{ article_image(item) }}
-                {% endif %}
-                {{ tile_content }}
-                {% endif %}
-            </div>
-        </div>
+        {{ article_tile(item, "h2", "#editModal" ~ item.id, top, bottom) }}
+        {{ article_modal(item) }}
 
         <div class="modal fade" id="editModal{{ item.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ item.id }}" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-top">

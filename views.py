@@ -75,7 +75,6 @@ EVENT_CATEGORY_MODAL = {
 }
 
 DEFAULT_COL_SIZE = "col-12 col-md-6 col-lg-4"
-PREVIEW_MIN_CHARS = 200  # Mindestlaenge der Textvorschau im Bedienfeld
 RESIZED_IMAGE_WIDTH = 1280
 RESIZED_IMAGE_HEIGHT = 715
 
@@ -111,6 +110,22 @@ migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
+
+
+# Cache-Busting fuer CSS/JS/Bilder aus static/: Nginx liefert static/ mit
+# "expires 7d" aus, Browser behalten daher eine Woche lang alte Dateien.
+# Jede mit url_for("static", ...) erzeugte Adresse bekommt deshalb die
+# Aenderungszeit der Datei angehaengt (z. B. custom.css?v=1760527913).
+# Aendert sich die Datei, aendert sich die Adresse und Browser laden neu.
+@app.url_defaults
+def add_static_version(endpoint, values):
+    if endpoint != "static" or "filename" not in values or "v" in values:
+        return
+    path = os.path.join(app.static_folder, values["filename"])
+    try:
+        values["v"] = int(os.stat(path).st_mtime)
+    except OSError:
+        pass
 
 
 def allowed_file(filename):
@@ -260,31 +275,6 @@ def eventcategoryicon(value):
 @app.template_filter("eventcategorymodal")
 def eventcategorymodal(value):
     return EVENT_CATEGORY_MODAL.get(value)
-
-
-@app.template_filter("halfpreview")
-def halfpreview(value):
-    # Vorschautext fuer die Beitragkarten-Kacheln im Bedienfeld: HTML-Tags
-    # entfernen (Absaetze, Zeilenumbrueche und Ueberschriften werden zu
-    # Zeilenumbruechen) und lange Texte auf die Haelfte kuerzen, an einer
-    # Wortgrenze, mit "…" am Ende. Kurze Anreisser (bis PREVIEW_MIN_CHARS
-    # Zeichen) bleiben vollstaendig, und auch bei laengeren Texten wird nie
-    # unter PREVIEW_MIN_CHARS gekuerzt - sonst bliebe bei einem einzeiligen
-    # Anreisser vor "##" kaum etwas uebrig.
-    import html
-    import re
-    text = re.sub(r"<br\s*/?>|</(?:p|div|li|h[1-6])\s*>", "\n", value or "", flags=re.I)
-    text = re.sub(r"<[^>]+>", "", text)
-    text = html.unescape(text).replace("\xa0", " ")
-    text = re.sub(r"[ \t]+\n", "\n", text)
-    text = re.sub(r"\n{3,}", "\n\n", text).strip()
-    if len(text) <= PREVIEW_MIN_CHARS:
-        return text
-    limit = max(len(text) // 2, PREVIEW_MIN_CHARS)
-    cut = text.rfind(" ", 0, limit)
-    if cut < limit * 0.6:
-        cut = limit
-    return text[:cut].rstrip(" ,;:-–\n") + " …"
 
 
 @app.template_filter("eventdaterange")

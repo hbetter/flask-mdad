@@ -280,15 +280,10 @@ form._form:not(#_) .iti__country-container {
   box-shadow: 0 -10px 12px -10px rgba(40, 19, 81, .18) !important;
 }
 
-/* Formular-Modals auf dem Smartphone (modal-fullscreen-sm-down in
-   base.html): wirklich bildschirmfuellend - custom.css begrenzt die
-   Hoehe scrollbarer Modals sonst auf 100vh - 2rem - und kompakter Kopf,
-   damit die Felder mehr Platz bekommen. */
+/* Modals auf dem Smartphone (modal-fullscreen-sm-down): kompakter Kopf,
+   damit Felder und Text mehr Platz bekommen. Die Hoehe des Vollbild-Modals
+   regelt custom.css (Abschnitt "Vollbild-Modals auf dem Smartphone"). */
 @media (max-width: 575.98px) {
-  .modal-fullscreen-sm-down .modal-content {
-    max-height: none;
-    height: 100%;
-  }
   .modal-fullscreen-sm-down .modal-header {
     padding: .75rem 1rem;
   }
