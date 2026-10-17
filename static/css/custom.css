@@ -185,11 +185,21 @@ h1, h2, h3 {
     }
 }
 
+/* Zwischen 992 und 1199px ist die ausgeklappte Leiste knapp (Logo, fuenf
+   Menuepunkte, Button): Menuepunkte etwas enger. */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .navbar-custom .nav-link {
+        padding: 0 .6rem !important;
+    }
+}
+
+/* Selektor mit .btn-toggle-group, weil ".btn.text-nowrap" (weiter unten)
+   die Schriftgroesse sonst wieder auf .95rem setzt. */
 @media (max-width: 576px) {
     .navbar .btn-toggle-group {
         gap: .35rem !important;
     }
-    .navbar .btn-maroon {
+    .navbar .btn-toggle-group .btn-maroon {
         padding: .3rem .5rem;
         font-size: .75rem;
     }
@@ -1184,5 +1194,13 @@ body.hide-dev-labels .dev-label {
        eine Luecke unter dem Button. */
     .modal-fullscreen-sm-down .modal-body:not(:has(form._form)) {
         padding-bottom: calc(var(--bs-modal-padding, 1rem) + max(5rem, env(safe-area-inset-bottom, 0px)));
+    }
+}
+
+/* Sehr schmale Smartphones (unter 360px): kleineres Logo, damit Logo, Button
+   und Menue-Icon in eine Zeile passen. */
+@media (max-width: 359.98px) {
+    .navbar-logo {
+        height: 40px;
     }
 }

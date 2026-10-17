@@ -6,7 +6,8 @@
 
 <!-- Platzhalterseite: Struktur (Hero + 2 statische Sektionen) nach dem Muster der
      Indexseite, Inhalte sind Lorem-Ipsum-Beispieltexte und Bildplatzhalter, die
-     später durch die echte Beratungs-Seite ersetzt werden. -->
+     später durch die echte Beratungs-Seite ersetzt werden. Danach folgt die
+     echte Sektion "Neue Wege gehen" (von der Startseite verschoben). -->
 <div class="page-main">
 
   <!-- HERO -->
@@ -110,6 +111,67 @@
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[3] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- LÖSUNGSWEG (von der Startseite hierher verschoben) -->
+  {% call m.section_card("Der spielerische Lösungsansatz", "Neue Wege gehen") %}
+          <p class="fs-5 mb-5">Fünf Gründe, warum MENSCH DENK AN DICH® einen Unterschied macht:</p>
+          <div class="table-responsive">
+            <table class="table schmerz-table mb-0">
+              <thead>
+                <tr>
+                  <th>Herausforderung</th>
+                  <th>Ergebnis</th>
+                  <th>Wirkung des Spiels</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="painpoint">Mangelndes Engagement</span>
+                    Viele Mitarbeitende leisten Dienst nach Vorschrift statt sich einzubringen.
+                  </td>
+                  <td data-label="Ergebnis">Mitarbeitende ziehen von sich aus mit – ohne Kontrolle, ohne Anreizsystem, ohne ständiges Nachhalten.</td>
+                  <td data-label="Wirkung des Spiels"><span class="wirkmechanismus">Kreative Ideen finden und intrinsische Motivation</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="painpoint">Fehlende Veränderungsbereitschaft</span>
+                    Wandel wird ausgesessen statt aktiv mitgetragen.
+                  </td>
+                  <td data-label="Ergebnis">Veränderung wird selbst vorangetrieben. Der Widerstand fällt von innen weg, die Umsetzung beschleunigt sich.</td>
+                  <td data-label="Wirkung des Spiels"><span class="wirkmechanismus">Erlebte Selbstwirksamkeit und soziale Verbundenheit</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="painpoint">Wenig Vertrauen in Führung</span>
+                    Nur 23&nbsp;% trauen der Geschäftsführung zu, Herausforderungen zu meistern.
+                  </td>
+                  <td data-label="Ergebnis">Offene Ideen statt vorsichtiges Schweigen – Entscheidungen stehen auf einer breiteren, ehrlicheren Informationsbasis.</td>
+                  <td data-label="Wirkung des Spiels"><span class="wirkmechanismus">Psychologische Sicherheit ermöglicht Ko-Kreation</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="painpoint">Fachkräftemangel</span>
+                    1,7 Mio. unbesetzte Stellen – Deutschland weltweit an der Spitze der Mangelquote.
+                  </td>
+                  <td data-label="Ergebnis">Personalkapazität steigt - Zeit und Kosten gespart - besser als jede Rekrutierung.</td>
+                  <td data-label="Wirkung des Spiels"><span class="wirkmechanismus">Brachliegende Potenziale werden gehoben, kollektive Stärke entsteht</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="painpoint">Reduktion auf kognitive Ebene</span>
+                    Klassische Formate vermitteln bloßes Wissen, aber verändern kein Verhalten.
+                  </td>
+                  <td data-label="Ergebnis">Ideen, Lösungen und Innovationen leichter erzeugt und schneller umgesetzt.</td>
+                  <td data-label="Wirkung des Spiels"><span class="wirkmechanismus">Positive Emotion und kollektive Stärke als Treiber für Innovationen</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[4] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 

@@ -69,7 +69,7 @@ Code-Bezeichner sind englisch, sichtbare Inhalte deutsch. Template-Dateinamen, V
 
 - `User`: Benutzername und Passwort-Hash (bcrypt).
 - Beitrag (`Article`): Titel, Text, Beschreibung, optional ein Bild, Reihenfolge (`order_number`) und Spaltenbreite (`col_size`). Unabhängige Tickboxen `on_index`, `on_consulting`, `on_academy`, `on_stories` – ein Beitrag kann auf mehreren Seiten erscheinen. `is_banner` markiert höchstens einen Beitrag als Banner.
-- Sektion (`Section`): wie ein Beitrag, zusätzlich mit Kicker und Bildposition (links/rechts), aber ohne Banner, Erfolgsgeschichten und Spaltenbreite. Sektionen werden je Seite in nummerierte Plätze („Slots") zwischen den festen Inhalten eingefügt (Indexseite 10, Beratung und Akademie je 3).
+- Sektion (`Section`): wie ein Beitrag, zusätzlich mit Kicker und Bildposition (links/rechts), aber ohne Banner, Erfolgsgeschichten und Spaltenbreite. Sektionen werden je Seite in nummerierte Plätze („Slots") zwischen den festen Inhalten eingefügt (Indexseite 10, Beratung 4, Akademie 3).
 - Termin (`Event`): Titel, Untertitel, Kategorie, Ort, Start und Ende (mit Uhrzeit oder ganztägig).
 
 **Beitragsbilder** werden nicht zugeschnitten, sondern nur auf höchstens 1600 px verkleinert und als WebP gespeichert (Transparenz bleibt erhalten). Wie ein Bild in der Kachel erscheint, legt das Feld `image_fit` fest – im Formular „Bilddarstellung“, jederzeit änderbar:
