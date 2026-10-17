@@ -1261,3 +1261,33 @@ main li a:not(.btn) {
 .oton-quote-text {
     font-style: italic;
 }
+
+/* Kooperationspartnerinnen: rundes Porträt links neben Name/Funktion */
+.partner-person {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+}
+
+.partner-portrait {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(40, 19, 81, .12);
+}
+
+.partner-name {
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--sm-dark);
+}
+
+/* Footer: Herz-Symbol mit den Händen rechts in der oberen Zeile */
+.footer-symbol {
+    width: 88px;
+    height: auto;
+}
