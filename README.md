@@ -58,7 +58,9 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 - `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
 - `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder und Favicon. Bilder aus dem Bedienfeld liegen nicht hier, sondern in `data/uploads`. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
 - `docs/`: Dokumentation der Indexseite (Inhalt und Stil) und Sicherung der Erfolgsgeschichten-Texte.
-- `equipe-pq/` und `nginx/`: eigenständige statische Landingpage für equipe-pq.playfulfuture.de samt Nginx-Konfiguration (siehe unten).
+- `equipe-pq/`: eigenständige statische Landingpage für equipe-pq.playfulfuture.de (siehe unten).
+- `mensch-pflege/`: eigenständige statische Landingpage für das Projekt MENSCH PFLEGE! auf mensch-pflege.playfulfuture.de (siehe unten).
+- `nginx/`: Nginx-Konfigurationen für die statischen Seiten und playfulfuture.de.
 - `logos_download/`: Hilfsskripte zum Herunterladen der „Bekannt aus"-Logos und zum Erzeugen des Logo-Banners.
 
 ### Namenskonvention
@@ -137,6 +139,18 @@ Regeln beim Import:
 ## equipe-pq
 
 Der Ordner `equipe-pq/` enthält eine eigenständige statische Seite für equipe-pq.playfulfuture.de. Sie wird nicht von Flask, sondern direkt von Nginx ausgeliefert. Einrichtung, Rechte und HTTPS sind als Kommentar in `nginx/equipe-pq.playfulfuture.de.conf` beschrieben. Nginx gibt nur diesen Unterordner frei, der Rest des Repositorys bleibt unerreichbar.
+
+## mensch-pflege
+
+Der Ordner `mensch-pflege/` enthält die statische Landingpage für MENSCH PFLEGE!, ein Modellvorhaben der BARMER und der SMEO GmbH in der stationären Pflege (Laufzeit Oktober 2024 bis September 2027). Die Seite ist ursprünglich eine Kopie von `equipe-pq/`, hat inzwischen aber eigene Inhalte, ein eigenes Logo-Set und eine eigene `custom.css`. Wie equipe-pq wird sie nicht von Flask, sondern direkt von Nginx ausgeliefert; Einrichtung, Rechte und HTTPS stehen als Kommentar in `nginx/mensch-pflege.playfulfuture.de.conf`. Nginx gibt nur diesen Unterordner frei.
+
+- Seiten: `index.html` (One-Pager), `impressum.html`, `datenschutz.html`. Navbar und Footer sind in allen drei Dateien gleich und müssen bei Änderungen in allen drei nachgezogen werden.
+- Navbar: SMEO-Logo links, rundes MENSCH-PFLEGE!-Logo mittig (ragt etwa zu einem Drittel über den unteren Rand), BARMER-Logo rechts.
+- Sektionen der Startseite: Hero („Worum es geht“, Fotos, Zitat Christine Witte/BARMER, Kontakt-Button an mensch.pflege@smeo-now.de), „Feedback aus den Einrichtungen“ (Kicker „Die 3 Häuser“; je Haus eine Karte mit Träger und Ort, ein Klick öffnet ein Modal mit Zitaten von Einrichtungsleitungen und Qualitätsbeauftragten), „Die Intervention“, „Eindrücke der Prozessberaterinnen“, „Die Evaluation“, „Kooperationspartnerinnen“. Jede Sektion hat darüber einen HTML-Kommentar mit Name und Aufbau.
+- Bilder: Eingebunden werden nur verkleinerte Webfassungen (`*-web.jpg`, `*-web.webp`, bereinigte SVGs wie `hand-in-hand.svg`, `mp-schriftzug-claim.svg`). Große Originale (Fotos, PNGs, Inkscape-SVGs) werden nicht committet, da alles im Ordner öffentlich abrufbar ist.
+- CSS-Klassen für Fotos richten sich nach dem Format: `hero-photo-portrait` (Hochformat) und `hero-photo-landscape` (Querformat); freigestellte Figuren nutzen `hero-figure`.
+- Barrierefreiheit: geprüft nach WCAG 2.2 AA mit axe-core (keine Verstöße). Skip-Link, `<main>` auf allen Seiten, sichtbarer Tastaturfokus, Kontraste ≥ 4,5:1, Ankündigung neuer Fenster, `prefers-reduced-motion`. Bei Änderungen erhalten.
+- Kein Build-Schritt: Bootstrap 5 und Bootstrap Icons kommen per CDN, Änderungen an HTML/CSS sind sofort wirksam.
 
 ## Datensicherung und Grenzen
 
