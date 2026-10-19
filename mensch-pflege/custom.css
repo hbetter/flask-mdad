@@ -409,8 +409,13 @@ h1, h2, h3 {
     margin-bottom: 1rem;
 }
 
+/* dvh statt vh: auf iPhone/iPad ist 100vh hoeher als der sichtbare Bereich,
+   der untere Teil des Modals laege sonst unter der Safari-Leiste. Die
+   vh-Zeile davor bleibt als Rueckfall fuer Browser ohne dvh.
+   (uebernommen aus flask-mdad static/css/custom.css) */
 .modal-dialog-scrollable .modal-content {
     max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
 }
 
 .modal-dialog-scrollable .modal-body {
@@ -1290,4 +1295,54 @@ main li a:not(.btn) {
 .footer-symbol {
     width: 88px;
     height: auto;
+}
+
+/* ---------------------------------------------------------
+   Uebernommen aus flask-mdad static/css/custom.css
+   --------------------------------------------------------- */
+
+/* Linkfarbe etwas dunkler als Bootstraps #0d6efd: erreicht so auch auf
+   dem fast weissen Seitenhintergrund (#fcfcfc) den Kontrast 4,5:1. */
+:root {
+    --bs-link-color: #0b5ed7;
+    --bs-link-color-rgb: 11, 94, 215;
+    --bs-link-hover-color: #084298;
+    --bs-link-hover-color-rgb: 8, 66, 152;
+}
+
+/* Schliessen-Kreuz der Modals: oben rechts statt vertikal mittig im Kopf
+   (bei mehrzeiligen Titeln rutschte es sonst nach unten) und als runder,
+   umrandeter Button in Markenfarbe, damit es nicht uebersehen wird.
+   Hover/Fokus: gefuellt mit weissem Kreuz. */
+.modal-header {
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.modal-header .btn-close {
+    --bs-btn-close-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M3.5 3.5l9 9M12.5 3.5l-9 9' stroke='%239C0E17' stroke-width='2.2' stroke-linecap='round'/%3e%3c/svg%3e");
+    --bs-btn-close-opacity: 1;
+    --bs-btn-close-hover-opacity: 1;
+    --bs-btn-close-focus-opacity: 1;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    margin: -.25rem -.25rem 0 auto;
+    border: 2px solid var(--brand-red-dark);
+    border-radius: 50%;
+    background-color: #fff;
+    background-size: 1rem;
+    transition: background-color .2s ease;
+}
+
+.modal-header .btn-close:hover,
+.modal-header .btn-close:focus-visible {
+    --bs-btn-close-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M3.5 3.5l9 9M12.5 3.5l-9 9' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3e%3c/svg%3e");
+    background-color: var(--brand-red-dark);
+}
+
+.modal-header .btn-close:focus-visible {
+    box-shadow: 0 0 0 .25rem rgba(156, 14, 23, .3);
 }
