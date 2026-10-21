@@ -125,10 +125,37 @@
     pointer-events: none;
 }
 
-@media (min-width: 992px) {
-    .lexicon-az-list {
-        justify-content: space-between;
+/* Die Leiste erscheint nur, wenn alle 26 Buchstaben in eine Zeile passen
+   (ab lg; 26 x 2rem + Abstaende < 936px Containerbreite). Darunter wird sie
+   ausgeblendet statt seitlich zu scrollen. Zusaetzlich blendet das Skript in
+   lexicon.html sie aus, falls sie trotzdem ueberlaeuft (z. B. bei groesserer
+   Schrifteinstellung im Browser). */
+.lexicon-az-list a,
+.lexicon-az-list span {
+    min-width: 2rem;
+    height: 2rem;
+}
+
+.lexicon-az-list {
+    justify-content: space-between;
+    gap: 2px;
+}
+
+@media (max-width: 991.98px) {
+    .lexicon-page {
+        --lexicon-az-height: 0px;
     }
+    .lexicon-az {
+        display: none;
+    }
+}
+
+.lexicon-page.lexicon-az-off {
+    --lexicon-az-height: 0px;
+}
+
+.lexicon-az-off .lexicon-az {
+    display: none;
 }
 
 /* ---------- Buchstabengruppen & Eintraege ---------- */

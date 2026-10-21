@@ -232,7 +232,18 @@
         page.style.setProperty("--lexicon-nav-offset", h + "px");
     }
     setOffset();
-    window.addEventListener("resize", setOffset);
+
+    // A-Z-Leiste nur zeigen, wenn alle Buchstaben in eine Zeile passen.
+    var azList = document.querySelector(".lexicon-az-list");
+    function checkAz() {
+        page.classList.remove("lexicon-az-off");
+        if (azList && azList.offsetParent !== null && azList.scrollWidth > azList.clientWidth + 1) {
+            page.classList.add("lexicon-az-off");
+        }
+    }
+    checkAz();
+
+    window.addEventListener("resize", function () { setOffset(); checkAz(); });
 })();
 </script>
 {% endblock %}
