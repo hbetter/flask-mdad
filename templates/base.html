@@ -26,6 +26,8 @@
          (z. B. die Spielraum-Anmeldung im Modal unten), ausgelagert nach
          static/css/ac-formulare.css statt in custom.css. -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ac-formulare.css') }}">
+    {# Seitenspezifische Styles/Head-Elemente (z. B. lexicon.html) #}
+    {% block head_extra %}{% endblock %}
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 </head>
@@ -50,7 +52,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('academy') }}">Akademie</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('stories') }}">Erfolgsgeschichten</a></li>
                     <li class="nav-item"><a class="nav-link text-nowrap" href="{{ url_for('index') }}#events">Termine</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Kontakt</a></li>
+                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'lexicon' %} active{% endif %}" href="{{ url_for('lexicon') }}"{% if request.endpoint == 'lexicon' %} aria-current="page"{% endif %}>Lexikon</a></li>
                 </ul>
             </div>
             <div class="d-flex align-items-center gap-2 btn-toggle-group">

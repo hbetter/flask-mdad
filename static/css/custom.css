@@ -799,6 +799,31 @@ footer.site-footer .sustainability-badge-link:hover {
     display: block;
 }
 
+/* Portraetfoto im Kopfbereich der Startseite: rechteckiges Hochformat (3:4)
+   mit Bildunterschrift. Hoechstens 420px breit, damit das Bild neben dem
+   Text nicht zu dominant wird. */
+.hero-photo {
+    width: 100%;
+    max-width: 420px;
+}
+
+.hero-photo img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: .6rem;
+    display: block;
+    box-shadow: 0 6px 20px rgba(40, 19, 81, .12);
+}
+
+.hero-photo figcaption {
+    margin-top: .6rem;
+    font-size: .9rem;
+    color: var(--sm-muted);
+    text-align: center;
+}
+
 .award-logo-frame {
     display: flex;
     align-items: center;

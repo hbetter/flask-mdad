@@ -29,8 +29,12 @@
                 <a href="{{ url_for('academy') }}" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
               </div>
             </div>
-            <div class="col-lg-6">
-              <img src="{{ url_for('static', filename='img/collage_web.jpg') }}" alt="Impressionen aus dem Spiel MENSCH DENK AN DICH®" class="hero-media">
+            <div class="col-lg-6 d-flex justify-content-center align-items-center">
+              {# Web-Fassung von static/img/IreneImCafe.png (750x1000, JPEG) #}
+              <figure class="hero-photo mb-0">
+                <img src="{{ url_for('static', filename='img/IreneImCafe-web.jpg') }}" alt="Dr. Irene Preußner am Laptop in einem Café" width="750" height="1000">
+                <figcaption>Dr. Irene Preußner<br>- Spieleentwicklerin -<br>Geschäftsführerin SMEO GmbH</figcaption>
+              </figure>
             </div>
           </div>
   {% endcall %}

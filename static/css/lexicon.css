@@ -1,0 +1,229 @@
+/* =========================================================
+   Lexikonseite (templates/lexicon.html)
+   Eigene Datei statt custom.css, weil die Regeln nur hier gelten.
+   Farben ausschliesslich ueber die Variablen aus custom.css.
+   ========================================================= */
+
+.lexicon-page {
+    /* wird per Skript auf die echte Navbar-Hoehe gesetzt */
+    --lexicon-nav-offset: 88px;
+    --lexicon-az-height: 3.25rem;
+}
+
+.lexicon-intro {
+    max-width: 46rem;
+}
+
+/* ---------- Suche & Themenfilter ---------- */
+
+.lexicon-tools {
+    max-width: 52rem;
+}
+
+.lexicon-tools .input-group-text {
+    background: #fff;
+    color: var(--sm-maroon);
+}
+
+.lexicon-tools .form-control:focus {
+    border-color: var(--sm-maroon);
+    box-shadow: 0 0 0 .2rem rgba(156, 14, 23, .15);
+}
+
+.lexicon-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.lexicon-chip {
+    border: 1px solid var(--sm-line);
+    background: #fff;
+    color: var(--sm-ink);
+    border-radius: 999px;
+    padding: .4rem .9rem;
+    font-size: .9rem;
+    font-weight: 600;
+    line-height: 1.3;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.lexicon-chip:hover {
+    border-color: var(--sm-maroon);
+    color: var(--sm-maroon);
+}
+
+.lexicon-chip[aria-pressed="true"] {
+    background: var(--sm-maroon);
+    border-color: var(--sm-maroon);
+    color: #fff;
+}
+
+.lexicon-chip:focus-visible {
+    outline: 3px solid var(--sm-purple);
+    outline-offset: 2px;
+}
+
+/* ---------- Haeufig gesuchte Begriffe ---------- */
+
+.lexicon-quick a {
+    color: var(--sm-maroon);
+    font-weight: 600;
+}
+
+/* ---------- A-Z-Leiste (klebt unter der Navbar) ---------- */
+
+.lexicon-az {
+    position: sticky;
+    top: var(--lexicon-nav-offset);
+    z-index: 1010; /* unter der Navbar (1020), ueber den Karten */
+    background: rgba(252, 252, 252, .96);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--sm-line);
+    margin-top: .5rem;
+}
+
+.lexicon-az-list {
+    display: flex;
+    gap: .25rem;
+    list-style: none;
+    margin: 0;
+    padding: .5rem 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.lexicon-az-list::-webkit-scrollbar {
+    display: none;
+}
+
+.lexicon-az-list a,
+.lexicon-az-list span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    border-radius: .5rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.lexicon-az-list a {
+    color: var(--sm-maroon);
+}
+
+.lexicon-az-list a:hover,
+.lexicon-az-list a:focus-visible {
+    background: var(--sm-maroon);
+    color: #fff;
+}
+
+.lexicon-az-list span,
+.lexicon-az-list a.is-disabled {
+    color: var(--sm-line);
+    pointer-events: none;
+}
+
+@media (min-width: 992px) {
+    .lexicon-az-list {
+        justify-content: space-between;
+    }
+}
+
+/* ---------- Buchstabengruppen & Eintraege ---------- */
+
+.lexicon-group + .lexicon-group {
+    margin-top: 2.5rem;
+}
+
+.lexicon-group,
+.lexicon-entry {
+    scroll-margin-top: calc(var(--lexicon-nav-offset) + var(--lexicon-az-height) + 1rem);
+}
+
+.lexicon-letter {
+    font-size: 2.5rem;
+    color: var(--sm-maroon);
+    border-bottom: 2px solid var(--sm-line);
+    padding-bottom: .25rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Lesekarten sollen beim Ueberfahren nicht "springen" wie die
+   klickbaren card-sm-Karten auf den anderen Seiten. */
+.lexicon-entry:hover {
+    transform: none;
+    box-shadow: 0 6px 20px rgba(40, 19, 81, .08);
+}
+
+.lexicon-entry dfn {
+    font-style: normal;
+}
+
+/* Bootstraps .h4 setzt font-weight 500 und schlaegt damit die
+   h3-Regel aus custom.css - Begriffe sollen aber fett sein. */
+.lexicon-entry h3 {
+    font-weight: 800;
+}
+
+.lexicon-entry p:last-child {
+    margin-bottom: 0;
+}
+
+.lexicon-entry:target {
+    box-shadow: 0 0 0 3px var(--sm-maroon), 0 8px 24px rgba(40, 19, 81, .12);
+}
+
+.lexicon-tag {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: .2rem .55rem;
+    border-radius: .35rem;
+    background: var(--sm-bg);
+    color: var(--sm-purple);
+}
+
+.lexicon-tag-health { color: var(--sm-maroon); }
+.lexicon-tag-psychology { color: var(--sm-purple); }
+.lexicon-tag-change { color: var(--sm-dark); }
+.lexicon-tag-leadership { color: var(--sm-pink); }
+.lexicon-tag-play { color: var(--sm-maroon); background: #fbeeee; }
+
+.lexicon-aliases {
+    color: var(--sm-muted);
+}
+
+.lexicon-short {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--sm-dark);
+}
+
+.lexicon-points {
+    padding-left: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.lexicon-points li + li {
+    margin-top: .35rem;
+}
+
+.lexicon-related {
+    border-top: 1px solid var(--sm-line);
+    padding-top: .75rem;
+    margin-top: 1rem;
+    color: var(--sm-muted);
+}
+
+.lexicon-related a {
+    color: var(--sm-maroon);
+}
+
+.lexicon-empty {
+    font-size: 1.1rem;
+    padding: 2rem 0;
+}

@@ -20,6 +20,7 @@ from flask_migrate import Migrate
 from models import db, User, Article, Section, Event
 import csv_transfer
 import images
+import lexicon_data
 
 
 # Jede Beitragkarte kann unabhängig auf mehreren dieser Seiten erscheinen
@@ -1241,6 +1242,44 @@ def imprint():
 def privacy():
     banner = get_banner_text()
     return render_template("privacy.html", banner=banner)
+
+
+@app.route("/lexicon")
+def lexicon():
+    # Statische Lexikonseite (Inhalte in lexicon_data.py), vorerst ohne
+    # Menuepunkt - nur direkt ueber /lexicon erreichbar.
+    banner = get_banner_text()
+    groups, terms_by_slug = lexicon_data.build_lexicon()
+    page_url = url_for("lexicon", _external=True)
+    # Strukturierte Daten (schema.org DefinedTermSet), damit Suchmaschinen
+    # die Seite als Glossar mit einzelnen Begriffen erkennen.
+    structured_data = {
+        "@context": "https://schema.org",
+        "@type": "DefinedTermSet",
+        "name": "Lexikon: Gesundheit, Resilienz und Wandel in der Arbeitswelt",
+        "url": page_url,
+        "inLanguage": "de",
+        "hasDefinedTerm": [
+            {
+                "@type": "DefinedTerm",
+                "name": term["term"],
+                "description": term["short"],
+                "url": page_url + "#" + term["slug"],
+            }
+            for term in lexicon_data.LEXICON_TERMS
+        ],
+    }
+    return render_template(
+        "lexicon.html",
+        banner=banner,
+        groups=groups,
+        letters={letter for letter, _ in groups},
+        alphabet=[chr(c) for c in range(ord("A"), ord("Z") + 1)],
+        categories=lexicon_data.LEXICON_CATEGORIES,
+        term_count=len(terms_by_slug),
+        structured_data=structured_data,
+        quick_terms=lexicon_data.LEXICON_QUICK_TERMS,
+    )
 
 
 @app.route("/logout")

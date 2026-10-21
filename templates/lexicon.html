@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}Lexikon: Gesundheit, Resilienz & Wandel in der Arbeitswelt – Mensch denk an Dich{% endblock %}
+{% block meta_description %}Lexikon zu Playfulness, Gamification, Betrieblichem Gesundheitsmanagement, Resilienz und Transformation in der Arbeitswelt: {{ term_count }} Begriffe kompakt erklärt.{% endblock %}
+{% block head_extra %}
+    <meta name="keywords" content="Playfulness, Gamification, Playfulness vs. Gamification, Lexikon, Betriebliches Gesundheitsmanagement, BGM, Resilienz, Psychologie Arbeitswelt, Transformation, Change Management, Serious Games">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lexicon.css') }}">
+    <script type="application/ld+json">{{ structured_data|tojson }}</script>
+{% endblock %}
+{% block content %}
+
+{# Statische Lexikonseite. Die Inhalte stehen in lexicon_data.py, nicht in der
+   Datenbank. Suche und Themenfilter (Skript unten) blenden nur Eintraege
+   aus - ohne JavaScript ist die komplette Liste sichtbar und per A-Z-Leiste
+   und Ankern (/lexicon#resilienz) navigierbar. #}
+<div class="page-main lexicon-page">
+
+  <!-- KOPFBEREICH mit Suche und Themenfilter -->
+  {% call m.section_card("Lexikon", "Begriffe aus der Arbeitswelt – verständlich erklärt", heading_tag='h1', heading_class='display-5 mb-3') %}
+          <p class="fs-5 mb-4 lexicon-intro">
+            Von Resilienz über betriebliches Gesundheitsmanagement bis Playfulness:
+            Hier finden Sie zentrale Begriffe rund um Gesundheit, Psychologie, Führung,
+            Wandel und spielbasiertes Lernen in der Arbeitswelt – kompakt und praxisnah erklärt.
+          </p>
+
+          <div class="lexicon-tools" hidden data-lexicon-tools>
+            <label for="lexiconSearch" class="form-label fw-semibold">Begriff suchen</label>
+            <div class="input-group input-group-lg mb-3">
+              <span class="input-group-text" aria-hidden="true"><i class="bi bi-search"></i></span>
+              <input type="search" id="lexiconSearch" class="form-control"
+                     placeholder="z. B. Playfulness, Gamification, Resilienz, BGM …" autocomplete="off"
+                     aria-describedby="lexiconCount">
+            </div>
+            <p class="lexicon-quick small mb-3">
+              <span class="fw-semibold">Häufig gesucht:</span>
+              {% for slug, label in quick_terms %}<a href="#{{ slug }}">{{ label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
+            </p>
+            <div class="lexicon-filters" role="group" aria-label="Nach Thema filtern">
+              <button type="button" class="lexicon-chip" data-lexicon-category="" aria-pressed="true">Alle Themen</button>
+              {% for key, label in categories %}
+              <button type="button" class="lexicon-chip lexicon-chip-{{ key }}" data-lexicon-category="{{ key }}" aria-pressed="false">{{ label }}</button>
+              {% endfor %}
+            </div>
+            <p class="small text-muted mt-3 mb-0" id="lexiconCount" aria-live="polite">{{ term_count }} Begriffe</p>
+          </div>
+  {% endcall %}
+
+  <!-- A-Z-LEISTE -->
+  <nav class="lexicon-az" aria-label="Lexikon nach Anfangsbuchstaben">
+    <div class="container">
+      <ul class="lexicon-az-list">
+        {% for letter in alphabet %}
+          <li>
+            {% if letter in letters %}
+              <a href="#buchstabe-{{ letter|lower }}" data-lexicon-letter="{{ letter }}">{{ letter }}</a>
+            {% else %}
+              <span aria-hidden="true">{{ letter }}</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- EINTRAEGE -->
+  {% call m.section_plain() %}
+    <p class="lexicon-empty" hidden data-lexicon-empty>
+      Zu Ihrer Suche haben wir keinen Begriff gefunden. Versuchen Sie es mit einem anderen
+      Stichwort oder <button type="button" class="btn btn-link p-0 align-baseline" data-lexicon-reset>setzen Sie die Filter zurück</button>.
+    </p>
+
+    {% for letter, entries in groups %}
+    <section class="lexicon-group" id="buchstabe-{{ letter|lower }}" data-lexicon-group="{{ letter }}" aria-labelledby="buchstabe-{{ letter|lower }}-titel">
+      <h2 class="lexicon-letter" id="buchstabe-{{ letter|lower }}-titel">{{ letter }}</h2>
+      <div class="row g-3 g-lg-4">
+        {% for entry in entries %}
+        <div class="col-12 col-lg-6" data-lexicon-entry
+             data-category="{{ entry.category }}"
+             data-search="{{ ([entry.term] + (entry.aliases or []) + [entry.short])|join(' ') }}">
+          <article class="card-sm lexicon-entry" id="{{ entry.slug }}">
+            <p class="lexicon-tag lexicon-tag-{{ entry.category }} mb-2">{{ entry.category_label }}</p>
+            <h3 class="h4 mb-1"><dfn>{{ entry.term }}</dfn></h3>
+            {% if entry.aliases %}
+            <p class="lexicon-aliases small mb-2">auch: {{ entry.aliases|join(', ') }}</p>
+            {% endif %}
+            <p class="lexicon-short">{{ entry.short }}</p>
+            {% for paragraph in entry.body or [] %}
+            <p>{{ paragraph }}</p>
+            {% endfor %}
+            {% if entry.points %}
+            <ul class="lexicon-points">
+              {% for label, text in entry.points %}
+              <li><strong>{{ label }}:</strong> {{ text }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+            {% for paragraph in entry.body_after or [] %}
+            <p>{{ paragraph }}</p>
+            {% endfor %}
+            {% if entry.related %}
+            <p class="lexicon-related small mb-0">
+              <span class="fw-semibold">Siehe auch:</span>
+              {% for rel in entry.related %}<a href="#{{ rel.slug }}">{{ rel.term }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+            </p>
+            {% endif %}
+          </article>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+  {% endcall %}
+
+  <!-- ABSCHLUSS: vom Lesen ins Erleben -->
+  {% call m.section_card("Spielerisch ausprobieren", "Begriffe erleben statt nur nachschlagen") %}
+          <div class="row gy-4 align-items-center">
+            <div class="col-lg-8">
+              <p class="fs-5 mb-0">
+                Resilienz, psychologische Sicherheit und Veränderungskompetenz entstehen im
+                Miteinander. Mit MENSCH DENK AN DICH® werden sie im Team erfahrbar – und mit der
+                play2change-Methode in den Arbeitsalltag übertragen.
+              </p>
+            </div>
+            <div class="col-lg-4 d-flex flex-wrap gap-3 justify-content-lg-end">
+              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Gratis spielen</button>
+              <a href="{{ url_for('academy') }}" class="btn btn-outline-dark-sm btn-lg">Spiele-Coach werden</a>
+            </div>
+          </div>
+  {% endcall %}
+
+</div>
+
+<script>
+// Lexikon: Suche, Themenfilter und A-Z-Leiste. Bewusst ohne Abhaengigkeiten;
+// ohne JavaScript bleibt die Werkzeugleiste ausgeblendet und alles sichtbar.
+(function () {
+    var tools = document.querySelector("[data-lexicon-tools]");
+    if (!tools) { return; }
+    tools.hidden = false;
+
+    var search = document.getElementById("lexiconSearch");
+    var count = document.getElementById("lexiconCount");
+    var empty = document.querySelector("[data-lexicon-empty]");
+    var chips = Array.prototype.slice.call(document.querySelectorAll("[data-lexicon-category]"));
+    var entries = Array.prototype.slice.call(document.querySelectorAll("[data-lexicon-entry]"));
+    var groups = Array.prototype.slice.call(document.querySelectorAll("[data-lexicon-group]"));
+    var letterLinks = Array.prototype.slice.call(document.querySelectorAll("[data-lexicon-letter]"));
+    var activeCategory = "";
+
+    // Umlaute, ß und Gross-/Kleinschreibung fuer die Suche angleichen
+    // ("Fuehrung", "führung" und "Führung" finden dasselbe).
+    function normalize(text) {
+        return (text || "").toLowerCase()
+            .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+            .normalize("NFD").replace(/[̀-ͯ]/g, "");
+    }
+
+    entries.forEach(function (el) {
+        el._haystack = normalize(el.getAttribute("data-search") + " " + el.textContent);
+    });
+
+    function apply() {
+        var query = normalize(search.value.trim());
+        var visible = 0;
+        entries.forEach(function (el) {
+            var show = (!activeCategory || el.getAttribute("data-category") === activeCategory)
+                && (!query || el._haystack.indexOf(query) !== -1);
+            el.hidden = !show;
+            if (show) { visible += 1; }
+        });
+        var visibleLetters = {};
+        groups.forEach(function (group) {
+            var hasEntries = group.querySelector("[data-lexicon-entry]:not([hidden])") !== null;
+            group.hidden = !hasEntries;
+            if (hasEntries) { visibleLetters[group.getAttribute("data-lexicon-group")] = true; }
+        });
+        letterLinks.forEach(function (link) {
+            var on = !!visibleLetters[link.getAttribute("data-lexicon-letter")];
+            link.classList.toggle("is-disabled", !on);
+            if (on) { link.removeAttribute("aria-disabled"); link.removeAttribute("tabindex"); }
+            else { link.setAttribute("aria-disabled", "true"); link.setAttribute("tabindex", "-1"); }
+        });
+        empty.hidden = visible !== 0;
+        count.textContent = visible === entries.length
+            ? entries.length + " Begriffe"
+            : visible + " von " + entries.length + " Begriffen";
+    }
+
+    function setCategory(key) {
+        activeCategory = key;
+        chips.forEach(function (chip) {
+            chip.setAttribute("aria-pressed", chip.getAttribute("data-lexicon-category") === key ? "true" : "false");
+        });
+        apply();
+    }
+
+    search.addEventListener("input", apply);
+    chips.forEach(function (chip) {
+        chip.addEventListener("click", function () { setCategory(chip.getAttribute("data-lexicon-category")); });
+    });
+    letterLinks.forEach(function (link) {
+        link.addEventListener("click", function (event) {
+            if (link.classList.contains("is-disabled")) { event.preventDefault(); }
+        });
+    });
+    document.querySelector("[data-lexicon-reset]").addEventListener("click", function () {
+        search.value = "";
+        setCategory("");
+        search.focus();
+    });
+
+    // "Siehe auch"-Links und Direktaufrufe (/lexicon#bgm) sollen auch dann
+    // funktionieren, wenn der Zieleintrag gerade weggefiltert ist.
+    function revealHash() {
+        var id = decodeURIComponent(location.hash.slice(1));
+        var target = id && document.getElementById(id);
+        if (!target || !target.closest("[data-lexicon-entry]")) { return; }
+        if (target.closest("[hidden]")) {
+            search.value = "";
+            setCategory("");
+            target.scrollIntoView();
+        }
+    }
+    window.addEventListener("hashchange", revealHash);
+
+    // Hoehe der klebenden Navigationsleiste, damit A-Z-Leiste und Anker
+    // nicht darunter verschwinden.
+    var navbar = document.querySelector(".navbar.sticky-top");
+    var page = document.querySelector(".lexicon-page");
+    function setOffset() {
+        var h = navbar ? navbar.offsetHeight : 0;
+        page.style.setProperty("--lexicon-nav-offset", h + "px");
+    }
+    setOffset();
+    window.addEventListener("resize", setOffset);
+})();
+</script>
+{% endblock %}
