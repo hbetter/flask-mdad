@@ -49,10 +49,23 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto gap-lg-2">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('consulting') }}">Beratung</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('academy') }}">Akademie</a></li>
+                    {# Akademie als Aufklappmenue: Uebersichtsseite, Demo-Eintraege
+                       (Lorem ipsum, Platzhalter) und das Lexikon. #}
+                    {% set academy_active = request.endpoint in ('academy', 'lexicon') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle{% if academy_active %} active{% endif %}" href="{{ url_for('academy') }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">Akademie</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item{% if request.endpoint == 'academy' %} active{% endif %}" href="{{ url_for('academy') }}"{% if request.endpoint == 'academy' %} aria-current="page"{% endif %}>Akademie im Überblick</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Lorem ipsum dolor</a></li>
+                            <li><a class="dropdown-item" href="#">Consectetur adipiscing</a></li>
+                            <li><a class="dropdown-item" href="#">Sed do eiusmod tempor</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item{% if request.endpoint == 'lexicon' %} active{% endif %}" href="{{ url_for('lexicon') }}"{% if request.endpoint == 'lexicon' %} aria-current="page"{% endif %}>Lexikon</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('stories') }}">Erfolgsgeschichten</a></li>
-                    <li class="nav-item"><a class="nav-link text-nowrap" href="{{ url_for('index') }}#events">Termine</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'lexicon' %} active{% endif %}" href="{{ url_for('lexicon') }}"{% if request.endpoint == 'lexicon' %} aria-current="page"{% endif %}>Lexikon</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Kontakt</a></li>
                 </ul>
             </div>
             <div class="d-flex align-items-center gap-2 btn-toggle-group">
