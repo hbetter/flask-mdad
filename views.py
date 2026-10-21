@@ -1282,6 +1282,23 @@ def lexicon():
     )
 
 
+@app.route("/lexicon/<slug>/preview")
+def lexicon_preview(slug):
+    # HTML-Fragment eines Lexikoneintrags fuer das Lexikon-Modal (base.html),
+    # geoeffnet ueber Links aus dem Makro lexicon_link (_macros.html).
+    _, terms_by_slug = lexicon_data.build_lexicon()
+    entry = terms_by_slug.get(slug)
+    if entry is None:
+        return "", 404
+    # "related" enthaelt Slugs; fuer "Siehe auch" die Eintraege selbst
+    # (unbekannte Slugs fallen wie auf der Lexikonseite heraus).
+    entry = dict(entry)
+    entry["related"] = [
+        terms_by_slug[s] for s in entry.get("related", []) if s in terms_by_slug
+    ]
+    return render_template("_lexicon_preview.html", entry=entry)
+
+
 @app.route("/logout")
 def logout():
     logout_user()

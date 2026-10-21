@@ -1243,3 +1243,52 @@ body.hide-dev-labels .dev-label {
         height: 40px;
     }
 }
+
+/* Lexikon-Verweise im Fliesstext (Makro lexicon_link) und Lexikon-Modal
+   (base.html). Die Eintragsklassen spiegeln lexicon.css, das nur auf der
+   Lexikonseite geladen wird. */
+.lexicon-link {
+    color: inherit;
+    text-decoration: underline dotted;
+    text-decoration-color: var(--sm-maroon);
+    text-decoration-thickness: 2px;
+    text-underline-offset: .2em;
+    cursor: help;
+}
+
+.lexicon-link:hover,
+.lexicon-link:focus-visible {
+    color: var(--sm-maroon);
+}
+
+.lexicon-modal .lexicon-short {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--sm-dark);
+}
+
+.lexicon-modal .lexicon-points {
+    padding-left: 1.1rem;
+}
+
+.lexicon-modal .lexicon-points li + li {
+    margin-top: .35rem;
+}
+
+.lexicon-modal .modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.lexicon-modal .lexicon-related {
+    border-top: 1px solid var(--sm-line);
+    padding-top: .75rem;
+    margin-top: 1rem;
+    color: var(--sm-muted);
+}
+
+.lexicon-modal .lexicon-related .lexicon-link {
+    color: var(--sm-maroon);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    cursor: pointer;
+}

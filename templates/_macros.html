@@ -30,3 +30,12 @@
     <img src="{{ src }}" alt="" loading="lazy">
 </div>
 {%- endmacro %}
+
+{# Begriff im Fliesstext mit einem Lexikoneintrag verknuepfen. Beim Ueberfahren
+   mit der Maus (kurz verweilen), per Tippen/Klick oder per Tastatur oeffnet
+   sich der Eintrag als Modal (base.html, #lexiconModal). Ohne JavaScript
+   fuehrt der Link zum Eintrag auf der Lexikonseite.
+   Aufruf: {{ m.lexicon_link("resilienz-spiele", "Resilienzspiel") }} #}
+{% macro lexicon_link(slug, text) -%}
+<a href="{{ url_for('lexicon') }}#{{ slug }}" class="lexicon-link" data-lexicon="{{ slug }}">{{ text }}</a>
+{%- endmacro %}

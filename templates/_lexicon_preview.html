@@ -1,0 +1,16 @@
+{# Inhalt des Lexikon-Modals (base.html, #lexiconModal), per fetch von
+   /lexicon/<slug>/preview geladen. Titel und Link setzt das Skript aus
+   den data-Attributen. #}
+<div data-lexicon-title="{{ entry.term }}" data-lexicon-url="{{ url_for('lexicon') }}#{{ entry.slug }}">
+  {% if entry.aliases %}
+  <p class="lexicon-aliases small text-secondary mb-2">auch: {{ entry.aliases|join(', ') }}</p>
+  {% endif %}
+  {% include "_lexicon_entry_text.html" %}
+  {% if entry.related %}
+  {# Verwandte Eintraege oeffnen sich im selben Modal (lexicon-link) #}
+  <p class="lexicon-related small mb-0">
+    <span class="fw-semibold">Siehe auch:</span>
+    {% for rel in entry.related %}<a href="{{ url_for('lexicon') }}#{{ rel.slug }}" class="lexicon-link" data-lexicon="{{ rel.slug }}">{{ rel.term }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+  </p>
+  {% endif %}
+</div>

@@ -83,20 +83,7 @@
             {% if entry.aliases %}
             <p class="lexicon-aliases small mb-2">auch: {{ entry.aliases|join(', ') }}</p>
             {% endif %}
-            <p class="lexicon-short">{{ entry.short }}</p>
-            {% for paragraph in entry.body or [] %}
-            <p>{{ paragraph }}</p>
-            {% endfor %}
-            {% if entry.points %}
-            <ul class="lexicon-points">
-              {% for label, text in entry.points %}
-              <li><strong>{{ label }}:</strong> {{ text }}</li>
-              {% endfor %}
-            </ul>
-            {% endif %}
-            {% for paragraph in entry.body_after or [] %}
-            <p>{{ paragraph }}</p>
-            {% endfor %}
+            {% include "_lexicon_entry_text.html" %}
             {% if entry.related %}
             <p class="lexicon-related small mb-0">
               <span class="fw-semibold">Siehe auch:</span>

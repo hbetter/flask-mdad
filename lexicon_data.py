@@ -264,7 +264,7 @@ LEXICON_TERMS = [
             "Im Alltag zeigt sich Resilienz in einem resilienten Lebensstil: einer gesunden Lebensführung mit Bewegung, Ernährung und Schlaf, einem wirksamen Umgang mit Stress, tragfähigen sozialen Beziehungen und einer optimistischen Grundhaltung, die Herausforderungen auch als Chance zum Wachsen sieht.",
             "Für Dr. Irene Preußner, die Entwicklerin von MENSCH DENK AN DICH®, soll Resilienz nicht erklärt, sondern erlebt werden – erst die eigene Erfahrung macht sie im Arbeitsalltag verfügbar.",
         ],
-        "related": ["resilienzfaktoren", "resilienzfoerderung", "resilienztraining"],
+        "related": ["resilienz-spiele", "resilienzfaktoren", "resilienzfoerderung", "resilienztraining"],
     },
     {
         "slug": "resilienzfaktoren",
@@ -958,7 +958,7 @@ LEXICON_TERMS = [
     {
         "slug": "spiele-am-arbeitsplatz",
         "term": "Spiele am Arbeitsplatz",
-        "aliases": ["Bürospiele", "Teambuilding-Spiele"],
+        "aliases": ["Bürospiele", "Teambuildingspiele"],
         "category": "play",
         "short": "Spielerische Formate im Büro oder Homeoffice, die Teamgeist, Kommunikation und Kreativität fördern.",
         "body": [
@@ -969,13 +969,13 @@ LEXICON_TERMS = [
     },
     {
         "slug": "resilienz-spiele",
-        "term": "Resilienz-Spiele",
+        "term": "Resilienzspiele",
         "category": "play",
         "short": "Spiele, die gezielt die Widerstandskraft von Mitarbeitenden und Teams fördern.",
         "body": [
             "Mit Spielkarten und einem interaktiven Spielfeld werden berufliche Situationen aufgegriffen, in denen Teilnehmende Entscheidungen treffen, mit Belastungen umgehen und Krisen bewältigen. So werden Resilienzfaktoren erlebbar und individuelle Unterschiede im Umgang mit Stress bewusst.",
         ],
-        "related": ["resilienzfoerderung", "mdad", "resilienzfaktoren"],
+        "related": ["resilienz", "resilienzfoerderung", "mdad", "resilienzfaktoren"],
     },
     {
         "slug": "play2change",

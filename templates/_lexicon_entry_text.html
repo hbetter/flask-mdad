@@ -1,0 +1,17 @@
+{# Text eines Lexikoneintrags (Kurzdefinition, Absaetze, Aufzaehlung),
+   gemeinsam genutzt von der Lexikonseite (lexicon.html) und dem
+   Lexikon-Modal (_lexicon_preview.html, oeffnet sich ueber lexicon_link). #}
+<p class="lexicon-short">{{ entry.short }}</p>
+{% for paragraph in entry.body or [] %}
+<p>{{ paragraph }}</p>
+{% endfor %}
+{% if entry.points %}
+<ul class="lexicon-points">
+  {% for label, text in entry.points %}
+  <li><strong>{{ label }}:</strong> {{ text }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% for paragraph in entry.body_after or [] %}
+<p>{{ paragraph }}</p>
+{% endfor %}
