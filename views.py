@@ -661,6 +661,7 @@ def dashboard():
             "articles": Article.query.count(),
             "sections": Section.query.count(),
             "events": Event.query.count(),
+            "users": User.query.count(),
         },
         import_errors=import_errors,
         past_event_count=past_events_query().count(),
@@ -1268,11 +1269,7 @@ def import_data():
             except csv_transfer.CsvImportError as exc:
                 return _import_failed(exc.errors)
 
-        flash(
-            f"Import abgeschlossen: {counts['articles']} Beiträge, {counts['sections']} Sektionen, "
-            f"{counts['events']} Termine, {counts['images']} Bilder.",
-            "success",
-        )
+        flash(csv_transfer.format_counts(counts, "Import abgeschlossen") + ".", "success")
         return redirect(url_for("dashboard"))
 
     # Der Import ist ein Modal im Bedienfeld; ein direkter Aufruf von /import

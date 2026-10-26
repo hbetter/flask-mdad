@@ -66,7 +66,7 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 - `auth.py`: `admin_required` und Passwortregeln. `extensions.py`: CSRF-Schutz und Rate-Limit. `mailer.py`: Mailversand und Verschlüsselung des SMTP-Passworts.
 - `models.py`: SQLAlchemy-Modelle `User`, `Profile`, `Invitation`, `PortalSettings`, `Article`, `Section`, `Event`.
 - `images.py`: Verarbeitung der Beitragsbilder (Verkleinern ohne Zuschnitt, Logo-Erkennung, Wahl der Darstellung) – genutzt vom Bedienfeld und vom CSV-Import.
-- `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine und Sektionen (siehe unten), auch als Kommandozeilenwerkzeug.
+- `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine, Sektionen und Nutzer mit Profil (siehe unten), auch als Kommandozeilenwerkzeug.
 - `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_user_menu.html` das Nutzermenü rechts in der Navbar (Avatar mit Dropdown: Mein Profil, Öffentliche Ansicht, Passwort ändern, Bedienfeld für Admins, Abmelden; auf dem Handy als Block im aufgeklappten Menü). Der Button „Gratis spielen“ erscheint nur für nicht angemeldete Besucher, „Anmelden“ steht im Footer; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
 - `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder und Favicon. Bilder aus dem Bedienfeld liegen nicht hier, sondern in `data/uploads`. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
 - `docs/`: Dokumentation der Indexseite (Inhalt und Stil) und Sicherung der Erfolgsgeschichten-Texte.
@@ -133,13 +133,13 @@ Fünf AC-Formulare sind als Bootstrap-Modals in `base.html` eingebunden und von 
 
 ## CSV-Import und -Export
 
-Beiträge, Termine und Sektionen lassen sich als CSV-Dateien exportieren und wieder importieren, etwa um Inhalte vor einem Neuaufbau der Datenbank zu sichern oder zwischen Entwicklung und Produktion zu übertragen. Die Logik steckt in `csv_transfer.py`.
+Beiträge, Termine, Sektionen und Nutzer mit Profil lassen sich als CSV-Dateien exportieren und wieder importieren, etwa um Inhalte vor einem Neuaufbau der Datenbank zu sichern oder zwischen Entwicklung und Produktion zu übertragen. Die Logik steckt in `csv_transfer.py`.
 
-Ein Export-/Importordner enthält `articles.csv`, `sections.csv` und `events.csv` sowie alle Bilder, auf die die Spalte `image_filename` verweist – im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8 (mit BOM, damit Excel Umlaute korrekt zeigt). Ja/Nein-Felder als `1`/`0`, Datum und Uhrzeit in deutscher Ortszeit als `JJJJ-MM-TT HH:MM`.
+Ein Export-/Importordner enthält `articles.csv`, `sections.csv`, `events.csv` und `users.csv` sowie alle Bilder und Profilfotos, auf die die Spalten `image_filename` bzw. `photo_filename` verweisen – im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8 (mit BOM, damit Excel Umlaute korrekt zeigt). Ja/Nein-Felder als `1`/`0`, Datum und Uhrzeit in deutscher Ortszeit als `JJJJ-MM-TT HH:MM`.
 
 Im Bedienfeld:
 
-- **Export** zeigt zuerst eine Rückfrage mit der Anzahl der Beiträge, Termine und Sektionen und lädt nach Bestätigung ein ZIP mit allen drei CSV-Dateien und den Bildern herunter. Fehlt ein Bild in `static/uploads`, steht das in `export_hinweise.txt` im ZIP.
+- **Export** zeigt zuerst eine Rückfrage mit der Anzahl der Beiträge, Termine, Sektionen und Nutzer und lädt nach Bestätigung ein ZIP mit allen vier CSV-Dateien, den Bildern und den Profilfotos herunter. Das ZIP enthält personenbezogene Daten und die Passwort-Hashes – sicher aufbewahren. Fehlt ein Bild in `static/uploads`, steht das in `export_hinweise.txt` im ZIP.
 - **Import** öffnet ein Fenster, in dem ein ganzer Ordner (CSV-Dateien und Bilder) oder ein Export-ZIP ausgewählt wird. Schlägt der Import fehl, öffnet sich das Fenster erneut mit den Fehlermeldungen. Uploads sind auf insgesamt 16 MB begrenzt.
 
 Auf der Kommandozeile (ohne Größenbegrenzung):
@@ -151,7 +151,7 @@ $ docker compose exec web python csv_transfer.py import export-ordner [--user ad
 
 Regeln beim Import:
 
-- Es werden immer neue Einträge angelegt, bestehende bleiben unverändert. Ein wiederholter Import erzeugt Duplikate. Die Spalte `id` dient nur zur Orientierung und wird ignoriert.
+- Beiträge, Sektionen und Termine werden immer neu angelegt, bestehende bleiben unverändert. Ein wiederholter Import erzeugt Duplikate. Die Spalte `id` dient nur zur Orientierung und wird ignoriert.
 - Alles oder nichts: Enthält eine Zeile einen Fehler, wird nichts gespeichert; die Fehlermeldungen nennen Datei und Zeile.
 - Pflichtspalten: `title` und `body` bei Beiträgen und Sektionen; `title`, `category`, `starts_at`, `ends_at` und `location` bei Terminen. Alle übrigen Spalten dürfen fehlen. Fehlt eine der drei Dateien, wird sie übersprungen.
 - `category` ist einer der internen Werte `webinar`, `inhouse`, `certification`, `trial`.
@@ -161,6 +161,7 @@ Regeln beim Import:
 - Texte werden bereinigt: Im Inhalt (`body`) werden `<p>`, `<br>`, `<div>`, Überschriften und Listen durch Zeilenumbrüche ersetzt (Listenpunkte als „•“), alle übrigen Tags entfernt. Erhalten bleiben nur Fett (`<strong>`), Kursiv (`<em>`) und Links (`<a href>`). Titel, Untertitel, Kicker, Beschreibung und Ort werden zu reinem Text. Das `##` für den Anreißer steht danach in einer eigenen Zeile.
 - Bilder werden mit neuem Dateinamen nach `data/uploads` übernommen. Bei Beiträgen steuert die Spalte `image_fit` (`auto` bzw. leer, `cover`, `contain`, `blur`) die Darstellung wie im Formular; Bei Sektionen schneidet die optionale Spalte `image_orientation` (`landscape` oder `portrait`) das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export). Bei Beiträgen wird `image_orientation` ignoriert.
 - Autor der importierten Einträge ist der angemeldete Nutzer (Kommandozeile: `--user`, Standard `admin`).
+- Nutzer (`users.csv`, eine Zeile je Konto mit Profil): Pflichtspalten `username` und `email` (Mitglieder brauchen eine E-Mail-Adresse). Neue Konten werden mit `role`, `is_active` und `password_hash` (bcrypt) aus der CSV angelegt, die Passwörter gelten also weiter; ist `password_hash` leer, setzt die Person ihr Passwort über „Passwort vergessen“. Gibt es ein Konto mit gleichem Nutzernamen oder gleicher E-Mail-Adresse schon (z. B. `admin` nach `init_db.py`), bleiben Rolle, Sperre und Passwort unverändert und nur das Profil wird übernommen. Profilspalten sind optional; wenn ausgefüllt, sind `first_name`, `last_name` und `city` Pflicht. `functions` = Schlüssel mit Komma getrennt (`coach,smeo_staff`), `*_visibility` = `public` oder `members`. Profilfotos werden wie beim Upload quadratisch zugeschnitten und nach `data/uploads/avatars/` übernommen. Ein wiederholter Import legt keine doppelten Konten an.
 
 ## equipe-pq
 
@@ -180,7 +181,7 @@ Der Ordner `mensch-pflege/` enthält die statische Landingpage für MENSCH PFLEG
 
 ## Datensicherung und Grenzen
 
-Regelmäßig sichern: den Datenbank-Dump (siehe oben) und den Ordner `data/uploads`. Der Dump enthält nur die Dateinamen der Bilder, nicht die Bilder selbst. Der CSV-Export enthält Inhalte und Bilder, aber keine Nutzer und ersetzt daher kein vollständiges Backup.
+Regelmäßig sichern: den Datenbank-Dump (siehe oben) und den Ordner `data/uploads`. Der Dump enthält nur die Dateinamen der Bilder, nicht die Bilder selbst. Der CSV-Export enthält Inhalte, Bilder, Nutzer, Profile und Profilfotos, aber keine Einladungen und keine Portalkonfiguration (SMTP-Daten, Passwort-Richtlinie) und ersetzt daher kein vollständiges Backup.
 
 Vor einem öffentlichen Betrieb zu beachten:
 

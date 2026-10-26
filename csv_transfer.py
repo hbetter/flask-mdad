@@ -1,8 +1,9 @@
-"""CSV-Import und -Export fuer Beitragkarten (Article), Termine (Event) und Sektionen (Section).
+"""CSV-Import und -Export fuer Beitragkarten (Article), Termine (Event),
+Sektionen (Section) sowie Nutzer mit Profil (User + Profile).
 
-Ein Export-/Import-Ordner enthaelt bis zu drei CSV-Dateien (articles.csv,
-sections.csv, events.csv) sowie die darin per Dateiname referenzierten Bilder
-im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8
+Ein Export-/Import-Ordner enthaelt bis zu vier CSV-Dateien (articles.csv,
+sections.csv, events.csv, users.csv) sowie die darin per Dateiname
+referenzierten Bilder und Profilfotos im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8
 mit BOM (damit Excel Umlaute korrekt anzeigt). Datum/Uhrzeit in lokaler Zeit
 (Europe/Berlin) als "JJJJ-MM-TT HH:MM"; gespeichert wird wie im Bedienfeld in UTC.
 
@@ -26,10 +27,13 @@ from html.parser import HTMLParser
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
-from PIL import Image
+from PIL import Image, ImageOps
 from flask import current_app
 
-from models import db, Article, Section, Event
+from models import (
+    db, Article, Section, Event, Profile, User, PROFILE_FUNCTIONS, ROLES, ROLE_MEMBER,
+    VISIBILITY_CHOICES, VISIBILITY_MEMBERS,
+)
 import images as image_tools
 
 BERLIN = ZoneInfo("Europe/Berlin")
@@ -41,7 +45,8 @@ ARTICLE_FILE = "articles.csv"
 ORDER_STEP = 10  # Abstand der Ordnungsnummern beim Import
 SECTION_FILE = "sections.csv"
 EVENT_FILE = "events.csv"
-FILES = (ARTICLE_FILE, SECTION_FILE, EVENT_FILE)
+USER_FILE = "users.csv"
+FILES = (ARTICLE_FILE, SECTION_FILE, EVENT_FILE, USER_FILE)
 
 # Spaltenreihenfolge der CSV-Dateien. "id" wird nur zur Orientierung
 # exportiert und beim Import ignoriert (es werden immer neue Datensaetze
@@ -69,6 +74,21 @@ EVENT_COLUMNS = [
     "id", "title", "category", "subtitle", "all_day", "starts_at", "ends_at",
     "location", "updated_at",
 ]
+
+# Nutzer und Profil in einer Zeile (1:1). Profilspalten bleiben leer, wenn
+# ein Konto kein Profil hat (z. B. der Admin aus init_db.py).
+# password_hash ist der bcrypt-Hash: damit bleiben Passwoerter nach einem
+# Neuaufbau der Datenbank gueltig. Leer = Konto ohne bekanntes Passwort
+# (Person setzt es ueber "Passwort vergessen"). functions = Schluessel durch
+# Komma getrennt (coach, smeo_staff). photo_filename = Bilddatei im Ordner.
+USER_COLUMNS = [
+    "id", "username", "email", "role", "is_active", "password_hash",
+    "created_at", "last_login_at",
+    "first_name", "last_name", "display_name", "organization", "job_title",
+    "functions", "city", "phone", "bio", "website", "photo_filename",
+    "email_visibility", "phone_visibility", "bio_visibility", "profile_updated_at",
+]
+PROFILE_COLUMNS = USER_COLUMNS[8:]
 
 TRUE_VALUES = {"1", "true", "ja", "j", "yes", "y", "x", "wahr"}
 FALSE_VALUES = {"", "0", "false", "nein", "n", "no", "falsch"}
@@ -344,15 +364,47 @@ def export_to_dir(target_dir):
         for e in events
     ])
 
+    # Nutzer mit Profil; Profilfotos liegen in data/uploads/avatars/ und
+    # werden flach (nur Dateiname) in den Exportordner kopiert.
+    users = User.query.order_by(User.id.asc()).all()
+    user_rows = []
+    photos = {}
+    for u in users:
+        row = [u.id, u.username, u.email or "", u.role, _format_bool(u.is_active),
+               u.password_hash or "", _format_datetime(u.created_at), _format_datetime(u.last_login_at)]
+        p = u.profile
+        if p:
+            photo = os.path.basename(p.photo_filename) if p.photo_filename else ""
+            if photo:
+                photos[photo] = p.photo_filename
+            row += [p.first_name, p.last_name, p.display_name or "", p.organization or "",
+                    p.job_title or "", ",".join(p.functions or []), p.city, p.phone or "",
+                    p.bio or "", p.website or "", photo, p.email_visibility,
+                    p.phone_visibility, p.bio_visibility, _format_datetime(p.updated_at)]
+        else:
+            row += [""] * len(PROFILE_COLUMNS)
+        user_rows.append(row)
+    _write_csv(os.path.join(target_dir, USER_FILE), USER_COLUMNS, user_rows)
+
+    copied = 0
     for name in sorted(images):
         src = os.path.join(upload_folder, name)
         if os.path.isfile(src):
             shutil.copy2(src, os.path.join(target_dir, name))
+            copied += 1
         else:
             warnings.append(f"Bild „{name}“ fehlt in data/uploads und wurde nicht exportiert.")
+    copied_photos = 0
+    for name, stored in sorted(photos.items()):
+        src = os.path.join(upload_folder, stored)
+        if os.path.isfile(src):
+            shutil.copy2(src, os.path.join(target_dir, name))
+            copied_photos += 1
+        else:
+            warnings.append(f"Profilfoto „{stored}“ fehlt in data/uploads und wurde nicht exportiert.")
 
     counts = {"articles": len(articles), "sections": len(sections), "events": len(events),
-              "images": len(images) - len(warnings)}
+              "users": len(users), "images": copied, "photos": copied_photos}
     return counts, warnings
 
 
@@ -422,6 +474,24 @@ class _ImageImporter:
         self.created.append(new_name)
         self.cache[key] = (new_name, final_fit)
         return new_name, final_fit
+
+    def store_avatar(self, name):
+        """Profilfoto wie beim Upload: quadratisch zuschneiden, EXIF entfernen,
+        als WebP in data/uploads/avatars/ speichern."""
+        from members import AVATAR_SIZE, AVATAR_SUBFOLDER
+        key = ("avatar", name)
+        if key in self.cache:
+            return self.cache[key]
+        os.makedirs(os.path.join(self.upload_folder, AVATAR_SUBFOLDER), exist_ok=True)
+        with Image.open(os.path.join(self.source_dir, name)) as img:
+            img.load()
+            img = ImageOps.exif_transpose(img).convert("RGB")
+            img = ImageOps.fit(img, (AVATAR_SIZE, AVATAR_SIZE), Image.LANCZOS, centering=(0.5, 0.4))
+            new_name = f"{AVATAR_SUBFOLDER}/{uuid4().hex}.webp"
+            img.save(os.path.join(self.upload_folder, new_name), "WEBP", quality=85, method=6)
+        self.created.append(new_name)
+        self.cache[key] = new_name
+        return new_name
 
     def rollback(self):
         for name in self.created:
@@ -560,6 +630,90 @@ def _parse_events(path, errors):
     return parsed
 
 
+def _parse_users(path, images, errors):
+    from members import EMAIL_PATTERN, normalize_website
+    fieldnames, rows = _read_csv(path)
+    if not _check_columns(USER_FILE, fieldnames, ["username", "email"], errors):
+        return []
+    roles = {key for key, _ in ROLES}
+    visibilities = {key for key, _ in VISIBILITY_CHOICES}
+    parsed, seen = [], set()
+    for line, row in rows:
+        try:
+            username = _text(row, "username")
+            email = (_text(row, "email") or "").lower() or None
+            if not username:
+                raise ValueError("username darf nicht leer sein")
+            if email and not EMAIL_PATTERN.match(email):
+                raise ValueError(f"ungültige E-Mail-Adresse „{email}“")
+            for key in {username.lower(), email} - {None}:
+                if key in seen:
+                    raise ValueError(f"„{key}“ kommt in users.csv mehrfach vor")
+                seen.add(key)
+            role = (_text(row, "role") or ROLE_MEMBER).lower()
+            if role not in roles:
+                raise ValueError(f"role „{role}“ muss admin oder member sein")
+            if role == ROLE_MEMBER and not email:
+                raise ValueError("Mitglieder brauchen eine E-Mail-Adresse")
+            password_hash = _text(row, "password_hash")
+            if password_hash and not password_hash.startswith("$2"):
+                raise ValueError("password_hash ist kein bcrypt-Hash (leer lassen, wenn unbekannt)")
+            item = {
+                "username": username, "email": email, "role": role,
+                "is_active": _parse_bool(row.get("is_active") if _text(row, "is_active") else "1"),
+                "password_hash": password_hash,
+                "created_at": _parse_datetime(row["created_at"]) if _text(row, "created_at") else None,
+                "last_login_at": _parse_datetime(row["last_login_at"]) if _text(row, "last_login_at") else None,
+                "profile": None,
+            }
+            if any(_text(row, col) for col in PROFILE_COLUMNS):
+                first, last, city = _plain(row, "first_name"), _plain(row, "last_name"), _plain(row, "city")
+                if not (first and last and city):
+                    raise ValueError("Profil braucht first_name, last_name und city")
+                functions = [f.strip() for f in (_text(row, "functions") or "").split(",") if f.strip()]
+                unknown = [f for f in functions if f not in PROFILE_FUNCTIONS]
+                if unknown:
+                    raise ValueError(f"unbekannte functions {', '.join(unknown)} (erlaubt: {', '.join(PROFILE_FUNCTIONS)})")
+                vis = {}
+                for field in ("email", "phone", "bio"):
+                    value = (_text(row, f"{field}_visibility") or VISIBILITY_MEMBERS).lower()
+                    if value not in visibilities:
+                        raise ValueError(f"{field}_visibility „{value}“ muss public oder members sein")
+                    vis[field] = value
+                photo = _text(row, "photo_filename")
+                if photo:
+                    images.check(photo)
+                item["profile"] = {
+                    "first_name": first, "last_name": last, "city": city,
+                    "display_name": _plain(row, "display_name"),
+                    "organization": _plain(row, "organization"),
+                    "job_title": _plain(row, "job_title"),
+                    "functions": functions,
+                    "phone": _plain(row, "phone"),
+                    "bio": _text(row, "bio"),
+                    "website": normalize_website(_text(row, "website")) or None,
+                    "photo": photo,
+                    "email_visibility": vis["email"], "phone_visibility": vis["phone"],
+                    "bio_visibility": vis["bio"],
+                    "updated_at": _parse_datetime(row["profile_updated_at"]) if _text(row, "profile_updated_at") else None,
+                }
+            parsed.append(item)
+        except ValueError as exc:
+            errors.append(f"{USER_FILE} Zeile {line}: {exc}")
+    return parsed
+
+
+def _apply_profile(profile, data, images):
+    for key in ("first_name", "last_name", "city", "display_name", "organization", "job_title",
+                "functions", "phone", "bio", "website", "email_visibility", "phone_visibility",
+                "bio_visibility"):
+        setattr(profile, key, data[key])
+    if data["updated_at"]:
+        profile.updated_at = data["updated_at"]
+    if data["photo"]:
+        profile.photo_filename = images.store_avatar(data["photo"])
+
+
 def import_from_dir(source_dir, user):
     """Liest articles.csv, sections.csv und events.csv (soweit vorhanden) aus
     source_dir und legt die Eintraege neu an, mit user als Autor. Alles oder
@@ -576,6 +730,7 @@ def import_from_dir(source_dir, user):
     articles = _parse_articles(os.path.join(source_dir, ARTICLE_FILE), images, errors) if ARTICLE_FILE in present else []
     sections = _parse_sections(os.path.join(source_dir, SECTION_FILE), images, errors) if SECTION_FILE in present else []
     events = _parse_events(os.path.join(source_dir, EVENT_FILE), errors) if EVENT_FILE in present else []
+    users = _parse_users(os.path.join(source_dir, USER_FILE), images, errors) if USER_FILE in present else []
     if errors:
         raise CsvImportError(errors)
 
@@ -641,14 +796,80 @@ def import_from_dir(source_dir, user):
                 user_id=user.id,
             ))
 
+        # Nutzer: neue Konten werden angelegt (mit Passwort-Hash aus der CSV).
+        # Bestehende Konten (gleicher Nutzername oder gleiche E-Mail) behalten
+        # Rolle, Sperre und Passwort; nur ihr Profil wird uebernommen.
+        replaced_photos = []
+        new_users = updated_users = 0
+        for u in users:
+            with db.session.no_autoflush:
+                existing = User.query.filter(db.or_(
+                    User.username == u["username"],
+                    *([User.email == u["email"], User.username == u["email"]] if u["email"] else []),
+                )).first()
+            if existing is None:
+                account = User(
+                    username=u["username"], email=u["email"], role=u["role"], is_active=u["is_active"],
+                    password_hash=u["password_hash"] or _unusable_password_hash(),
+                    created_at=u["created_at"] or now, last_login_at=u["last_login_at"],
+                )
+                db.session.add(account)
+                new_users += 1
+            else:
+                account = existing
+                if u["profile"]:
+                    updated_users += 1
+            if u["profile"]:
+                profile = account.profile
+                if profile is None:
+                    profile = Profile(user=account, first_name="", last_name="", city="")
+                    db.session.add(profile)
+                elif u["profile"]["photo"] and profile.photo_filename:
+                    replaced_photos.append(profile.photo_filename)
+                _apply_profile(profile, u["profile"], images)
+            db.session.flush()
+
         db.session.commit()
     except Exception:
         db.session.rollback()
         images.rollback()
         raise
 
+    # Ersetzte Profilfotos erst nach erfolgreichem Speichern entfernen
+    for stored in replaced_photos:
+        try:
+            os.remove(os.path.join(images.upload_folder, stored))
+        except OSError:
+            pass
+
     return {"articles": len(articles), "sections": len(sections), "events": len(events),
-            "images": len(images.created)}
+            "users": new_users, "users_updated": updated_users,
+            "images": sum(1 for n in images.created if not n.startswith("avatars/")),
+            "photos": sum(1 for n in images.created if n.startswith("avatars/"))}
+
+
+def _unusable_password_hash():
+    # Zufaelliges, unbekanntes Passwort: die Person setzt ueber "Passwort
+    # vergessen" ein eigenes.
+    import secrets
+    from flask_bcrypt import generate_password_hash
+    return generate_password_hash(secrets.token_urlsafe(32)).decode("utf-8")
+
+
+def format_counts(counts, verb="Importiert"):
+    parts = [f"{counts['articles']} Beiträge", f"{counts['sections']} Sektionen",
+             f"{counts['events']} Termine"]
+    if "users_updated" in counts:
+        parts.append(f"{counts['users']} neue{'r' if counts['users'] == 1 else ''} Nutzer")
+        if counts["users_updated"]:
+            n = counts["users_updated"]
+            parts.append(f"{n} bestehende{'s Profil' if n == 1 else ' Profile'} aktualisiert")
+    else:
+        parts.append(f"{counts['users']} Nutzer")
+    parts.append(f"{counts['images']} Bilder")
+    if "photos" in counts:
+        parts[-1] += f" und {counts['photos']} Profilfotos"
+    return f"{verb}: " + ", ".join(parts)
 
 
 # --------------------------------------------------------------------------
@@ -660,7 +881,7 @@ def main(argv):
     from views import app
     from models import User
 
-    parser = argparse.ArgumentParser(description="CSV-Import/-Export für Beiträge, Sektionen und Termine")
+    parser = argparse.ArgumentParser(description="CSV-Import/-Export für Beiträge, Sektionen, Termine und Nutzer")
     sub = parser.add_subparsers(dest="command", required=True)
     p_exp = sub.add_parser("export", help="Daten und Bilder in einen Ordner exportieren")
     p_exp.add_argument("directory")
@@ -674,8 +895,7 @@ def main(argv):
             counts, warnings = export_to_dir(args.directory)
             for w in warnings:
                 print(f"Hinweis: {w}")
-            print(f"Exportiert: {counts['articles']} Beiträge, {counts['sections']} Sektionen, "
-                  f"{counts['events']} Termine, {counts['images']} Bilder → {args.directory}")
+            print(format_counts(counts, "Exportiert") + f" → {args.directory}")
             return 0
 
         user = User.query.filter_by(username=args.user).first()
@@ -689,8 +909,7 @@ def main(argv):
             for e in exc.errors:
                 print(f"  - {e}", file=sys.stderr)
             return 1
-        print(f"Importiert: {counts['articles']} Beiträge, {counts['sections']} Sektionen, "
-              f"{counts['events']} Termine, {counts['images']} Bilder")
+        print(format_counts(counts))
         return 0
 
 

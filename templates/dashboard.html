@@ -494,10 +494,15 @@
                 {% endif %}
 
                 <p>
-                    Importiert werden <code>articles.csv</code>, <code>sections.csv</code> und
-                    <code>events.csv</code> (soweit vorhanden). Bilder, auf die die Spalte
-                    <code>image_filename</code> verweist, müssen im selben Ordner liegen.
-                    Alle Einträge werden neu angelegt; bestehende Inhalte bleiben unverändert.
+                    Importiert werden die Dateien articles.csv, sections.csv, events.csv und users.csv,
+                    soweit vorhanden. Die Bilder und Profilfotos, auf die sie verweisen, müssen im selben
+                    Ordner liegen. Beiträge, Sektionen und Termine werden neu angelegt; bestehende Inhalte
+                    bleiben unverändert.
+                </p>
+                <p>
+                    Nutzer: Neue Konten werden mit ihrem bisherigen Passwort angelegt. Gibt es ein Konto
+                    mit gleichem Nutzernamen oder gleicher E-Mail-Adresse schon, bleiben Rolle, Sperre
+                    und Passwort unverändert; nur das Profil wird übernommen.
                 </p>
 
                 <form method="POST" action="{{ url_for('import_data') }}" enctype="multipart/form-data" class="mb-4">
@@ -515,10 +520,9 @@
                     <button type="submit" class="btn btn-primary">ZIP importieren</button>
                 </form>
 
-                <p class="small text-muted mt-4 mb-0">
+                <p class="mt-4 mb-0">
                     Uploads sind auf {{ (config.MAX_CONTENT_LENGTH // 1048576) }} MB insgesamt begrenzt.
-                    Größere Bestände über die Kommandozeile importieren
-                    (<code>python csv_transfer.py import &lt;ordner&gt;</code>, siehe README).
+                    Größere Bestände über die Kommandozeile importieren (siehe README).
                 </p>
             </div>
             <div class="modal-footer">
@@ -582,9 +586,14 @@
                     <li>{{ export_counts.articles }} Beiträge</li>
                     <li>{{ export_counts.sections }} Sektionen</li>
                     <li>{{ export_counts.events }} Termine</li>
-                    <li>alle zugehörigen Bilder</li>
+                    <li>{{ export_counts.users }} Nutzer samt Profilen</li>
+                    <li>alle zugehörigen Bilder und Profilfotos</li>
                 </ul>
-                <p class="small text-muted mb-0">
+                <div class="alert alert-warning text-body">
+                    Das Archiv enthält personenbezogene Daten und die verschlüsselten Passwörter
+                    (bcrypt-Hashes) aller Nutzer. Bitte sicher aufbewahren und nicht weitergeben.
+                </div>
+                <p class="mb-0">
                     Exportiert werden die Einträge aller Nutzer. Die Daten auf der Website bleiben unverändert.
                 </p>
             </div>
