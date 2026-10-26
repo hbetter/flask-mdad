@@ -98,11 +98,12 @@
                         <input type="hidden" name="action" value="password">
                         <div class="mb-2">
                             <label class="form-label fw-bold" for="password">Neues Passwort</label>
-                            <input type="password" class="form-control" id="password" name="password" minlength="10" autocomplete="new-password" required>
+                            <input type="password" class="form-control" id="password" name="password" minlength="{{ password_policy().min_length }}" autocomplete="new-password" required>
                         </div>
+                        <div class="form-text mb-2">{{ password_policy_text() }}</div>
                         <div class="mb-3">
                             <label class="form-label fw-bold" for="password_confirm">Wiederholen</label>
-                            <input type="password" class="form-control" id="password_confirm" name="password_confirm" minlength="10" autocomplete="new-password" required>
+                            <input type="password" class="form-control" id="password_confirm" name="password_confirm" minlength="{{ password_policy().min_length }}" autocomplete="new-password" required>
                         </div>
                         <button type="submit" class="btn btn-outline-secondary btn-sm">Passwort setzen</button>
                     </form>

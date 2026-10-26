@@ -24,7 +24,7 @@ from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from PIL import Image, ImageOps
 
 import mailer
-from auth import password_problem
+from auth import describe_policy, password_policy, password_problem
 from extensions import limiter
 from models import (
     db, Invitation, Profile, User, ROLE_MEMBER,
@@ -221,6 +221,10 @@ def password_link(user, purpose="password-reset"):
 @bp.app_context_processor
 def inject_member_helpers():
     return {
+        # Als Funktionen, damit die Datenbank nur auf Seiten mit
+        # Passwortfeldern abgefragt wird
+        "password_policy": password_policy,
+        "password_policy_text": describe_policy,
         "visible_fields": visible_fields,
         "profile_functions": PROFILE_FUNCTIONS,
         "visibility_choices": VISIBILITY_CHOICES,

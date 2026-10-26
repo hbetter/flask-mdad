@@ -1321,15 +1321,63 @@ body.hide-dev-labels .dev-label {
 /* ---------------------------------------------------------------------
    Nutzerbereich und Community (members.py, admin.py)
    --------------------------------------------------------------------- */
-.footer-link-button {
-    border: 0;
-    line-height: inherit;
-    color: inherit;
-    text-decoration: none;
-    font-size: inherit;
+/* Nutzermenue in der Menueleiste (_user_menu.html) */
+.user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
 }
-.footer-link-button:hover {
-    text-decoration: underline;
+.user-avatar-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--sm-bg);
+    color: var(--sm-purple);
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+.user-menu-toggle {
+    padding: .15rem .25rem;
+    border: 0;
+    color: var(--sm-dark);
+}
+.user-menu-toggle:focus-visible {
+    outline: 2px solid var(--sm-maroon);
+    outline-offset: 2px;
+}
+.user-menu {
+    min-width: 15rem;
+}
+.user-menu .dropdown-item.active,
+.user-menu .dropdown-item:active {
+    background-color: var(--sm-bg);
+    color: var(--sm-maroon);
+}
+.user-menu-logout {
+    width: 100%;
+    text-align: inherit;
+    background: none;
+    border: 0;
+}
+.user-menu-mobile {
+    margin-top: .75rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--sm-line);
+}
+.user-menu-mobile-head {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-bottom: .4rem;
+    font-weight: 600;
+    color: var(--sm-dark);
+}
+.user-menu-mobile .user-menu-logout {
+    padding: 0 1rem;
 }
 .admin-nav .nav-link {
     color: var(--sm-dark);

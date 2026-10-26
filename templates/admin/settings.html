@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Portalkonfiguration – Bedienfeld{% endblock %}
 {% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
-{%- macro value(name) -%}{{ (form.get(name) if form else portal[name]) or '' }}{%- endmacro -%}
+{#- Nach einem Fehler zeigt nur das abgeschickte Formular die eingegebenen
+    Werte, das andere die gespeicherten -#}
+{%- macro value(name) -%}{{ (form.get(name) if form and form.get('action') != 'password_policy' else portal[name]) or '' }}{%- endmacro -%}
 {% block content %}
 <div class="container py-3">
     {% include "admin/_nav.html" %}
@@ -16,6 +18,7 @@
                     <p class="small text-muted mb-4">Für Einladungen und „Passwort vergessen“. Die Daten stehen beim Mail-Anbieter.</p>
                     <form method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="smtp">
                         <div class="row g-3">
                             <div class="col-md-8">
                                 <label class="form-label fw-bold" for="smtp_host">SMTP-Server</label>
@@ -27,7 +30,7 @@
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-bold" for="smtp_security">Verschlüsselung</label>
-                                {%- set chosen = (form.get('smtp_security') if form else portal.smtp_security) or 'starttls' %}
+                                {%- set chosen = (form.get('smtp_security') if form and form.get('action') != 'password_policy' else portal.smtp_security) or 'starttls' %}
                                 <select class="form-select" id="smtp_security" name="smtp_security">
                                     {% for key, label in security_choices %}
                                     <option value="{{ key }}"{% if key == chosen %} selected{% endif %}>{{ label }}</option>
@@ -60,7 +63,7 @@
                         </div>
                         <p class="small text-muted mt-3 mb-3">Das Passwort wird verschlüsselt gespeichert und nicht wieder angezeigt.
                             Wird der SECRET_KEY des Servers geändert, muss es neu eingetragen werden.</p>
-                        <button type="submit" class="btn btn-maroon px-4">Speichern</button>
+                        <button type="submit" class="btn btn-maroon px-4">Mailversand speichern</button>
                     </form>
                 </div>
             </div>
@@ -80,6 +83,41 @@
                     {% else %}
                     <p class="small text-muted mb-0">Möglich, sobald Server, Port und Absenderadresse gespeichert sind.</p>
                     {% endif %}
+                </div>
+            </div>
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-1">Passwort-Richtlinie</h2>
+                    <p class="small text-muted mb-3">Gilt für alle ab jetzt gesetzten Passwörter (Einladung, Passwort ändern
+                        oder vergessen, Nutzerverwaltung). Bestehende Passwörter bleiben gültig.</p>
+                    {%- set pf = form if form and form.get('action') == 'password_policy' else none %}
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="password_policy">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="password_min_length">Mindestlänge</label>
+                            <div class="input-group" style="max-width: 12rem;">
+                                <input type="number" class="form-control" id="password_min_length" name="password_min_length"
+                                       min="1" step="1" required
+                                       value="{{ pf.get('password_min_length') if pf else portal.password_min_length }}">
+                                <span class="input-group-text">Zeichen</span>
+                            </div>
+                        </div>
+                        <fieldset class="mb-3">
+                            <legend class="form-label fw-bold fs-6 mb-1">Muss enthalten</legend>
+                            {% for field, _test, label in character_rules %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="{{ field }}" name="{{ field }}" value="1"
+                                       {% set is_on = (pf.get(field) == '1') if pf else portal[field] %}{% if is_on %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ field }}">mindestens {{ label }}{% if field == 'password_require_special' %} <span class="text-muted small">({{ special_hint }})</span>{% endif %}</label>
+                            </div>
+                            {% endfor %}
+                        </fieldset>
+                        <p class="small text-muted">Länge schützt mehr als Sonderzeichen: Empfohlen sind mindestens 10–12 Zeichen;
+                            zusätzliche Zeichenregeln sind optional.</p>
+                        <p class="small mb-3"><span class="fw-semibold">Aktuell:</span> {{ password_policy_text() }}</p>
+                        <button type="submit" class="btn btn-maroon px-4">Richtlinie speichern</button>
+                    </form>
                 </div>
             </div>
         </div>

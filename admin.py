@@ -9,7 +9,9 @@ from flask_bcrypt import generate_password_hash
 from flask_login import current_user
 
 import mailer
-from auth import admin_required, password_problem
+from auth import (
+    CHARACTER_RULES, SPECIAL_CHARACTERS_HINT, admin_required, password_problem,
+)
 from members import (
     ACCOUNT_SETUP_MAX_AGE, EMAIL_PATTERN, apply_profile_form, delete_avatar, email_taken,
     hash_token, now_utc, password_link, save_avatar,
@@ -322,6 +324,27 @@ def revoke_invitation(invitation_id):
 @admin_required
 def settings():
     config = mailer.get_settings()
+
+    def render(form=None, status=200):
+        return render_template("admin/settings.html", portal=config, form=form,
+                               security_choices=mailer.SMTP_SECURITY_CHOICES,
+                               smtp_ready=mailer.is_configured(config),
+                               character_rules=CHARACTER_RULES,
+                               special_hint=SPECIAL_CHARACTERS_HINT), status
+
+    if request.method == "POST" and request.form.get("action") == "password_policy":
+        length = (request.form.get("password_min_length") or "").strip()
+        # Keine Ober- oder Untergrenze ausser: ein Passwort hat mindestens 1 Zeichen
+        if not (length.isdigit() and int(length) >= 1):
+            flash("Die Mindestlänge muss eine ganze Zahl ab 1 sein.", "danger")
+            return render(form=request.form, status=400)
+        config.password_min_length = int(length)
+        for field, _, _ in CHARACTER_RULES:
+            setattr(config, field, request.form.get(field) == "1")
+        db.session.commit()
+        flash("Passwort-Richtlinie gespeichert. Sie gilt für alle ab jetzt gesetzten Passwörter.", "success")
+        return redirect(url_for("admin.settings"))
+
     if request.method == "POST":
         get = lambda key: (request.form.get(key) or "").strip()  # noqa: E731
         port = get("smtp_port")
@@ -337,8 +360,7 @@ def settings():
         if errors:
             for message in errors:
                 flash(message, "danger")
-            return render_template("admin/settings.html", portal=config, form=request.form,
-                                   security_choices=mailer.SMTP_SECURITY_CHOICES), 400
+            return render(form=request.form, status=400)
         config.smtp_host = get("smtp_host") or None
         config.smtp_port = int(port) if port else None
         config.smtp_security = security
@@ -352,11 +374,9 @@ def settings():
             # Leeres Feld = bisheriges Passwort bleibt
             config.smtp_password_encrypted = mailer.encrypt_secret(password)
         db.session.commit()
-        flash("Portalkonfiguration gespeichert.", "success")
+        flash("Mailversand gespeichert.", "success")
         return redirect(url_for("admin.settings"))
-    return render_template("admin/settings.html", portal=config, form=None,
-                           security_choices=mailer.SMTP_SECURITY_CHOICES,
-                           smtp_ready=mailer.is_configured(config))
+    return render()
 
 
 @bp.route("/settings/test-mail", methods=["POST"])

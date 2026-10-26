@@ -1,0 +1,73 @@
+{#- Nutzermenue rechts in der Menueleiste (base.html): Desktop als Avatar
+    mit Dropdown, auf dem Handy als eigener Block im aufgeklappten Menue.
+    Fuer Gaeste nichts - "Anmelden" steht im Footer (base.html). -#}
+
+{%- macro user_initials(user) -%}
+{%- if user.profile and user.profile.first_name -%}
+{{ (user.profile.first_name[:1] ~ user.profile.last_name[:1])|upper }}
+{%- else -%}
+{{ (user.username or '?')[:1]|upper }}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro user_avatar(user, size=34) -%}
+{%- if user.profile and user.profile.photo_filename -%}
+<img src="{{ url_for('uploaded_file', filename=user.profile.photo_filename) }}" alt="" class="user-avatar"
+     width="{{ size }}" height="{{ size }}">
+{%- else -%}
+<span class="user-avatar user-avatar-initials" style="width: {{ size }}px; height: {{ size }}px;" aria-hidden="true">{{ user_initials(user) }}</span>
+{%- endif -%}
+{%- endmacro -%}
+
+{#- Eintraege, gemeinsam fuer Dropdown (item_class="dropdown-item") und
+    Handy-Block (item_class="nav-link") -#}
+{%- macro user_links(item_class, divider) -%}
+{%- set ep = request.endpoint or '' -%}
+<li><a class="{{ item_class }}{% if ep == 'members.profile' %} active{% endif %}" href="{{ url_for('members.profile') }}"><i class="bi bi-person me-2" aria-hidden="true"></i>Mein Profil</a></li>
+{% if current_user.profile and current_user.profile.photo_filename %}
+<li><a class="{{ item_class }}" href="{{ url_for('members.community_detail', profile_id=current_user.profile.id) }}"><i class="bi bi-eye me-2" aria-hidden="true"></i>Öffentliche Ansicht</a></li>
+{% endif %}
+<li><a class="{{ item_class }}{% if ep == 'members.change_password' %} active{% endif %}" href="{{ url_for('members.change_password') }}"><i class="bi bi-lock me-2" aria-hidden="true"></i>Passwort ändern</a></li>
+{% if current_user.is_admin %}
+{{ divider }}
+<li><a class="{{ item_class }}{% if ep == 'dashboard' or ep.startswith('admin.') %} active{% endif %}" href="{{ url_for('dashboard') }}"><i class="bi bi-grid me-2" aria-hidden="true"></i>Bedienfeld</a></li>
+{% endif %}
+{{ divider }}
+<li>
+    <form method="POST" action="{{ url_for('logout') }}" class="m-0">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="{{ item_class }} user-menu-logout"><i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Abmelden</button>
+    </form>
+</li>
+{%- endmacro -%}
+
+{%- macro user_menu_desktop() -%}
+{% if current_user.is_authenticated %}
+<div class="dropdown d-none d-lg-block">
+    <button class="btn user-menu-toggle dropdown-toggle d-flex align-items-center gap-1" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false" aria-label="Nutzermenü: {{ current_user.profile.name if current_user.profile else current_user.username }}">
+        {{ user_avatar(current_user) }}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end user-menu shadow-sm">
+        <li class="px-3 pt-1 pb-2">
+            <div class="fw-semibold">{{ current_user.profile.name if current_user.profile else current_user.username }}</div>
+            <div class="small text-muted">{{ current_user.email or current_user.username }}{% if current_user.is_admin %} · Admin{% endif %}</div>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        {{ user_links("dropdown-item", '<li><hr class="dropdown-divider"></li>'|safe) }}
+    </ul>
+</div>
+{% endif %}
+{%- endmacro -%}
+
+{%- macro user_menu_mobile() -%}
+{% if current_user.is_authenticated %}
+<ul class="navbar-nav user-menu-mobile d-lg-none">
+    <li class="nav-item user-menu-mobile-head">
+        {{ user_avatar(current_user, 28) }}
+        <span>{{ current_user.profile.name if current_user.profile else current_user.username }}</span>
+    </li>
+    {{ user_links("nav-link", "") }}
+</ul>
+{% endif %}
+{%- endmacro -%}

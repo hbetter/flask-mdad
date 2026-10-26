@@ -106,8 +106,8 @@ class Invitation(db.Model):
     invited_by = db.relationship('User', foreign_keys=[invited_by_id])
 
 
-# Portalkonfiguration (genau ein Datensatz, id=1). Zunaechst nur SMTP fuer
-# Einladungs- und Passwort-Mails. Das SMTP-Passwort liegt verschluesselt
+# Portalkonfiguration (genau ein Datensatz, id=1): SMTP fuer Einladungs- und
+# Passwort-Mails sowie die Passwort-Richtlinie. Das SMTP-Passwort liegt verschluesselt
 # vor (mailer.py), abgeleitet vom SECRET_KEY.
 class PortalSettings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -118,6 +118,13 @@ class PortalSettings(db.Model):
     smtp_password_encrypted = db.Column(db.Text)
     mail_from_address = db.Column(db.String(255))
     mail_from_name = db.Column(db.String(255))
+    # Passwort-Richtlinie (auth.py): gilt fuer jedes neu gesetzte Passwort,
+    # bestehende Passwoerter bleiben gueltig.
+    password_min_length = db.Column(db.Integer, nullable=False, default=10)
+    password_require_lower = db.Column(db.Boolean, nullable=False, default=False)
+    password_require_upper = db.Column(db.Boolean, nullable=False, default=False)
+    password_require_digit = db.Column(db.Boolean, nullable=False, default=False)
+    password_require_special = db.Column(db.Boolean, nullable=False, default=False)
     updated_at = db.Column(db.DateTime, nullable=False, default=_utcnow, onupdate=_utcnow)
 
 class Article(db.Model):
