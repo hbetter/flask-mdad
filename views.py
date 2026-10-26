@@ -1246,9 +1246,10 @@ def privacy():
 
 @app.route("/lexicon")
 def lexicon():
-    # Statische Lexikonseite (Inhalte in lexicon_data.py), vorerst ohne
-    # Menuepunkt - nur direkt ueber /lexicon erreichbar.
+    # Statische Lexikonseite; die Begriffe stehen in content/lexicon.md und
+    # werden von lexicon_data.py eingelesen.
     banner = get_banner_text()
+    lexicon_content = lexicon_data.load_lexicon()
     groups, terms_by_slug = lexicon_data.build_lexicon()
     page_url = url_for("lexicon", _external=True)
     # Strukturierte Daten (schema.org DefinedTermSet), damit Suchmaschinen
@@ -1266,7 +1267,7 @@ def lexicon():
                 "description": term["short"],
                 "url": page_url + "#" + term["slug"],
             }
-            for term in lexicon_data.LEXICON_TERMS
+            for term in lexicon_content["terms"]
         ],
     }
     return render_template(
@@ -1275,10 +1276,10 @@ def lexicon():
         groups=groups,
         letters={letter for letter, _ in groups},
         alphabet=[chr(c) for c in range(ord("A"), ord("Z") + 1)],
-        categories=lexicon_data.LEXICON_CATEGORIES,
+        categories=lexicon_content["categories"],
         term_count=len(terms_by_slug),
         structured_data=structured_data,
-        quick_terms=lexicon_data.LEXICON_QUICK_TERMS,
+        quick_terms=lexicon_content["quick_terms"],
     )
 
 
