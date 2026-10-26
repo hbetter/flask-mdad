@@ -428,7 +428,7 @@ Alle Seiten erben von `templates/base.html`; die Listen auf den öffentlichen Se
 
 **Statische Dateien (`static/`):** `bootstrap.min.css`, `bootstrap.bundle.min.js`, `custom.css` (Hausstil, Kartenoptik, `.termin-title` u. a.), `lexicon.css`, `ac-formulare.css`/`ac-formulare.js` (Styling der AC-Formulare, inkl. Ausblenden der doppelten AC-Titel im Modal; Formular 11 braucht eine eigene Regel) sowie feste Bilder in `static/img/`. Hochgeladene Bilder liegen nicht hier, sondern in `data/uploads`.
 
-**Inhalt vs. Code:** Feste Texte der Seiten stehen in den Templates; `docs/indexseite-inhalt.md` und `docs/indexseite-stil.md` beschreiben Inhalt und Stil der Indexseite.
+**Inhalt vs. Code:** Feste Texte der Seiten stehen in den Templates. Im Ordner `docs/` liegen diese Dokumentation (`Dokumentation.md`) und eine Sicherung der Erfolgsgeschichten-Texte (`erfolgsgeschichten-backup.md`).
 
 **Nicht Teil des CMS:** `equipe-pq/` und `mensch-pflege/` sind eigenständige statische Seiten im selben Repository, die Nginx direkt ausliefert (`nginx/*.conf`).
 

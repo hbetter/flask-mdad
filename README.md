@@ -69,7 +69,7 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 - `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine, Sektionen und Nutzer mit Profil (siehe unten), auch als Kommandozeilenwerkzeug.
 - `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_user_menu.html` das Nutzermenü rechts in der Navbar (Avatar mit Dropdown: Mein Profil, Öffentliche Ansicht, Passwort ändern, Administration für Admins, Abmelden; auf dem Handy als Block im aufgeklappten Menü). Der Button „Gratis spielen“ erscheint nur für nicht angemeldete Besucher, „Anmelden“ steht im Footer; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
 - `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder und Favicon. Bilder aus der Administration liegen nicht hier, sondern in `data/uploads`. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
-- `docs/`: Dokumentation der Indexseite (Inhalt und Stil) und Sicherung der Erfolgsgeschichten-Texte.
+- `docs/`: `Dokumentation.md` (CMS-Dokumentation für Anwender und Entwickler) und `erfolgsgeschichten-backup.md` (Sicherung der Erfolgsgeschichten-Texte).
 - `equipe-pq/`: eigenständige statische Landingpage für equipe-pq.playfulfuture.de (siehe unten).
 - `mensch-pflege/`: eigenständige statische Landingpage für das Projekt MENSCH PFLEGE! auf mensch-pflege.playfulfuture.de (siehe unten).
 - `nginx/`: Nginx-Konfigurationen für die statischen Seiten und playfulfuture.de.
