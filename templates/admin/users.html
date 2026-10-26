@@ -14,28 +14,33 @@
     </div>
     <div class="card shadow-sm border-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            {#- Spalten per Klick auf die Ueberschrift sortierbar (Skript unten),
+                ein Klick auf eine Zeile oeffnet die Bearbeiten-Seite. -#}
+            <table class="table table-hover align-middle mb-0 users-table" id="usersTable">
                 <thead>
                     <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">E-Mail / Login</th>
-                        <th scope="col">Rolle</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Community</th>
-                        <th scope="col">Letzter Login</th>
-                        <th scope="col"><span class="visually-hidden">Aktion</span></th>
+                        {% for label, kind in [("Name", "text"), ("E-Mail / Login", "text"), ("Rolle", "text"), ("Status", "text"), ("Community", "text"), ("Letzter Login", "date")] %}
+                        <th scope="col" aria-sort="{{ 'ascending' if loop.first else 'none' }}">
+                            <button type="button" class="sort-button" data-col="{{ loop.index0 }}" data-kind="{{ kind }}">
+                                {{ label }}<span class="sort-icon" aria-hidden="true"></span>
+                            </button>
+                        </th>
+                        {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td><a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="fw-semibold">{{ user.profile.full_name if user.profile else (user.username if not user.email else '–') }}</a></td>
+                {% for user in users|sort(attribute='id') %}
+                    {%- set name = user.profile.full_name if user.profile else (user.username if not user.email else '–') %}
+                    {%- set visible = user.profile and user.profile.photo_filename and user.is_active %}
+                    <tr data-href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="cursor-pointer">
+                        <td data-sort="{{ ((user.profile.last_name ~ ' ' ~ user.profile.first_name) if user.profile else name)|lower }}">
+                            <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="fw-semibold">{{ name }}</a>
+                        </td>
                         <td>{{ user.email or user.username }}</td>
                         <td>{{ roles.get(user.role, user.role) }}</td>
-                        <td>{% if user.is_active %}<span class="badge text-bg-success">aktiv</span>{% else %}<span class="badge text-bg-secondary">gesperrt</span>{% endif %}</td>
-                        <td>{% if user.profile and user.profile.photo_filename and user.is_active %}<span class="badge text-bg-light border">sichtbar</span>{% else %}<span class="small text-muted">nicht sichtbar</span>{% endif %}</td>
-                        <td class="small">{{ user.last_login_at|datetimeformat if user.last_login_at else 'noch nie' }}</td>
-                        <td class="text-end"><a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn btn-sm btn-outline-secondary">Bearbeiten</a></td>
+                        <td data-sort="{{ '0' if user.is_active else '1' }}">{% if user.is_active %}<span class="badge text-bg-success">aktiv</span>{% else %}<span class="badge text-bg-secondary">gesperrt</span>{% endif %}</td>
+                        <td data-sort="{{ '0' if visible else '1' }}">{% if visible %}<span class="badge text-bg-light border">sichtbar</span>{% else %}<span class="small text-muted">nicht sichtbar</span>{% endif %}</td>
+                        <td class="small" data-sort="{{ user.last_login_at.isoformat() if user.last_login_at else '' }}">{{ user.last_login_at|datetimeformat if user.last_login_at else 'noch nie' }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -43,4 +48,56 @@
         </div>
     </div>
 </div>
+<script>
+// Laeuft sofort (steht hinter der Tabelle), damit die Sortierung nicht auf
+// langsam ladende externe Skripte im Footer warten muss.
+(function () {
+    var table = document.getElementById("usersTable");
+    var tbody = table.tBodies[0];
+    var headers = table.querySelectorAll("thead th");
+
+    function value(row, col) {
+        var cell = row.cells[col];
+        return (cell.dataset.sort !== undefined ? cell.dataset.sort : cell.textContent).trim().toLowerCase();
+    }
+
+    function sortBy(col, kind, direction) {
+        var rows = Array.prototype.slice.call(tbody.rows);
+        rows.sort(function (a, b) {
+            var x = value(a, col), y = value(b, col);
+            // Leere Werte (z. B. "noch nie") immer ans Ende
+            if (x === "" && y !== "") return 1;
+            if (y === "" && x !== "") return -1;
+            var result = x.localeCompare(y, "de", { numeric: true });
+            return direction === "ascending" ? result : -result;
+        });
+        rows.forEach(function (row) { tbody.appendChild(row); });
+        headers.forEach(function (th, i) {
+            th.setAttribute("aria-sort", i === col ? direction : "none");
+        });
+    }
+
+    table.querySelectorAll(".sort-button").forEach(function (button) {
+        button.addEventListener("click", function () {
+            var th = button.closest("th");
+            var col = parseInt(button.dataset.col, 10);
+            var current = th.getAttribute("aria-sort");
+            // Datum zuerst absteigend (neuester Login oben), sonst aufsteigend
+            var first = button.dataset.kind === "date" ? "descending" : "ascending";
+            var next = current === "none" ? first : (current === "ascending" ? "descending" : "ascending");
+            sortBy(col, button.dataset.kind, next);
+        });
+    });
+
+    // Klick auf die Zeile oeffnet die Bearbeiten-Seite (Links in der Zeile
+    // funktionieren normal, auch mit Strg/Cmd fuer einen neuen Tab).
+    tbody.addEventListener("click", function (event) {
+        if (event.target.closest("a")) return;
+        var row = event.target.closest("tr[data-href]");
+        if (row) window.location.href = row.dataset.href;
+    });
+
+    sortBy(0, "text", "ascending");
+})();
+</script>
 {% endblock %}

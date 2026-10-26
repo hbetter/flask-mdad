@@ -1423,6 +1423,11 @@ body.hide-dev-labels .dev-label {
     box-shadow: 0 .5rem 1.25rem rgba(40, 19, 81, .12) !important;
     color: var(--sm-ink);
 }
+/* Lange Woerter (Position, Organisation) in schmalen Kacheln mit
+   Trennstrich umbrechen statt mitten im Wort ohne Kennzeichnung */
+.community-tile .card-body {
+    hyphens: auto;
+}
 .community-tile .card-img-top {
     aspect-ratio: 1 / 1;
     object-fit: cover;
@@ -1434,4 +1439,56 @@ body.hide-dev-labels .dev-label {
 .profile-contact .bi {
     color: var(--sm-muted);
     margin-right: .35rem;
+}
+
+/* Nutzertabelle im Admin-Bereich: sortierbare Spaltenkoepfe */
+.users-table .sort-button {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    font-weight: 700;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    white-space: nowrap;
+}
+.users-table .sort-button:focus-visible {
+    outline: 2px solid var(--sm-maroon);
+    outline-offset: 2px;
+}
+.users-table .sort-icon::before {
+    content: "\2195"; /* Pfeil hoch/runter */
+    color: var(--sm-muted);
+    font-size: .8em;
+}
+.users-table th[aria-sort="ascending"] .sort-icon::before {
+    content: "\2191"; /* Pfeil hoch */
+    color: var(--sm-maroon);
+}
+.users-table th[aria-sort="descending"] .sort-icon::before {
+    content: "\2193"; /* Pfeil runter */
+    color: var(--sm-maroon);
+}
+.users-table tbody tr {
+    cursor: pointer;
+}
+
+/* Stift zum Bearbeiten eines Profils (nur Admins, Modal und Detailseite) */
+.profile-edit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1px solid var(--sm-line);
+    color: var(--sm-dark);
+    text-decoration: none;
+}
+.profile-edit-link:hover,
+.profile-edit-link:focus-visible {
+    color: var(--sm-maroon);
+    border-color: var(--sm-maroon);
 }

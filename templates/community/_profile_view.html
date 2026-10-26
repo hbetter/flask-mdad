@@ -1,7 +1,8 @@
 {#- Inhalt eines Profils: Detailseite (community/detail.html) und Modal auf
     /community (per ?modal=1 nachgeladen). fields = visible_fields(profile):
     nur die fuer den Betrachter freigegebenen Werte, sonst None. -#}
-<div class="row g-4 align-items-start profile-view">
+{#- Fuer Admins: Ziel des Bearbeiten-Stifts (Modal und Detailseite) -#}
+<div class="row g-4 align-items-start profile-view"{% if current_user.is_authenticated and current_user.is_admin %} data-edit-url="{{ url_for('admin.user_detail', user_id=profile.user_id) }}"{% endif %}>
     <div class="col-sm-4 col-md-3">
         <img src="{{ url_for('uploaded_file', filename=profile.photo_filename) }}" alt="Foto von {{ profile.name }}"
              class="img-fluid rounded-3 w-100" width="600" height="600">

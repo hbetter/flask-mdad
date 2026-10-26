@@ -7,6 +7,12 @@
     <div class="card shadow-sm border-0">
         <div class="card-body p-4 p-lg-5">
             {% include "community/_profile_view.html" %}
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{{ url_for('admin.user_detail', user_id=profile.user_id) }}" class="profile-edit-link"
+                   title="Profil bearbeiten" aria-label="Profil bearbeiten"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

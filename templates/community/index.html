@@ -15,8 +15,10 @@
                      class="card-img-top" width="600" height="600" loading="lazy">
                 <div class="card-body">
                     <h2 class="h6 card-title mb-1">{{ profile.name }}</h2>
-                    {% if profile.job_title or profile.organization %}
-                    <p class="small mb-1">{{ profile.job_title or profile.organization }}</p>
+                    {#- Untertitel wie im Modal: "Position, Organisation" #}
+                    {% set subtitle = [profile.job_title, profile.organization]|select|join(', ') %}
+                    {% if subtitle %}
+                    <p class="small mb-1">{{ subtitle }}</p>
                     {% endif %}
                     <p class="small text-muted mb-2"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ profile.city }}</p>
                     {% for label in profile.function_labels %}<span class="badge badge-function me-1 mb-1">{{ label }}</span>{% endfor %}
@@ -40,8 +42,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
             </div>
             <div class="modal-body px-4 pb-4" id="profileModalBody"></div>
-            <div class="modal-footer border-0 pt-0">
+            <div class="modal-footer border-0 pt-0 justify-content-between">
                 <a href="#" class="btn btn-sm btn-outline-secondary" id="profileModalLink">Eigene Seite öffnen</a>
+                {# Nur fuer Admins sichtbar, sobald das geladene Profil ein Ziel liefert #}
+                <a href="#" class="profile-edit-link" id="profileModalEdit" hidden
+                   title="Profil bearbeiten" aria-label="Profil bearbeiten"><i class="bi bi-pencil" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>
@@ -51,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var modalEl = document.getElementById("profileModal");
     var body = document.getElementById("profileModalBody");
     var link = document.getElementById("profileModalLink");
+    var editLink = document.getElementById("profileModalEdit");
     var modal = new bootstrap.Modal(modalEl);
     document.querySelectorAll("[data-profile-modal]").forEach(function (tile) {
         tile.addEventListener("click", function (event) {
@@ -62,6 +68,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(function (html) {
                     body.innerHTML = html;
                     link.href = url;
+                    var view = body.querySelector("[data-edit-url]");
+                    editLink.hidden = !view;
+                    if (view) editLink.href = view.dataset.editUrl;
                     var heading = body.querySelector("h2");
                     if (heading) document.getElementById("profileModalTitle").textContent = heading.textContent;
                     modal.show();
