@@ -25,6 +25,8 @@ SMTP_SECURITY_CHOICES = [
     ("none", "Keine Verschlüsselung (nicht empfohlen)"),
 ]
 SMTP_TIMEOUT = 20
+# Ueblicher Port je Verschluesselung, wenn beim Speichern keiner angegeben ist
+DEFAULT_PORTS = {"starttls": 587, "ssl": 465, "none": 25}
 
 
 class MailError(Exception):
@@ -65,9 +67,21 @@ def get_settings():
     return settings
 
 
-def is_configured(settings=None):
+def missing_settings(settings=None):
+    """Bezeichnungen der Pflichtangaben, die fuer den Versand noch fehlen."""
     settings = settings or get_settings()
-    return bool(settings.smtp_host and settings.smtp_port and settings.mail_from_address)
+    missing = []
+    if not settings.smtp_host:
+        missing.append("SMTP-Server")
+    if not settings.smtp_port:
+        missing.append("Port")
+    if not settings.mail_from_address:
+        missing.append("Absenderadresse")
+    return missing
+
+
+def is_configured(settings=None):
+    return not missing_settings(settings)
 
 
 def send_mail(to, subject, body):

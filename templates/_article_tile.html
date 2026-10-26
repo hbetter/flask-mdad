@@ -1,5 +1,5 @@
 {# Beitragskachel und Lese-Modal, gemeinsam genutzt von _articles_list.html
-   (Start, Beratung, Akademie, Stories) und dem Bedienfeld, damit die Kacheln
+   (Start, Beratung, Akademie, Stories) und der Administration, damit die Kacheln
    ueberall exakt gleich aussehen.
 
    article_tile(item, heading, click_target, top, bottom)
@@ -7,7 +7,7 @@
      click_target  Modal, das ein Klick auf die Kachel oeffnet
                    (Standard: das Lese-Modal des Beitrags)
      top/bottom    zusaetzliches Markup ueber dem Titel bzw. unter dem Text
-                   (im Bedienfeld: Infos/Badges und Bearbeiten/Loeschen) #}
+                   (in der Administration: Infos/Badges und Bearbeiten/Loeschen) #}
 {% from "_macros.html" import article_image %}
 
 {% macro _article_text(item, heading) -%}

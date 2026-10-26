@@ -14,7 +14,7 @@ bestimmt das Feld Article.image_fit:
 
 Mit "auto" wird die Darstellung beim Speichern anhand des Bildes gewaehlt
 (siehe classify_image / choose_fit). Dieselben Funktionen nutzen das
-Bedienfeld (Beitrag hinzufuegen/bearbeiten) und der CSV-Import.
+Administration (Beitrag hinzufuegen/bearbeiten) und der CSV-Import.
 """
 
 import os

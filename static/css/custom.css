@@ -1471,8 +1471,12 @@ body.hide-dev-labels .dev-label {
     content: "\2193"; /* Pfeil runter */
     color: var(--sm-maroon);
 }
-.users-table tbody tr {
+.users-table tbody tr[data-href] {
     cursor: pointer;
+}
+.users-filter {
+    flex: 1 1 18rem;
+    max-width: 28rem;
 }
 
 /* Stift zum Bearbeiten eines Profils (nur Admins, Modal und Detailseite) */

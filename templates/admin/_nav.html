@@ -1,4 +1,4 @@
-{# Navigation des Admin-Bereichs (auch oben im Bedienfeld) #}
+{# Navigation des Admin-Bereichs (auch oben in der Administration) #}
 <ul class="nav nav-pills admin-nav gap-1 mb-4">
     <li class="nav-item"><a class="nav-link{% if request.endpoint == 'dashboard' %} active{% endif %}" href="{{ url_for('dashboard') }}"><i class="bi bi-grid" aria-hidden="true"></i> Inhalte</a></li>
     <li class="nav-item"><a class="nav-link{% if request.endpoint in ('admin.users', 'admin.user_detail') %} active{% endif %}" href="{{ url_for('admin.users') }}"><i class="bi bi-people" aria-hidden="true"></i> Nutzer</a></li>

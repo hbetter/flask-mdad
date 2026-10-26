@@ -3,7 +3,7 @@
 {% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
 {% block content %}
 <div class="container py-4">
-{# Admins bleiben im Bedienfeld-Kontext (Reiter oben) #}
+{# Admins bleiben im Administrations-Kontext (Reiter oben) #}
 {% if current_user.is_admin %}{% include "admin/_nav.html" %}{% endif %}
 <div class="row justify-content-center">
 <div class="col-lg-9">

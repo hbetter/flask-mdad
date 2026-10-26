@@ -8,7 +8,7 @@ def _utcnow():
     return datetime.now(timezone.utc)
 
 
-# Rollen: "admin" pflegt die Website (Bedienfeld, Nutzerverwaltung,
+# Rollen: "admin" pflegt die Website (Administration, Nutzerverwaltung,
 # Portalkonfiguration), "member" hat nur Zugriff auf das eigene Profil.
 ROLE_ADMIN = "admin"
 ROLE_MEMBER = "member"
@@ -55,7 +55,8 @@ VISIBILITY_CHOICES = [
 # Datenbankaenderung.
 PROFILE_FUNCTIONS = {
     "coach": "Spiele Coach",
-    "smeo_staff": "MitarbeiterIn SMEO GmbH",
+    "smeo_staff": "SMEO GmbH Team",
+    "friend": "FreundIn",
 }
 
 

@@ -1,7 +1,7 @@
 """Rollen, Zugriffsschutz und Passwort-Richtlinie.
 
 admin_required schuetzt alle Seiten, die nur der Admin sehen darf
-(Bedienfeld, Nutzerverwaltung, Portalkonfiguration). Nicht angemeldete
+(Administration, Nutzerverwaltung, Portalkonfiguration). Nicht angemeldete
 Besucher landen wie bei login_required auf der Login-Seite, angemeldete
 Mitglieder bekommen 403.
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Nutzer – Bedienfeld{% endblock %}
+{% block title %}Nutzer – Administration{% endblock %}
 {% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
 {% block content %}
 <div class="container py-3">
@@ -11,6 +11,14 @@
             <a href="{{ url_for('admin.invitations') }}" class="btn btn-outline-secondary"><i class="bi bi-envelope-plus" aria-hidden="true"></i> Mitglied einladen</a>
             <a href="{{ url_for('admin.user_new') }}" class="btn btn-maroon"><i class="bi bi-person-plus" aria-hidden="true"></i> Nutzer anlegen</a>
         </div>
+    </div>
+    {#- Textfilter: blendet Zeilen aus, in denen der Suchtext in keiner Spalte vorkommt -#}
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div class="users-filter">
+            <label class="visually-hidden" for="usersFilter">Nutzer filtern</label>
+            <input type="search" class="form-control" id="usersFilter" placeholder="Filtern nach Name, E-Mail, Rolle, Status …" autocomplete="off">
+        </div>
+        <span class="small text-muted" id="usersCount" aria-live="polite">{{ users|length }} Nutzer</span>
     </div>
     <div class="card shadow-sm border-0">
         <div class="table-responsive">
@@ -33,7 +41,7 @@
                     {%- set name = user.profile.full_name if user.profile else (user.username if not user.email else '–') %}
                     {%- set visible = user.profile and user.profile.photo_filename and user.is_active %}
                     <tr data-href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="cursor-pointer">
-                        <td data-sort="{{ ((user.profile.last_name ~ ' ' ~ user.profile.first_name) if user.profile else name)|lower }}">
+                        <td data-sort="{{ name|lower }}">
                             <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="fw-semibold">{{ name }}</a>
                         </td>
                         <td>{{ user.email or user.username }}</td>
@@ -43,6 +51,7 @@
                         <td class="small" data-sort="{{ user.last_login_at.isoformat() if user.last_login_at else '' }}">{{ user.last_login_at|datetimeformat if user.last_login_at else 'noch nie' }}</td>
                     </tr>
                 {% endfor %}
+                    <tr id="usersNoMatch" hidden><td colspan="6" class="text-muted">Keine Nutzer gefunden.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -55,6 +64,26 @@
     var table = document.getElementById("usersTable");
     var tbody = table.tBodies[0];
     var headers = table.querySelectorAll("thead th");
+    var noMatch = document.getElementById("usersNoMatch");
+    var filter = document.getElementById("usersFilter");
+    var count = document.getElementById("usersCount");
+    var total = tbody.querySelectorAll("tr[data-href]").length;
+
+    // Filter: jedes Wort muss irgendwo in der Zeile vorkommen (Gross-/
+    // Kleinschreibung egal), z. B. "admin aktiv" oder "berlin coach"
+    function applyFilter() {
+        var words = filter.value.toLowerCase().split(/\s+/).filter(Boolean);
+        var shown = 0;
+        tbody.querySelectorAll("tr[data-href]").forEach(function (row) {
+            var text = row.textContent.toLowerCase();
+            var match = words.every(function (w) { return text.indexOf(w) !== -1; });
+            row.hidden = !match;
+            if (match) shown++;
+        });
+        noMatch.hidden = shown !== 0;
+        count.textContent = words.length ? shown + " von " + total + " Nutzern" : total + " Nutzer";
+    }
+    filter.addEventListener("input", applyFilter);
 
     function value(row, col) {
         var cell = row.cells[col];
@@ -62,7 +91,7 @@
     }
 
     function sortBy(col, kind, direction) {
-        var rows = Array.prototype.slice.call(tbody.rows);
+        var rows = Array.prototype.slice.call(tbody.querySelectorAll("tr[data-href]"));
         rows.sort(function (a, b) {
             var x = value(a, col), y = value(b, col);
             // Leere Werte (z. B. "noch nie") immer ans Ende
@@ -72,6 +101,7 @@
             return direction === "ascending" ? result : -result;
         });
         rows.forEach(function (row) { tbody.appendChild(row); });
+        tbody.appendChild(noMatch);
         headers.forEach(function (th, i) {
             th.setAttribute("aria-sort", i === col ? direction : "none");
         });

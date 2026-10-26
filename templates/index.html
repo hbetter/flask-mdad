@@ -44,12 +44,12 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- TERMINE: dynamisch aus den im Bedienfeld gepflegten Terminen (views.py:
-       index()), gleiche Sortierung wie im Bedienfeld (chronologisch). Darstellung
-       angelehnt an die Bedienfeld-Terminkarten (Datum/Zeitspanne ueber
+  <!-- TERMINE: dynamisch aus den in der Administration gepflegten Terminen (views.py:
+       index()), gleiche Sortierung wie in der Administration (chronologisch). Darstellung
+       angelehnt an die Administrations-Terminkarten (Datum/Zeitspanne ueber
        eventdaterange), aber ohne die dort gezeigten internen Angaben (ID,
        Erstellungsdatum) - hier oeffentlich, kein Bearbeiten/Loeschen. Das
-       rote Kategorie-Badge aus dem Bedienfeld wird hier bewusst NICHT
+       rote Kategorie-Badge aus der Administration wird hier bewusst NICHT
        gezeigt (nur noch das dezente Hintergrund-Icon); die Kategorie
        steckt stattdessen im Titel selbst, da dieser beim Anlegen eines
        Termins mit der Eventkategorie vorausgefuellt wird (siehe
@@ -338,7 +338,7 @@
   {% endwith %}
 
 
-  <!-- ERFOLGSGESCHICHTEN: bestehende, datenbankgetriebene Beitragkarten (Bedienfeld-Verwaltung),
+  <!-- ERFOLGSGESCHICHTEN: bestehende, datenbankgetriebene Beitragkarten (Administrations-Verwaltung),
        gesteuert über die "Indexseite"-Tickbox der jeweiligen Beitragkarte.
        Hinweis: Diese Beitragkarten dürfen in der äußeren Karten-Hülle liegen, weil beim Hover jetzt nur
        noch echte klickbare Karten "anheben" (siehe custom.css) – sonst würde sich die Hülle beim

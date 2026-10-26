@@ -329,6 +329,7 @@ def settings():
         return render_template("admin/settings.html", portal=config, form=form,
                                security_choices=mailer.SMTP_SECURITY_CHOICES,
                                smtp_ready=mailer.is_configured(config),
+                               smtp_missing=mailer.missing_settings(config),
                                character_rules=CHARACTER_RULES,
                                special_hint=SPECIAL_CHARACTERS_HINT), status
 
@@ -362,7 +363,8 @@ def settings():
                 flash(message, "danger")
             return render(form=request.form, status=400)
         config.smtp_host = get("smtp_host") or None
-        config.smtp_port = int(port) if port else None
+        # Ohne Angabe den ueblichen Port der gewaehlten Verschluesselung nehmen
+        config.smtp_port = int(port) if port else mailer.DEFAULT_PORTS.get(security)
         config.smtp_security = security
         config.smtp_username = get("smtp_username") or None
         config.mail_from_address = from_address or None

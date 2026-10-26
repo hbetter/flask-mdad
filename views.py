@@ -56,7 +56,7 @@ EVENT_CATEGORIES = [
 EVENT_CATEGORY_LABELS = dict(EVENT_CATEGORIES)
 
 # Bootstrap-Icons-Name (ohne "bi-"-Praefix) je Kategorie - wird dezent als
-# Hintergrundgrafik auf den Terminkarten dargestellt (Bedienfeld und
+# Hintergrundgrafik auf den Terminkarten dargestellt (Administration und
 # oeffentlicher Bereich), damit die Kategorie auch ohne Lesen des Badges
 # auf einen Blick erkennbar ist.
 EVENT_CATEGORY_ICONS = {
@@ -114,7 +114,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_DEBUG") != "1"
 # CSRF-Token gilt fuer die ganze Sitzung (statt einer Stunde), damit lange
-# offene Bearbeiten-Formulare im Bedienfeld nicht ins Leere laufen.
+# offene Bearbeiten-Formulare in der Administration nicht ins Leere laufen.
 app.config["WTF_CSRF_TIME_LIMIT"] = None
 # Hochgeladene Bilder liegen ausserhalb von static/ in data/uploads (wie die
 # Datenbank in data/postgres nicht im Repository und im Produktionsbetrieb
@@ -309,7 +309,7 @@ def eventcategorymodal(value):
 
 @app.template_filter("eventdaterange")
 def eventdaterange(item):
-    # Kompakte Anzeige von Start bis Ende eines Termins (Bedienfeld/Portal):
+    # Kompakte Anzeige von Start bis Ende eines Termins (Administration/Portal):
     # ganztaegig -> nur Datum (nur einmal, wenn Start- und Endtag gleich
     # sind, sonst als Datumsspanne); mit Uhrzeit -> Datum + Uhrzeitspanne,
     # bzw. volle Datum-Uhrzeit-Spanne, wenn der Termin ueber Tage hinweg
@@ -448,7 +448,7 @@ def clear_section_slot(page_key, section):
 
 
 def section_slot_labels(sections):
-    # Fuer die Bedienfeld-Anzeige: pro Seite, auf der eine Sektion aktiv ist,
+    # Fuer die Administrations-Anzeige: pro Seite, auf der eine Sektion aktiv ist,
     # ihr aktueller Slot (mit Buchstabe, falls dort mehrere Sektionen stehen).
     labels = {section.id: {} for section in sections}
     for page_key in PAGE_SLOT_COUNT:
@@ -490,7 +490,7 @@ def handle_too_many_requests(_error):
 
 
 def home_for(user):
-    """Startseite nach dem Login: Admins ins Bedienfeld, Mitglieder ins Profil."""
+    """Startseite nach dem Login: Admins in die Administration, Mitglieder ins Profil."""
     return url_for("dashboard") if user.is_admin else url_for("members.profile")
 
 
@@ -504,7 +504,7 @@ def index():
         .all()
     )
     sections_in_slot = sections_by_slot("index")
-    # Alle Termine chronologisch, wie im Bedienfeld, aber ohne Filterung nach
+    # Alle Termine chronologisch, wie in der Administration, aber ohne Filterung nach
     # user_id: die Indexseite ist oeffentlich und zeigt saemtliche Termine.
     events = (
         Event.query
@@ -1124,7 +1124,7 @@ def edit_article(article_id):
 
         file = request.files.get("image")
         # Fehlt image_fit im Formular (Schnellbearbeitungs-Modal im
-        # Bedienfeld), bleibt die bisherige Darstellung unveraendert.
+        # Administration), bleibt die bisherige Darstellung unveraendert.
         fit_choice = request.form.get("image_fit")
         if file and file.filename:
             if not allowed_file(file.filename):
@@ -1221,7 +1221,7 @@ MAX_IMPORT_ERRORS_SHOWN = 20
 
 
 def _import_failed(errors):
-    # Fehler ueber die Session ans Bedienfeld weiterreichen (dort im
+    # Fehler ueber die Session ans Administration weiterreichen (dort im
     # Import-Modal angezeigt). Begrenzt, damit das Session-Cookie klein bleibt.
     shown = errors[:MAX_IMPORT_ERRORS_SHOWN]
     if len(errors) > MAX_IMPORT_ERRORS_SHOWN:
@@ -1272,7 +1272,7 @@ def import_data():
         flash(csv_transfer.format_counts(counts, "Import abgeschlossen") + ".", "success")
         return redirect(url_for("dashboard"))
 
-    # Der Import ist ein Modal im Bedienfeld; ein direkter Aufruf von /import
+    # Der Import ist ein Modal in der Administration; ein direkter Aufruf von /import
     # (z. B. nach einem zu grossen Upload) oeffnet dieses Modal.
     return redirect(url_for("dashboard", **{"import": "1"}))
 

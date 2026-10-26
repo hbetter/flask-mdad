@@ -30,7 +30,7 @@
 <li><a class="{{ item_class }}{% if ep == 'members.change_password' %} active{% endif %}" href="{{ url_for('members.change_password') }}"><i class="bi bi-lock me-2" aria-hidden="true"></i>Passwort ändern</a></li>
 {% if current_user.is_admin %}
 {{ divider }}
-<li><a class="{{ item_class }}{% if ep == 'dashboard' or ep.startswith('admin.') %} active{% endif %}" href="{{ url_for('dashboard') }}"><i class="bi bi-grid me-2" aria-hidden="true"></i>Bedienfeld</a></li>
+<li><a class="{{ item_class }}{% if ep == 'dashboard' or ep.startswith('admin.') %} active{% endif %}" href="{{ url_for('dashboard') }}"><i class="bi bi-grid me-2" aria-hidden="true"></i>Administration</a></li>
 {% endif %}
 {{ divider }}
 <li>

@@ -5,13 +5,13 @@ Ein Export-/Import-Ordner enthaelt bis zu vier CSV-Dateien (articles.csv,
 sections.csv, events.csv, users.csv) sowie die darin per Dateiname
 referenzierten Bilder und Profilfotos im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8
 mit BOM (damit Excel Umlaute korrekt anzeigt). Datum/Uhrzeit in lokaler Zeit
-(Europe/Berlin) als "JJJJ-MM-TT HH:MM"; gespeichert wird wie im Bedienfeld in UTC.
+(Europe/Berlin) als "JJJJ-MM-TT HH:MM"; gespeichert wird wie in der Administration in UTC.
 
 Aufruf im web-Container:
     python csv_transfer.py export <ordner>
     python csv_transfer.py import <ordner> [--user admin]
 
-Im Bedienfeld gibt es dieselben Funktionen als ZIP-Download (/export) und
+In der Administration gibt es dieselben Funktionen als ZIP-Download (/export) und
 als Ordner-Upload (/import).
 """
 
@@ -55,7 +55,7 @@ FILES = (ARTICLE_FILE, SECTION_FILE, EVENT_FILE, USER_FILE)
 # wird nie zugeschnitten, nur verkleinert (siehe images.py).
 # Sektionen: "image_orientation" ist wie im Upload-Formular kein Modellfeld:
 # leer = Bild unveraendert uebernehmen, "landscape"/"portrait" = wie beim
-# Upload im Bedienfeld zuschneiden und als WebP speichern.
+# Upload in der Administration zuschneiden und als WebP speichern.
 ARTICLE_COLUMNS = [
     "id", "title", "description", "body", "image_filename", "image_fit",
     "on_index", "on_consulting", "on_academy", "on_stories", "is_banner",

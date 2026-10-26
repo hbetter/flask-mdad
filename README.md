@@ -1,6 +1,6 @@
 # MENSCH DENK AN DICH® – Playful Future (flask-mdad)
 
-Flask-Website für MENSCH DENK AN DICH® mit Bedienfeld zur Pflege von Beiträgen, Terminen und Sektionen. Die Inhalte der öffentlichen Seiten sind teils fest in den Templates, teils werden sie über das Bedienfeld aus der Datenbank gespeist.
+Flask-Website für MENSCH DENK AN DICH® mit Administration zur Pflege von Beiträgen, Terminen und Sektionen. Die Inhalte der öffentlichen Seiten sind teils fest in den Templates, teils werden sie über die Administration aus der Datenbank gespeist.
 
 ## Start mit Docker
 
@@ -60,15 +60,15 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 ## Aufbau
 
 - `app.py`: Startpunkt, importiert die App aus `views.py`.
-- `views.py`: Konfiguration, öffentliche Seiten und Bedienfeld-Routen, Bild-Upload und -Zuschnitt, Jinja-Filter sowie die Konstanten für Seiten-Tickboxen, Terminkategorien, Icons und Formular-Modals.
+- `views.py`: Konfiguration, öffentliche Seiten und Administrations-Routen, Bild-Upload und -Zuschnitt, Jinja-Filter sowie die Konstanten für Seiten-Tickboxen, Terminkategorien, Icons und Formular-Modals.
 - `members.py`: Blueprint für den Nutzerbereich – eigenes Profil, Profilfoto, Passwort, Einladung annehmen, Passwort vergessen und den öffentlichen Community-Bereich.
 - `admin.py`: Blueprint für den Admin-Bereich – Nutzerverwaltung, Einladungen, Portalkonfiguration (SMTP).
 - `auth.py`: `admin_required` und Passwortregeln. `extensions.py`: CSRF-Schutz und Rate-Limit. `mailer.py`: Mailversand und Verschlüsselung des SMTP-Passworts.
 - `models.py`: SQLAlchemy-Modelle `User`, `Profile`, `Invitation`, `PortalSettings`, `Article`, `Section`, `Event`.
-- `images.py`: Verarbeitung der Beitragsbilder (Verkleinern ohne Zuschnitt, Logo-Erkennung, Wahl der Darstellung) – genutzt vom Bedienfeld und vom CSV-Import.
+- `images.py`: Verarbeitung der Beitragsbilder (Verkleinern ohne Zuschnitt, Logo-Erkennung, Wahl der Darstellung) – genutzt von der Administration und vom CSV-Import.
 - `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine, Sektionen und Nutzer mit Profil (siehe unten), auch als Kommandozeilenwerkzeug.
-- `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_user_menu.html` das Nutzermenü rechts in der Navbar (Avatar mit Dropdown: Mein Profil, Öffentliche Ansicht, Passwort ändern, Bedienfeld für Admins, Abmelden; auf dem Handy als Block im aufgeklappten Menü). Der Button „Gratis spielen“ erscheint nur für nicht angemeldete Besucher, „Anmelden“ steht im Footer; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
-- `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder und Favicon. Bilder aus dem Bedienfeld liegen nicht hier, sondern in `data/uploads`. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
+- `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_user_menu.html` das Nutzermenü rechts in der Navbar (Avatar mit Dropdown: Mein Profil, Öffentliche Ansicht, Passwort ändern, Administration für Admins, Abmelden; auf dem Handy als Block im aufgeklappten Menü). Der Button „Gratis spielen“ erscheint nur für nicht angemeldete Besucher, „Anmelden“ steht im Footer; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
+- `static/`: `bootstrap.min.css`, `custom.css`, `ac-formulare.css`/`ac-formulare.js` (Styling und Skript der AC-Formulare), Bilder und Favicon. Bilder aus der Administration liegen nicht hier, sondern in `data/uploads`. Bootstrap Icons und die Schrift Open Sans werden aus dem Internet geladen.
 - `docs/`: Dokumentation der Indexseite (Inhalt und Stil) und Sicherung der Erfolgsgeschichten-Texte.
 - `equipe-pq/`: eigenständige statische Landingpage für equipe-pq.playfulfuture.de (siehe unten).
 - `mensch-pflege/`: eigenständige statische Landingpage für das Projekt MENSCH PFLEGE! auf mensch-pflege.playfulfuture.de (siehe unten).
@@ -109,17 +109,17 @@ Code-Bezeichner sind englisch, sichtbare Inhalte deutsch. Template-Dateinamen, V
 
 ## Rollen und Nutzerbereich
 
-Zwei Rollen: **Admin** pflegt die Website (Bedienfeld, Nutzer, Einladungen, Portalkonfiguration), **Mitglied** sieht nur das eigene Profil. Alle Bedienfeld- und Admin-Routen sind mit `@admin_required` geschützt; Mitglieder bekommen dort 403. Login unter `/login` mit E-Mail-Adresse (Mitglieder) oder Nutzername (Admin); danach landen Admins im Bedienfeld, Mitglieder unter `/account/profile`.
+Zwei Rollen: **Admin** pflegt die Website (Administration: Inhalte, Nutzer, Einladungen, Portalkonfiguration), **Mitglied** sieht nur das eigene Profil. Alle Routen der Administration sind mit `@admin_required` geschützt; Mitglieder bekommen dort 403. Login unter `/login` mit E-Mail-Adresse (Mitglieder) oder Nutzername (Admin); danach landen Admins in der Administration, Mitglieder unter `/account/profile`.
 
-- **Zugang nur per Einladung:** Unter Bedienfeld → Einladungen verschickt der Admin einen Link (14 Tage gültig, einmal nutzbar). Darüber legt das Mitglied Konto, Pflichtfelder und Passwort an. Einladungen und „Passwort vergessen“ brauchen den Mailversand, der unter Bedienfeld → Portalkonfiguration eingerichtet und per Testmail geprüft wird.
+- **Zugang nur per Einladung:** Unter Administration → Einladungen verschickt der Admin einen Link (14 Tage gültig, einmal nutzbar). Darüber legt das Mitglied Konto, Pflichtfelder und Passwort an. Einladungen und „Passwort vergessen“ brauchen den Mailversand, der unter Administration → Portalkonfiguration eingerichtet und per Testmail geprüft wird.
 - **Profilfoto als Schalter:** Erst mit Foto erscheint ein Profil im Community-Bereich; Foto entfernen blendet es wieder aus. Fotos werden quadratisch auf 600 × 600 px zugeschnitten, EXIF-Daten entfernt, und als WebP in `data/uploads/avatars/` gespeichert.
-- **Nutzer direkt anlegen:** Alternativ zur Einladung legt der Admin unter Bedienfeld → Nutzer → „Nutzer anlegen“ ein Konto mit Rolle und Profil an – entweder mit selbst festgelegtem Startpasswort oder mit einem Link zum Passwortsetzen per Mail (14 Tage gültig).
-- **Mitglieder** ändern unter `/account/...` Profil, Foto und Passwort und können ihr Konto löschen. **Admins** sehen unter Bedienfeld → Nutzer eine nach jeder Spalte sortierbare Tabelle (Klick auf die Spaltenüberschrift; Klick auf eine Zeile öffnet das Konto) und können jedes Konto bearbeiten; im Community-Modal und auf der Detailseite führt ein Stift unten rechts direkt dorthin. Bearbeitbar sind: Login-E-Mail, Rolle, Sperre, Profil, neues Passwort setzen oder per Mail einen Link schicken, Konto löschen. Das eigene Konto lässt sich nicht sperren, herabstufen oder löschen; Konten, die Beiträge, Sektionen oder Termine verfasst haben, nur sperren.
+- **Nutzer direkt anlegen:** Alternativ zur Einladung legt der Admin unter Administration → Nutzer → „Nutzer anlegen“ ein Konto mit Rolle und Profil an – entweder mit selbst festgelegtem Startpasswort oder mit einem Link zum Passwortsetzen per Mail (14 Tage gültig).
+- **Mitglieder** ändern unter `/account/...` Profil, Foto und Passwort und können ihr Konto löschen. **Admins** sehen unter Administration → Nutzer eine nach jeder Spalte sortierbare Tabelle (Klick auf die Spaltenüberschrift, Name nach vollem Namen) mit Textfilter (jedes Wort muss in der Zeile vorkommen); ein Klick auf eine Zeile öffnet das Konto und können jedes Konto bearbeiten; im Community-Modal und auf der Detailseite führt ein Stift unten rechts direkt dorthin. Bearbeitbar sind: Login-E-Mail, Rolle, Sperre, Profil, neues Passwort setzen oder per Mail einen Link schicken, Konto löschen. Das eigene Konto lässt sich nicht sperren, herabstufen oder löschen; Konten, die Beiträge, Sektionen oder Termine verfasst haben, nur sperren.
 - **Sicherheit:** CSRF-Schutz für alle Formulare (Flask-WTF; jedes POST-Formular braucht `<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">`), Logout nur per POST, Rate-Limit für Login, Einladung und Passwort-Links (Flask-Limiter, im Arbeitsspeicher – passend zu einem gunicorn-Worker), Passwort-Richtlinie (Mindestlänge frei wählbar, Standard 10, optional Klein-/Großbuchstabe, Ziffer, Sonderzeichen) einstellbar in der Portalkonfiguration und gültig für jedes neu gesetzte Passwort, Sitzungs-Cookie in Produktion nur über HTTPS.
 
-## Bedienfeld
+## Administration
 
-Login unter `/login`, danach `/dashboard`. Das Bedienfeld hat drei Reiter – Beiträge, Termine und Sektionen –, jeweils mit eigenem Button zum Hinzufügen; Export und Import stehen daneben. Der zuletzt gewählte Reiter wird gemerkt und lässt sich auch direkt verlinken (`/dashboard#articles`, `#events`, `#sections`). Ein Klick auf eine Kachel öffnet ein Schnellbearbeitungs-Modal für die Platzierung auf den öffentlichen Seiten.
+Login unter `/login`, danach `/dashboard`. Die Administration hat oben die Reiter Inhalte, Nutzer, Einladungen und Portalkonfiguration. Unter Inhalte gibt es drei Reiter – Beiträge, Termine und Sektionen –, jeweils mit eigenem Button zum Hinzufügen; Export und Import stehen daneben. Der zuletzt gewählte Reiter wird gemerkt und lässt sich auch direkt verlinken (`/dashboard#articles`, `#events`, `#sections`). Ein Klick auf eine Kachel öffnet ein Schnellbearbeitungs-Modal für die Platzierung auf den öffentlichen Seiten.
 
 Begriffe: Beiträge, Termine und Sektionen entsprechen im Code den Modellen `Article`, `Event` und `Section` und in den CSV-Dateien `articles.csv`, `events.csv` und `sections.csv`. In Code-Kommentaren heißen Beiträge „Beitragkarten“.
 
@@ -137,7 +137,7 @@ Beiträge, Termine, Sektionen und Nutzer mit Profil lassen sich als CSV-Dateien 
 
 Ein Export-/Importordner enthält `articles.csv`, `sections.csv`, `events.csv` und `users.csv` sowie alle Bilder und Profilfotos, auf die die Spalten `image_filename` bzw. `photo_filename` verweisen – im selben Ordner. Format wie in flask-crm: Semikolon als Trennzeichen, UTF-8 (mit BOM, damit Excel Umlaute korrekt zeigt). Ja/Nein-Felder als `1`/`0`, Datum und Uhrzeit in deutscher Ortszeit als `JJJJ-MM-TT HH:MM`.
 
-Im Bedienfeld:
+In der Administration:
 
 - **Export** zeigt zuerst eine Rückfrage mit der Anzahl der Beiträge, Termine, Sektionen und Nutzer und lädt nach Bestätigung ein ZIP mit allen vier CSV-Dateien, den Bildern und den Profilfotos herunter. Das ZIP enthält personenbezogene Daten und die Passwort-Hashes – sicher aufbewahren. Fehlt ein Bild in `static/uploads`, steht das in `export_hinweise.txt` im ZIP.
 - **Import** öffnet ein Fenster, in dem ein ganzer Ordner (CSV-Dateien und Bilder) oder ein Export-ZIP ausgewählt wird. Schlägt der Import fehl, öffnet sich das Fenster erneut mit den Fehlermeldungen. Uploads sind auf insgesamt 16 MB begrenzt.
@@ -159,7 +159,7 @@ Regeln beim Import:
 - Höchstens ein Beitrag darf `is_banner = 1` haben, und nur wenn noch kein Banner existiert.
 - Sektionen werden über `slot_index_*`/`slot_position_*` in die Slots eingereiht. Sektionen, die schon im selben Slot stehen, bleiben davor.
 - Texte werden bereinigt: Im Inhalt (`body`) werden `<p>`, `<br>`, `<div>`, Überschriften und Listen durch Zeilenumbrüche ersetzt (Listenpunkte als „•“), alle übrigen Tags entfernt. Erhalten bleiben nur Fett (`<strong>`), Kursiv (`<em>`) und Links (`<a href>`). Titel, Untertitel, Kicker, Beschreibung und Ort werden zu reinem Text. Das `##` für den Anreißer steht danach in einer eigenen Zeile.
-- Bilder werden mit neuem Dateinamen nach `data/uploads` übernommen. Bei Beiträgen steuert die Spalte `image_fit` (`auto` bzw. leer, `cover`, `contain`, `blur`) die Darstellung wie im Formular; Bei Sektionen schneidet die optionale Spalte `image_orientation` (`landscape` oder `portrait`) das Bild wie beim Upload im Bedienfeld zu; leer lassen, um es unverändert zu übernehmen (so beim Export). Bei Beiträgen wird `image_orientation` ignoriert.
+- Bilder werden mit neuem Dateinamen nach `data/uploads` übernommen. Bei Beiträgen steuert die Spalte `image_fit` (`auto` bzw. leer, `cover`, `contain`, `blur`) die Darstellung wie im Formular; Bei Sektionen schneidet die optionale Spalte `image_orientation` (`landscape` oder `portrait`) das Bild wie beim Upload in der Administration zu; leer lassen, um es unverändert zu übernehmen (so beim Export). Bei Beiträgen wird `image_orientation` ignoriert.
 - Autor der importierten Einträge ist der angemeldete Nutzer (Kommandozeile: `--user`, Standard `admin`).
 - Nutzer (`users.csv`, eine Zeile je Konto mit Profil): Pflichtspalten `username` und `email` (Mitglieder brauchen eine E-Mail-Adresse). Neue Konten werden mit `role`, `is_active` und `password_hash` (bcrypt) aus der CSV angelegt, die Passwörter gelten also weiter; ist `password_hash` leer, setzt die Person ihr Passwort über „Passwort vergessen“. Gibt es ein Konto mit gleichem Nutzernamen oder gleicher E-Mail-Adresse schon (z. B. `admin` nach `init_db.py`), bleiben Rolle, Sperre und Passwort unverändert und nur das Profil wird übernommen. Profilspalten sind optional; wenn ausgefüllt, sind `first_name`, `last_name` und `city` Pflicht. `functions` = Schlüssel mit Komma getrennt (`coach,smeo_staff`), `*_visibility` = `public` oder `members`. Profilfotos werden wie beim Upload quadratisch zugeschnitten und nach `data/uploads/avatars/` übernommen. Ein wiederholter Import legt keine doppelten Konten an.
 
