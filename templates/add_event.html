@@ -7,6 +7,7 @@
             <div class="card-body p-4">
                 <h3 class="mb-4">Neuen Termin hinzufügen</h3>
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Titel</label>
                         <input type="text" name="title" id="title" class="form-control" required>

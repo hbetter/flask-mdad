@@ -1,0 +1,20 @@
+Hallo {{ user.profile.first_name if user.profile else '' }},
+
+für dich wurde ein Konto in der MENSCH DENK AN DICH® Community angelegt.
+Deine Anmeldung ist deine E-Mail-Adresse: {{ user.email }}
+
+Über diesen Link legst du dein Passwort fest:
+
+{{ link }}
+
+Der Link ist {{ days }} Tage gültig und kann nur einmal verwendet werden.
+Danach kannst du dich jederzeit über „Passwort vergessen“ einen neuen
+Link schicken.
+
+Gut zu wissen: Sobald du in deinem Profil ein Foto hochlädst, erscheint
+dein Profil mit Name, Foto, Ort, Organisation, Position und Website im
+öffentlichen Community-Bereich der Website. Ohne Foto bleibt es unsichtbar.
+
+Viele Grüße
+MENSCH DENK AN DICH®
+SMEO GmbH

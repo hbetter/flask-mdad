@@ -11,13 +11,15 @@ from flask_bcrypt import Bcrypt
 from flask_login import (
     LoginManager,
     login_user,
-    login_required,
     logout_user,
     current_user,
 )
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFError
 
-from models import db, User, Article, Section, Event
+from models import db, User, Article, Section, Event, Profile
+from auth import admin_required
+from extensions import csrf, limiter
 import csv_transfer
 import images
 import lexicon_data
@@ -106,6 +108,14 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL", "sqlite:///app.db"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Sitzungs-Cookie: nicht per JavaScript lesbar (Standard), nicht bei
+# Anfragen von fremden Seiten mitgeschickt (SameSite=Lax) und in Produktion
+# nur ueber HTTPS (Nginx). In der Entwicklung (FLASK_DEBUG=1, http://) aus.
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_DEBUG") != "1"
+# CSRF-Token gilt fuer die ganze Sitzung (statt einer Stunde), damit lange
+# offene Bearbeiten-Formulare im Bedienfeld nicht ins Leere laufen.
+app.config["WTF_CSRF_TIME_LIMIT"] = None
 # Hochgeladene Bilder liegen ausserhalb von static/ in data/uploads (wie die
 # Datenbank in data/postgres nicht im Repository und im Produktionsbetrieb
 # per Volume eingebunden, siehe docker-compose.prod.yml). Ausgeliefert ueber
@@ -115,12 +125,21 @@ app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg", "gif", "webp"}
 
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+# Profilfotos der Mitglieder (members.py), ausgeliefert wie alle Uploads
+# ueber /uploads/avatars/<dateiname>.
+os.makedirs(os.path.join(app.config["UPLOAD_FOLDER"], "avatars"), exist_ok=True)
 
 db.init_app(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
+login_manager.login_message = "Bitte melde dich an, um diese Seite zu sehen."
+login_manager.login_message_category = "info"
+# CSRF-Schutz fuer alle POST-Formulare: jedes Formular braucht
+# <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">.
+csrf.init_app(app)
+limiter.init_app(app)
 
 
 # Cache-Busting fuer CSS/JS/Bilder aus static/: Nginx liefert static/ mit
@@ -445,7 +464,34 @@ def section_slot_labels(sections):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    user = db.session.get(User, int(user_id))
+    # Gesperrte Konten verlieren auch eine bestehende Sitzung.
+    if user is None or not user.is_active:
+        return None
+    return user
+
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(_error):
+    flash("Die Sitzung ist abgelaufen oder das Formular war veraltet. Bitte noch einmal versuchen.", "warning")
+    return redirect(request.referrer or url_for("index"))
+
+
+@app.errorhandler(403)
+def handle_forbidden(_error):
+    return render_template("error.html", code=403,
+                           message="Für diese Seite fehlt dir die Berechtigung."), 403
+
+
+@app.errorhandler(429)
+def handle_too_many_requests(_error):
+    return render_template("error.html", code=429,
+                           message="Zu viele Versuche. Bitte warte ein paar Minuten und versuche es dann erneut."), 429
+
+
+def home_for(user):
+    """Startseite nach dem Login: Admins ins Bedienfeld, Mitglieder ins Profil."""
+    return url_for("dashboard") if user.is_admin else url_for("members.profile")
 
 
 @app.route("/")
@@ -527,23 +573,32 @@ def academy():
 
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit("10 per minute;30 per hour", methods=["POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(home_for(current_user))
     if request.method == "POST":
-        username = (request.form.get("username", "") or "").strip()
+        # Mitglieder melden sich mit E-Mail-Adresse an, der Admin auch mit
+        # seinem Nutzernamen.
+        login_name = (request.form.get("username", "") or "").strip()
         password = request.form.get("password", "")
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter(
+            db.or_(User.username == login_name, User.email == login_name.lower())
+        ).first()
 
-        if user and bcrypt.check_password_hash(user.password_hash, password):
+        if user and user.is_active and bcrypt.check_password_hash(user.password_hash, password):
             login_user(user)
-            return redirect(url_for("dashboard"))
+            user.last_login_at = datetime.now(timezone.utc)
+            db.session.commit()
+            return redirect(home_for(user))
 
-        flash("Falscher Nutzername oder Passwort.", "danger")
+        flash("Falsche E-Mail-Adresse bzw. falscher Nutzername oder falsches Passwort.", "danger")
 
     return render_template("login.html")
 
 
 @app.route("/dashboard")
-@login_required
+@admin_required
 def dashboard():
     banner = get_banner_text()
     # Fehler eines fehlgeschlagenen Imports (siehe import_data) werden im
@@ -614,7 +669,7 @@ def dashboard():
 
 
 @app.route("/add-article", methods=["GET", "POST"])
-@login_required
+@admin_required
 def add_article():
     if request.method == "POST":
         on_index = request.form.get("on_index") == "1"
@@ -678,7 +733,7 @@ def add_article():
 
 
 @app.route("/add-event", methods=["GET", "POST"])
-@login_required
+@admin_required
 def add_event():
     if request.method == "POST":
         all_day = request.form.get("all_day") == "1"
@@ -721,7 +776,7 @@ def add_event():
 
 
 @app.route("/edit-event/<int:event_id>", methods=["GET", "POST"])
-@login_required
+@admin_required
 def edit_event(event_id):
     item = Event.query.get_or_404(event_id)
 
@@ -776,7 +831,7 @@ def edit_event(event_id):
 
 
 @app.route("/delete-event/<int:event_id>", methods=["POST"])
-@login_required
+@admin_required
 def delete_event(event_id):
     item = Event.query.get_or_404(event_id)
 
@@ -797,7 +852,7 @@ def past_events_query():
 
 
 @app.route("/delete-past-events", methods=["POST"])
-@login_required
+@admin_required
 def delete_past_events():
     count = past_events_query().delete(synchronize_session=False)
     db.session.commit()
@@ -809,7 +864,7 @@ def delete_past_events():
 
 
 @app.route("/add-section", methods=["GET", "POST"])
-@login_required
+@admin_required
 def add_section():
     if request.method == "POST":
         on_index = request.form.get("on_index") == "1"
@@ -888,7 +943,7 @@ def add_section():
 
 
 @app.route("/edit-section/<int:section_id>", methods=["GET", "POST"])
-@login_required
+@admin_required
 def edit_section(section_id):
     item = Section.query.get_or_404(section_id)
 
@@ -1002,7 +1057,7 @@ def edit_section(section_id):
 
 
 @app.route("/delete-section/<int:section_id>", methods=["POST"])
-@login_required
+@admin_required
 def delete_section(section_id):
     item = Section.query.get_or_404(section_id)
 
@@ -1016,7 +1071,7 @@ def delete_section(section_id):
 
 
 @app.route("/edit-article/<int:article_id>", methods=["GET", "POST"])
-@login_required
+@admin_required
 def edit_article(article_id):
     item = Article.query.get_or_404(article_id)
 
@@ -1108,7 +1163,7 @@ def edit_article(article_id):
 
 
 @app.route("/delete-article/<int:article_id>", methods=["POST"])
-@login_required
+@admin_required
 def delete_article(article_id):
     item = Article.query.get_or_404(article_id)
 
@@ -1126,7 +1181,7 @@ def delete_article(article_id):
 # einen ganzen Ordner (CSV-Dateien + Bilder im selben Ordner) oder dieses
 # ZIP entgegen.
 @app.route("/export")
-@login_required
+@admin_required
 def export_data():
     import io
     import tempfile
@@ -1175,7 +1230,7 @@ def _import_failed(errors):
 
 
 @app.route("/import", methods=["GET", "POST"])
-@login_required
+@admin_required
 def import_data():
     if request.method == "POST":
         import tempfile
@@ -1310,7 +1365,7 @@ def lexicon_preview(slug):
     return render_template("_lexicon_preview.html", entry=entry)
 
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
     logout_user()
     return redirect(url_for("index"))
@@ -1326,5 +1381,25 @@ def sitemap():
         "loc": url_for("stories", _external=True),
         "lastmod": datetime.utcnow().date().isoformat()
     })
+    # Community: Uebersicht und je eine Detailseite pro sichtbarem Profil
+    pages.append({
+        "loc": url_for("members.community", _external=True),
+        "lastmod": datetime.utcnow().date().isoformat()
+    })
+    for profile in members.visible_profiles_query().all():
+        pages.append({
+            "loc": url_for("members.community_detail", profile_id=profile.id, _external=True),
+            "lastmod": profile.updated_at.date().isoformat(),
+        })
 
     return render_template("sitemap.xml", pages=pages)
+
+
+# Nutzerbereich (Profil, Einladung, Passwort, Community) und Admin-Bereich
+# (Nutzer, Einladungen, Portalkonfiguration) als Blueprints, siehe
+# members.py und admin.py.
+import members  # noqa: E402
+import admin  # noqa: E402
+
+app.register_blueprint(members.bp)
+app.register_blueprint(admin.bp)

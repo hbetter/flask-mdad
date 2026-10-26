@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ profile.name }} – Community – MENSCH DENK AN DICH®{% endblock %}
+{% block meta_description %}{{ profile.name }}{% if profile.job_title %}, {{ profile.job_title }}{% endif %}{% if profile.organization %}, {{ profile.organization }}{% endif %} – Mitglied der MENSCH DENK AN DICH® Community.{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <p class="mb-3"><a href="{{ url_for('members.community') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Zur Community</a></p>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-lg-5">
+            {% include "community/_profile_view.html" %}
+        </div>
+    </div>
+</div>
+{% endblock %}

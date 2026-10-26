@@ -6,24 +6,17 @@
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
                 <h1 class="h3 mb-4">Login</h1>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                  {% if messages %}
-                    {% for category, message in messages %}
-                      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schließen"></button>
-                      </div>
-                    {% endfor %}
-                  {% endif %}
-                {% endwith %}
+                {% include "_flashes.html" %}
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
-                        <label for="username" class="form-label fw-bold">Nutzername</label>
+                        <label for="username" class="form-label fw-bold">E-Mail-Adresse oder Nutzername</label>
                         <input
                             type="text"
                             id="username"
                             name="username"
                             class="form-control"
+                            autocomplete="username"
                             required
                             autofocus
                         >
@@ -35,6 +28,7 @@
                             id="password"
                             name="password"
                             class="form-control"
+                            autocomplete="current-password"
                             required
                         >
                     </div>
@@ -43,6 +37,7 @@
                         <button type="submit" class="btn btn-primary">Anmelden</button>
                     </div>
                 </form>
+                <p class="small mt-3 mb-0"><a href="{{ url_for('members.password_reset_request') }}">Passwort vergessen?</a></p>
             </div>
         </div>
     </div>

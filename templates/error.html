@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Hinweis – MENSCH DENK AN DICH®{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-lg-5">
+          <p class="kicker mb-2">Hinweis</p>
+          <h1 class="h3 mb-3">{% if code == 403 %}Kein Zugriff{% elif code == 429 %}Bitte kurz warten{% else %}Das hat nicht geklappt{% endif %}</h1>
+          <p class="mb-4">{{ message }}</p>
+          {% if link %}<a href="{{ link }}" class="btn btn-maroon me-2">{{ link_label }}</a>{% endif %}
+          <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Zur Startseite</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

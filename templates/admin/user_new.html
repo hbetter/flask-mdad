@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Nutzer anlegen – Bedienfeld{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="container py-3">
+    {% include "admin/_nav.html" %}
+    <p class="mb-3"><a href="{{ url_for('admin.users') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Alle Nutzer</a></p>
+    <h1 class="h3 mb-3">Nutzer anlegen</h1>
+    {% include "_flashes.html" %}
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="h5 mb-3">Konto</h2>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="account_email">E-Mail-Adresse (Login) *</label>
+                            <input type="email" class="form-control" id="account_email" name="account_email" maxlength="255" required
+                                   value="{{ form.get('account_email', '') if form else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="role">Rolle</label>
+                            {%- set chosen_role = form.get('role') if form else 'member' %}
+                            <select class="form-select" id="role" name="role">
+                                {% for key, label in roles %}
+                                <option value="{{ key }}"{% if key == chosen_role %} selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1"
+                                   {% if not form or form.get('is_active') == '1' %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">Konto aktiv</label>
+                        </div>
+                        {% include "admin/_password_choice.html" %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="h5 mb-3">Profil</h2>
+                        {% with profile=None, user_email='', email_locked=false, email_in_profile=false %}
+                            {% include "_profile_form.html" %}
+                        {% endwith %}
+                        <p class="small text-muted mt-3 mb-0">Ein Foto lädt die Person selbst in ihrem Profil hoch; erst dann erscheint sie im Community-Bereich.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-maroon px-4">Nutzer anlegen</button>
+            <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary ms-2">Abbrechen</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

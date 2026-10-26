@@ -1,0 +1,21 @@
+Hallo,
+
+du bist eingeladen, der MENSCH DENK AN DICH® Community beizutreten.
+{% if note %}
+{{ note }}
+{% endif %}
+Über diesen Link legst du dein Konto und dein Profil an:
+
+{{ link }}
+
+Der Link ist {{ days }} Tage gültig und kann nur einmal verwendet werden.
+
+Gut zu wissen: Sobald du ein Profilfoto hochlädst, erscheint dein Profil mit
+Name, Foto, Ort, Organisation, Position und Website im öffentlichen
+Community-Bereich der Website. E-Mail-Adresse, Telefon und Bio zeigst du
+wahlweise allen Besuchern oder nur eingeloggten Mitgliedern. Ohne Foto
+bleibt dein Profil unsichtbar.
+
+Viele Grüße
+MENSCH DENK AN DICH®
+SMEO GmbH

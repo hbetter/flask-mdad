@@ -1,0 +1,8 @@
+{# Navigation des Admin-Bereichs (auch oben im Bedienfeld) #}
+<ul class="nav nav-pills admin-nav gap-1 mb-4">
+    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'dashboard' %} active{% endif %}" href="{{ url_for('dashboard') }}"><i class="bi bi-grid" aria-hidden="true"></i> Inhalte</a></li>
+    <li class="nav-item"><a class="nav-link{% if request.endpoint in ('admin.users', 'admin.user_detail') %} active{% endif %}" href="{{ url_for('admin.users') }}"><i class="bi bi-people" aria-hidden="true"></i> Nutzer</a></li>
+    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'admin.invitations' %} active{% endif %}" href="{{ url_for('admin.invitations') }}"><i class="bi bi-envelope-plus" aria-hidden="true"></i> Einladungen</a></li>
+    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'admin.settings' %} active{% endif %}" href="{{ url_for('admin.settings') }}"><i class="bi bi-gear" aria-hidden="true"></i> Portalkonfiguration</a></li>
+    <li class="nav-item ms-lg-auto"><a class="nav-link{% if request.endpoint in ('members.profile', 'members.change_password') %} active{% endif %}" href="{{ url_for('members.profile') }}"><i class="bi bi-person-circle" aria-hidden="true"></i> Mein Profil</a></li>
+</ul>

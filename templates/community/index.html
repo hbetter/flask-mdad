@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "_macros.html" import section_card %}
+{% block title %}Community – MENSCH DENK AN DICH®{% endblock %}
+{% block meta_description %}Die Community von MENSCH DENK AN DICH®: Spiele Coaches und Mitarbeitende der SMEO GmbH im Überblick.{% endblock %}
+{% block content %}
+{% call section_card(kicker="Community", heading="Menschen hinter MENSCH DENK AN DICH®", heading_tag="h1", heading_class="display-5 mb-4") %}
+    {% if profiles %}
+    <div class="row g-3">
+        {% for profile in profiles %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('members.community_detail', profile_id=profile.id) }}"
+               class="card h-100 shadow-sm community-tile text-decoration-none"
+               data-profile-modal>
+                <img src="{{ url_for('uploaded_file', filename=profile.photo_filename) }}" alt=""
+                     class="card-img-top" width="600" height="600" loading="lazy">
+                <div class="card-body">
+                    <h2 class="h6 card-title mb-1">{{ profile.name }}</h2>
+                    {% if profile.job_title or profile.organization %}
+                    <p class="small mb-1">{{ profile.job_title or profile.organization }}</p>
+                    {% endif %}
+                    <p class="small text-muted mb-2"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ profile.city }}</p>
+                    {% for label in profile.function_labels %}<span class="badge badge-function me-1 mb-1">{{ label }}</span>{% endfor %}
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="mb-0">Hier stellen sich bald die Mitglieder der Community vor.</p>
+    {% endif %}
+{% endcall %}
+
+{# Ein Klick auf eine Kachel laedt die Detailseite (?modal=1) in dieses
+   Modal. Ohne JavaScript fuehrt der Link einfach zur Detailseite. #}
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <span class="visually-hidden" id="profileModalTitle">Profil</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+            </div>
+            <div class="modal-body px-4 pb-4" id="profileModalBody"></div>
+            <div class="modal-footer border-0 pt-0">
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="profileModalLink">Eigene Seite öffnen</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var modalEl = document.getElementById("profileModal");
+    var body = document.getElementById("profileModalBody");
+    var link = document.getElementById("profileModalLink");
+    var modal = new bootstrap.Modal(modalEl);
+    document.querySelectorAll("[data-profile-modal]").forEach(function (tile) {
+        tile.addEventListener("click", function (event) {
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return;
+            event.preventDefault();
+            var url = tile.getAttribute("href");
+            fetch(url + "?modal=1", { credentials: "same-origin" })
+                .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+                .then(function (html) {
+                    body.innerHTML = html;
+                    link.href = url;
+                    var heading = body.querySelector("h2");
+                    if (heading) document.getElementById("profileModalTitle").textContent = heading.textContent;
+                    modal.show();
+                })
+                .catch(function () { window.location.href = url; });
+        });
+    });
+});
+</script>
+{% endblock %}

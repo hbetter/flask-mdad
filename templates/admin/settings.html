@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Portalkonfiguration – Bedienfeld{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+{%- macro value(name) -%}{{ (form.get(name) if form else portal[name]) or '' }}{%- endmacro -%}
+{% block content %}
+<div class="container py-3">
+    {% include "admin/_nav.html" %}
+    <h1 class="h3 mb-3">Portalkonfiguration</h1>
+    {% include "_flashes.html" %}
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-1">Mailversand (SMTP)</h2>
+                    <p class="small text-muted mb-4">Für Einladungen und „Passwort vergessen“. Die Daten stehen beim Mail-Anbieter.</p>
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold" for="smtp_host">SMTP-Server</label>
+                                <input type="text" class="form-control" id="smtp_host" name="smtp_host" placeholder="smtp.beispiel.de" value="{{ value('smtp_host') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold" for="smtp_port">Port</label>
+                                <input type="number" class="form-control" id="smtp_port" name="smtp_port" min="1" max="65535" placeholder="587" value="{{ value('smtp_port') }}">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold" for="smtp_security">Verschlüsselung</label>
+                                {%- set chosen = (form.get('smtp_security') if form else portal.smtp_security) or 'starttls' %}
+                                <select class="form-select" id="smtp_security" name="smtp_security">
+                                    {% for key, label in security_choices %}
+                                    <option value="{{ key }}"{% if key == chosen %} selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="smtp_username">Benutzername</label>
+                                <input type="text" class="form-control" id="smtp_username" name="smtp_username" autocomplete="off" value="{{ value('smtp_username') }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="smtp_password">Passwort</label>
+                                <input type="password" class="form-control" id="smtp_password" name="smtp_password" autocomplete="new-password"
+                                       placeholder="{{ 'gespeichert – leer lassen zum Beibehalten' if portal.smtp_password_encrypted else '' }}">
+                                {% if portal.smtp_password_encrypted %}
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input" type="checkbox" id="clear_password" name="clear_password" value="1">
+                                    <label class="form-check-label small" for="clear_password">Gespeichertes Passwort löschen</label>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="mail_from_address">Absenderadresse</label>
+                                <input type="email" class="form-control" id="mail_from_address" name="mail_from_address" placeholder="info@smeo-now.de" value="{{ value('mail_from_address') }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold" for="mail_from_name">Absendername</label>
+                                <input type="text" class="form-control" id="mail_from_name" name="mail_from_name" placeholder="MENSCH DENK AN DICH®" value="{{ value('mail_from_name') }}">
+                            </div>
+                        </div>
+                        <p class="small text-muted mt-3 mb-3">Das Passwort wird verschlüsselt gespeichert und nicht wieder angezeigt.
+                            Wird der SECRET_KEY des Servers geändert, muss es neu eingetragen werden.</p>
+                        <button type="submit" class="btn btn-maroon px-4">Speichern</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-1">Testmail</h2>
+                    {% if smtp_ready %}
+                    <p class="small text-muted mb-3">Prüft die gespeicherten Einstellungen.</p>
+                    <form method="POST" action="{{ url_for('admin.send_test_mail') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <label class="form-label fw-bold" for="to">Empfänger</label>
+                        <input type="email" class="form-control mb-3" id="to" name="to" value="{{ current_user.email or '' }}" required>
+                        <button type="submit" class="btn btn-outline-secondary">Testmail senden</button>
+                    </form>
+                    {% else %}
+                    <p class="small text-muted mb-0">Möglich, sobald Server, Port und Absenderadresse gespeichert sind.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

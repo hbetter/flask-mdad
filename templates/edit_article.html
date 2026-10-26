@@ -8,6 +8,7 @@
             <div class="card-body p-4">
                 <h3 class="mb-4">Beitrag bearbeiten</h3>
                 <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label class="form-label fw-bold d-block">Anzeigen auf</label>
                         {% for key, label in article_flags %}

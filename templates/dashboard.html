@@ -4,6 +4,8 @@
 {% block content %}
 <div class="container py-3">
 
+{% include "admin/_nav.html" %}
+
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     {% for category, message in messages %}
@@ -107,6 +109,7 @@
                               style="display: inline;"
                               onclick="event.stopPropagation();"
                               onsubmit="return confirm('Möchtest du diesen Beitrag wirklich löschen?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-sm btn-outline-danger ms-2 px-3 border-1">
                                 Löschen
                             </button>
@@ -133,6 +136,7 @@
                         action="{{ url_for('edit_article', article_id=item.id) }}"
                         enctype="multipart/form-data"
                     >
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="modal-body flex-grow-1 overflow-auto">
                             <div class="mb-3">
                                 <label class="form-label fw-bold d-block mb-1">Anzeigen auf</label>
@@ -287,6 +291,7 @@
                               method="POST"
                               style="display: inline;"
                               onsubmit="return confirm('Möchtest du diesen Termin wirklich löschen?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-sm btn-outline-danger ms-2 px-3 border-1">
                                 Löschen
                             </button>
@@ -372,6 +377,7 @@
                               style="display: inline;"
                               onclick="event.stopPropagation();"
                               onsubmit="return confirm('Möchtest du diese Sektion wirklich löschen?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-sm btn-outline-danger ms-2 px-3 border-1">
                                 Löschen
                             </button>
@@ -397,6 +403,7 @@
                         action="{{ url_for('edit_section', section_id=item.id) }}"
                         enctype="multipart/form-data"
                     >
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="modal-body flex-grow-1 overflow-auto">
                             <div class="mb-3 section-flags-toggle">
                                 <label class="form-label fw-bold d-block mb-1">Anzeigen auf</label>
@@ -494,6 +501,7 @@
                 </p>
 
                 <form method="POST" action="{{ url_for('import_data') }}" enctype="multipart/form-data" class="mb-4">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <label class="form-label fw-bold" for="import-folder">Ordner auswählen</label>
                     <input type="file" name="files" id="import-folder" class="form-control mb-2"
                            webkitdirectory directory multiple required>
@@ -501,6 +509,7 @@
                 </form>
 
                 <form method="POST" action="{{ url_for('import_data') }}" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <label class="form-label fw-bold" for="import-zip">… oder ZIP-Datei aus dem Export</label>
                     <input type="file" name="files" id="import-zip" class="form-control mb-2" accept=".zip" required>
                     <button type="submit" class="btn btn-primary">ZIP importieren</button>
@@ -549,6 +558,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 <form method="POST" action="{{ url_for('delete_past_events') }}" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash"></i> Endgültig löschen
                     </button>

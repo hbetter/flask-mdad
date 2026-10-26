@@ -1,0 +1,31 @@
+{#- Inhalt eines Profils: Detailseite (community/detail.html) und Modal auf
+    /community (per ?modal=1 nachgeladen). fields = visible_fields(profile):
+    nur die fuer den Betrachter freigegebenen Werte, sonst None. -#}
+<div class="row g-4 align-items-start profile-view">
+    <div class="col-sm-4 col-md-3">
+        <img src="{{ url_for('uploaded_file', filename=profile.photo_filename) }}" alt="Foto von {{ profile.name }}"
+             class="img-fluid rounded-3 w-100" width="600" height="600">
+    </div>
+    <div class="col-sm-8 col-md-9">
+        {% if profile.function_labels %}
+        <p class="mb-2">
+            {% for label in profile.function_labels %}<span class="badge badge-function me-1">{{ label }}</span>{% endfor %}
+        </p>
+        {% endif %}
+        <h2 class="h3 mb-1">{{ profile.name }}</h2>
+        {% if profile.job_title or profile.organization %}
+        <p class="mb-1 fw-semibold">{{ profile.job_title or '' }}{% if profile.job_title and profile.organization %}, {% endif %}{{ profile.organization or '' }}</p>
+        {% endif %}
+        <p class="text-muted mb-3"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ profile.city }}</p>
+
+        <ul class="list-unstyled mb-3 profile-contact">
+            {% if fields.email %}<li><i class="bi bi-envelope" aria-hidden="true"></i> <a href="mailto:{{ fields.email }}">{{ fields.email }}</a></li>{% endif %}
+            {% if fields.phone %}<li><i class="bi bi-telephone" aria-hidden="true"></i> <a href="tel:{{ fields.phone|replace(' ', '') }}">{{ fields.phone }}</a></li>{% endif %}
+            {% if profile.website %}<li><i class="bi bi-globe" aria-hidden="true"></i> <a href="{{ profile.website }}" target="_blank" rel="noopener nofollow">{{ profile.website|replace('https://', '')|replace('http://', '') }}</a></li>{% endif %}
+        </ul>
+
+        {% if fields.bio %}
+        <div class="preserve-lines">{{ fields.bio }}</div>
+        {% endif %}
+    </div>
+</div>

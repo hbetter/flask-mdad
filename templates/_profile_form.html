@@ -1,0 +1,114 @@
+{#- Profilfelder, gemeinsam genutzt von "Mein Profil" (account/profile.html),
+    der Einladung (auth/invite.html) und der Nutzerverwaltung
+    (admin/user_detail.html).
+
+    Erwartet: profile (oder None), form (abgeschickte Werte nach einem
+    Fehler, sonst None), user_email (aktuelle Adresse), email_locked (bei
+    der Einladung steht die Adresse fest), optional email_in_profile=false
+    (Nutzerverwaltung: Adresse wird im Kontobereich gepflegt). -#}
+
+{%- macro field_value(name, attr_value) -%}
+{{ (form.get(name) if form else attr_value) or '' }}
+{%- endmacro -%}
+
+{%- macro visibility_select(field, current) -%}
+{%- set chosen = (form.get(field ~ '_visibility') if form else current) or 'members' -%}
+<select name="{{ field }}_visibility" id="{{ field }}_visibility" class="form-select form-select-sm visibility-select"
+        aria-label="Sichtbarkeit" title="Wer sieht dieses Feld?">
+    {% for key, label in visibility_choices %}
+    <option value="{{ key }}"{% if key == chosen %} selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+</select>
+{%- endmacro -%}
+
+<p class="small text-muted mb-3">Felder mit * sind Pflichtfelder. Name, Ort, Organisation, Position, Funktion
+    und Website sind im Community-Bereich immer öffentlich; für E-Mail, Telefon und Bio ist die
+    Sichtbarkeit wählbar.</p>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label fw-bold" for="first_name">Vorname *</label>
+        <input type="text" class="form-control" id="first_name" name="first_name" maxlength="100" required
+               autocomplete="given-name" value="{{ field_value('first_name', profile.first_name if profile) }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-bold" for="last_name">Nachname *</label>
+        <input type="text" class="form-control" id="last_name" name="last_name" maxlength="100" required
+               autocomplete="family-name" value="{{ field_value('last_name', profile.last_name if profile) }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-bold" for="display_name">Anzeigename</label>
+        <input type="text" class="form-control" id="display_name" name="display_name" maxlength="120"
+               value="{{ field_value('display_name', profile.display_name if profile) }}"
+               aria-describedby="display_name_help">
+        <div id="display_name_help" class="form-text">Optional, sonst erscheint „Vorname Nachname“.</div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-bold" for="city">Ort *</label>
+        <input type="text" class="form-control" id="city" name="city" maxlength="120" required
+               autocomplete="address-level2" value="{{ field_value('city', profile.city if profile) }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-bold" for="organization">Organisation</label>
+        <input type="text" class="form-control" id="organization" name="organization" maxlength="200"
+               autocomplete="organization" value="{{ field_value('organization', profile.organization if profile) }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-bold" for="job_title">Position</label>
+        <input type="text" class="form-control" id="job_title" name="job_title" maxlength="200"
+               autocomplete="organization-title" value="{{ field_value('job_title', profile.job_title if profile) }}">
+    </div>
+    <div class="col-12">
+        <fieldset>
+            <legend class="form-label fw-bold fs-6 mb-1">Funktion</legend>
+            {%- set chosen_functions = form.getlist('functions') if form else ((profile.functions if profile else []) or []) %}
+            {% for key, label in profile_functions.items() %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="functions" id="function_{{ key }}"
+                       value="{{ key }}"{% if key in chosen_functions %} checked{% endif %}>
+                <label class="form-check-label" for="function_{{ key }}">{{ label }}</label>
+            </div>
+            {% endfor %}
+        </fieldset>
+    </div>
+    {% if email_in_profile is not defined or email_in_profile %}
+    <div class="col-12">
+        <label class="form-label fw-bold" for="email">E-Mail-Adresse *</label>
+        <div class="input-group">
+            <input type="email" class="form-control" id="email" name="email" maxlength="255" autocomplete="email"
+                   value="{{ user_email if email_locked else field_value('email', user_email) }}"
+                   {% if email_locked %}readonly{% else %}required{% endif %}>
+            {{ visibility_select('email', profile.email_visibility if profile) }}
+        </div>
+        <div class="form-text">{% if email_locked %}Die Adresse steht durch die Einladung fest und kann später im Profil geändert werden. {% endif %}Mit dieser Adresse meldest du dich an.</div>
+    </div>
+    {% else %}
+    {# Nutzerverwaltung: die Login-Adresse steht im Kontobereich, hier nur
+       die Sichtbarkeit der E-Mail-Adresse #}
+    <div class="col-12">
+        <label class="form-label fw-bold" for="email_visibility">Sichtbarkeit der E-Mail-Adresse</label>
+        <div>{{ visibility_select('email', profile.email_visibility if profile) }}</div>
+        <div class="form-text">Die E-Mail-Adresse selbst wird im Bereich „Konto“ geändert.</div>
+    </div>
+    {% endif %}
+    <div class="col-12">
+        <label class="form-label fw-bold" for="phone">Telefon</label>
+        <div class="input-group">
+            <input type="tel" class="form-control" id="phone" name="phone" maxlength="60" autocomplete="tel"
+                   value="{{ field_value('phone', profile.phone if profile) }}">
+            {{ visibility_select('phone', profile.phone_visibility if profile) }}
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-2">
+            <label class="form-label fw-bold mb-0" for="bio">Bio</label>
+            <div>{{ visibility_select('bio', profile.bio_visibility if profile) }}</div>
+        </div>
+        <textarea class="form-control" id="bio" name="bio" rows="5">{{ field_value('bio', profile.bio if profile) }}</textarea>
+    </div>
+    <div class="col-12">
+        <label class="form-label fw-bold" for="website">Website</label>
+        <input type="text" class="form-control" id="website" name="website" maxlength="300" inputmode="url"
+               placeholder="www.beispiel.de" value="{{ field_value('website', profile.website if profile) }}">
+    </div>
+</div>

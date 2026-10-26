@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Nutzer – Bedienfeld{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="container py-3">
+    {% include "admin/_nav.html" %}
+    {% include "_flashes.html" %}
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Nutzer</h1>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('admin.invitations') }}" class="btn btn-outline-secondary"><i class="bi bi-envelope-plus" aria-hidden="true"></i> Mitglied einladen</a>
+            <a href="{{ url_for('admin.user_new') }}" class="btn btn-maroon"><i class="bi bi-person-plus" aria-hidden="true"></i> Nutzer anlegen</a>
+        </div>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">E-Mail / Login</th>
+                        <th scope="col">Rolle</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Community</th>
+                        <th scope="col">Letzter Login</th>
+                        <th scope="col"><span class="visually-hidden">Aktion</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td><a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="fw-semibold">{{ user.profile.full_name if user.profile else (user.username if not user.email else '–') }}</a></td>
+                        <td>{{ user.email or user.username }}</td>
+                        <td>{{ roles.get(user.role, user.role) }}</td>
+                        <td>{% if user.is_active %}<span class="badge text-bg-success">aktiv</span>{% else %}<span class="badge text-bg-secondary">gesperrt</span>{% endif %}</td>
+                        <td>{% if user.profile and user.profile.photo_filename and user.is_active %}<span class="badge text-bg-light border">sichtbar</span>{% else %}<span class="small text-muted">nicht sichtbar</span>{% endif %}</td>
+                        <td class="small">{{ user.last_login_at|datetimeformat if user.last_login_at else 'noch nie' }}</td>
+                        <td class="text-end"><a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="btn btn-sm btn-outline-secondary">Bearbeiten</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

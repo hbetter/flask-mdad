@@ -6,3 +6,6 @@ psycopg2-binary==2.9.9
 gunicorn==22.0.0
 Flask-Bcrypt
 Pillow
+Flask-WTF==1.2.2
+Flask-Limiter==3.12
+cryptography

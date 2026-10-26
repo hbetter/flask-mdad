@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}Nutzer bearbeiten – Bedienfeld{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="container py-3">
+    {% include "admin/_nav.html" %}
+    <p class="mb-3"><a href="{{ url_for('admin.users') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Alle Nutzer</a></p>
+    <h1 class="h3 mb-3">{{ profile.full_name if profile and profile.first_name else (user.email or user.username) }}</h1>
+    {% include "_flashes.html" %}
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Profilfoto</h2>
+                    {% if profile and profile.photo_filename %}
+                        <img src="{{ url_for('uploaded_file', filename=profile.photo_filename) }}" alt="Profilfoto"
+                             class="img-fluid rounded-3 mb-2" width="600" height="600">
+                        <p class="small mb-3">
+                            {% if user.is_active %}<span class="badge text-bg-success">Sichtbar</span>
+                            <a href="{{ url_for('members.community_detail', profile_id=profile.id) }}">Öffentliche Ansicht</a>
+                            {% else %}<span class="badge text-bg-secondary">Nicht sichtbar</span> Konto gesperrt{% endif %}
+                        </p>
+                    {% else %}
+                        <div class="profile-photo profile-photo-empty mb-2" aria-hidden="true"><i class="bi bi-person"></i></div>
+                        <p class="small mb-3"><span class="badge text-bg-secondary">Nicht sichtbar</span> Ohne Foto erscheint das Profil nicht im Community-Bereich.</p>
+                    {% endif %}
+                    {% if profile and profile.id %}
+                    <form method="POST" action="{{ url_for('admin.user_photo', user_id=user.id) }}" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="file" name="photo" accept="image/jpeg,image/png,image/gif,image/webp"
+                               class="form-control form-control-sm mb-2" required aria-label="Foto auswählen">
+                        <button type="submit" class="btn btn-maroon btn-sm">{% if profile.photo_filename %}Foto ersetzen{% else %}Foto hochladen{% endif %}</button>
+                    </form>
+                    {% if profile.photo_filename %}
+                    <form method="POST" action="{{ url_for('admin.user_photo_delete', user_id=user.id) }}" class="mt-2"
+                          onsubmit="return confirm('Foto entfernen? Das Profil verschwindet dann aus dem Community-Bereich.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Foto entfernen</button>
+                    </form>
+                    {% endif %}
+                    {% else %}
+                    <p class="small text-muted mb-0">Erst möglich, wenn das Profil mit den Pflichtfeldern gespeichert ist.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Konto</h2>
+                    <dl class="small mb-3">
+                        {% if user.username != user.email %}<dt>Nutzername</dt><dd>{{ user.username }}</dd>{% endif %}
+                        <dt>Angelegt</dt><dd>{{ user.created_at|datetimeformat }}</dd>
+                        <dt>Letzter Login</dt><dd>{{ user.last_login_at|datetimeformat if user.last_login_at else 'noch nie' }}</dd>
+                    </dl>
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="account">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="account_email">E-Mail-Adresse (Login)</label>
+                            <input type="email" class="form-control" id="account_email" name="account_email" maxlength="255"
+                                   value="{{ user.email or '' }}"{% if not user.is_admin %} required{% endif %}>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="role">Rolle</label>
+                            <select class="form-select" id="role" name="role"{% if is_self %} disabled{% endif %}>
+                                {% for key, label in roles %}
+                                <option value="{{ key }}"{% if key == user.role %} selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            {% if is_self %}<input type="hidden" name="role" value="{{ user.role }}">{% endif %}
+                        </div>
+                        <div class="form-check mb-3">
+                            {% if is_self %}<input type="hidden" name="is_active" value="1">{% endif %}
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1"
+                                   {% if user.is_active %}checked{% endif %}{% if is_self %} disabled{% endif %}>
+                            <label class="form-check-label" for="is_active">Konto aktiv (gesperrte Konten können sich nicht anmelden und erscheinen nicht in der Community)</label>
+                        </div>
+                        {% if is_self %}<p class="small text-muted">Die eigene Rolle und Sperre kannst du nicht ändern.</p>{% endif %}
+                        <button type="submit" class="btn btn-outline-secondary">Konto speichern</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Passwort</h2>
+                    {% if smtp_ready and user.email %}
+                    <form method="POST" class="mb-3">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="send_link">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Link zum Passwortsetzen senden</button>
+                        <div class="form-text">Geht an {{ user.email }}, 14 Tage gültig.</div>
+                    </form>
+                    {% endif %}
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="password">
+                        <div class="mb-2">
+                            <label class="form-label fw-bold" for="password">Neues Passwort</label>
+                            <input type="password" class="form-control" id="password" name="password" minlength="10" autocomplete="new-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" for="password_confirm">Wiederholen</label>
+                            <input type="password" class="form-control" id="password_confirm" name="password_confirm" minlength="10" autocomplete="new-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Passwort setzen</button>
+                    </form>
+                </div>
+            </div>
+
+            {% if not is_self %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-2">Konto löschen</h2>
+                    {% if owned_content %}
+                    <p class="small mb-0">Dieses Konto ist Autor von {{ owned_content }} Beiträgen, Sektionen oder Terminen und kann deshalb nicht gelöscht werden. Stattdessen sperren.</p>
+                    {% else %}
+                    <p class="small mb-3">Löscht Konto, Profil und Foto endgültig.</p>
+                    <form method="POST" action="{{ url_for('admin.user_delete', user_id=user.id) }}"
+                          onsubmit="return confirm('Konto, Profil und Foto endgültig löschen?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Konto löschen</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Profil</h2>
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="profile">
+                        {% with user_email=user.email, email_locked=false, email_in_profile=false %}
+                            {% include "_profile_form.html" %}
+                        {% endwith %}
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-maroon px-4">Profil speichern</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

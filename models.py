@@ -4,13 +4,121 @@ from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
+def _utcnow():
+    return datetime.now(timezone.utc)
+
+
+# Rollen: "admin" pflegt die Website (Bedienfeld, Nutzerverwaltung,
+# Portalkonfiguration), "member" hat nur Zugriff auf das eigene Profil.
+ROLE_ADMIN = "admin"
+ROLE_MEMBER = "member"
+ROLES = [(ROLE_ADMIN, "Admin"), (ROLE_MEMBER, "Mitglied")]
+
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    # Mitglieder melden sich mit ihrer E-Mail-Adresse an; username ist fuer
+    # sie identisch mit der E-Mail-Adresse bei der Einladung. Der Admin aus
+    # init_db.py meldet sich weiterhin mit "admin" an.
+    username = db.Column(db.String(255), unique=True, nullable=False)
+    email = db.Column(db.String(255), unique=True)
+    role = db.Column(db.String(20), nullable=False, default=ROLE_MEMBER)
+    # Gesperrte Konten (is_active=False) koennen sich nicht anmelden und
+    # erscheinen nicht im Community-Bereich. Ueberschreibt UserMixin.is_active.
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
+    last_login_at = db.Column(db.DateTime)
     articles = db.relationship('Article', backref='author', lazy=True)
     sections = db.relationship('Section', backref='author', lazy=True)
     events = db.relationship('Event', backref='author', lazy=True)
     password_hash = db.Column(db.String(255), nullable=False)
+    # 1:1 - jeder Nutzer hat hoechstens ein Profil (Admins brauchen keins).
+    profile = db.relationship(
+        'Profile', backref='user', uselist=False, cascade='all, delete-orphan'
+    )
+
+    @property
+    def is_admin(self):
+        return self.role == ROLE_ADMIN
+
+
+# Sichtbarkeit der Felder E-Mail, Telefon und Bio im Community-Bereich.
+VISIBILITY_PUBLIC = "public"    # alle Portalbesucher
+VISIBILITY_MEMBERS = "members"  # nur eingeloggte Mitglieder
+VISIBILITY_CHOICES = [
+    (VISIBILITY_PUBLIC, "Für alle Portalbesucher"),
+    (VISIBILITY_MEMBERS, "Nur für eingeloggte Mitglieder"),
+]
+
+# Funktion im Profil (Mehrfachauswahl). Gespeichert werden nur die
+# Schluessel; eine neue Option ist eine neue Zeile hier, ohne
+# Datenbankaenderung.
+PROFILE_FUNCTIONS = {
+    "coach": "Spiele Coach",
+    "smeo_staff": "MitarbeiterIn SMEO GmbH",
+}
+
+
+# Persoenliches Profil eines Mitglieds. Erscheint im oeffentlichen
+# Community-Bereich nur, wenn ein Foto hochgeladen ist (photo_filename).
+class Profile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
+    display_name = db.Column(db.String(120))
+    first_name = db.Column(db.String(100), nullable=False)
+    last_name = db.Column(db.String(100), nullable=False)
+    organization = db.Column(db.String(200))
+    job_title = db.Column(db.String(200))
+    functions = db.Column(db.JSON, nullable=False, default=list)
+    city = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(60))
+    bio = db.Column(db.Text)
+    website = db.Column(db.String(300))
+    photo_filename = db.Column(db.String(255))
+    email_visibility = db.Column(db.String(10), nullable=False, default=VISIBILITY_MEMBERS)
+    phone_visibility = db.Column(db.String(10), nullable=False, default=VISIBILITY_MEMBERS)
+    bio_visibility = db.Column(db.String(10), nullable=False, default=VISIBILITY_MEMBERS)
+    updated_at = db.Column(db.DateTime, nullable=False, default=_utcnow, onupdate=_utcnow)
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}".strip()
+
+    @property
+    def name(self):
+        return self.display_name or self.full_name
+
+    @property
+    def function_labels(self):
+        return [PROFILE_FUNCTIONS[k] for k in (self.functions or []) if k in PROFILE_FUNCTIONS]
+
+
+# Einladungslinks: gespeichert wird nur ein Hash des Tokens, der Link selbst
+# steht ausschliesslich in der versendeten Mail. Einmal nutzbar (used_at).
+class Invitation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), nullable=False)
+    token_hash = db.Column(db.String(64), nullable=False, unique=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=_utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    used_at = db.Column(db.DateTime)
+    invited_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    invited_by = db.relationship('User', foreign_keys=[invited_by_id])
+
+
+# Portalkonfiguration (genau ein Datensatz, id=1). Zunaechst nur SMTP fuer
+# Einladungs- und Passwort-Mails. Das SMTP-Passwort liegt verschluesselt
+# vor (mailer.py), abgeleitet vom SECRET_KEY.
+class PortalSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    smtp_host = db.Column(db.String(255))
+    smtp_port = db.Column(db.Integer)
+    smtp_security = db.Column(db.String(10), nullable=False, default="starttls")
+    smtp_username = db.Column(db.String(255))
+    smtp_password_encrypted = db.Column(db.Text)
+    mail_from_address = db.Column(db.String(255))
+    mail_from_name = db.Column(db.String(255))
+    updated_at = db.Column(db.DateTime, nullable=False, default=_utcnow, onupdate=_utcnow)
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)

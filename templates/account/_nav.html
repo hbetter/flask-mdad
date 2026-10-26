@@ -1,0 +1,8 @@
+{# Reiter im eigenen Konto #}
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'members.profile' %} active{% endif %}" href="{{ url_for('members.profile') }}">Mein Profil</a></li>
+    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'members.change_password' %} active{% endif %}" href="{{ url_for('members.change_password') }}">Passwort</a></li>
+    {% if current_user.profile and current_user.profile.photo_filename %}
+    <li class="nav-item"><a class="nav-link" href="{{ url_for('members.community_detail', profile_id=current_user.profile.id) }}">Öffentliche Ansicht</a></li>
+    {% endif %}
+</ul>

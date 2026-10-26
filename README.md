@@ -30,7 +30,7 @@ Ohne `SECRET_KEY` startet die App nur im Debug-Modus (`FLASK_DEBUG=1`, gesetzt i
 
 Im Debug-Modus wird der Projektordner in den Container eingebunden (`.:/app`), Änderungen an Code und Templates sind daher ohne Neubau sofort wirksam.
 
-`init_db.py` legt bei einer leeren Datenbank alle Tabellen an und erzeugt den Nutzer `admin` mit dem Passwort `pw`. Nur einmal bei einer frischen Datenbank ausführen – ein zweiter Aufruf scheitert, weil es den Nutzer `admin` dann schon gibt. `change_pw.py` setzt das Passwort von `admin` wieder auf `pw` zurück.
+`init_db.py` legt bei einer leeren Datenbank alle Tabellen an und erzeugt den Nutzer `admin` (Rolle Admin) mit dem Passwort `pw`. Nur einmal bei einer frischen Datenbank ausführen – ein zweiter Aufruf scheitert, weil es den Nutzer `admin` dann schon gibt. `change_pw.py` setzt das Passwort von `admin` wieder auf `pw` zurück.
 
 Die Datenbank liegt in `data/postgres`, hochgeladene Bilder in `data/uploads` (ausgeliefert unter `/uploads/<dateiname>`). Beide Ordner sind nicht im Git-Repository und werden nicht ins Docker-Image kopiert (`.dockerignore`); im Produktionsmodus ist `data/uploads` als Volume eingebunden, damit Bilder Neustarts überstehen und Nginx sie direkt ausliefern kann.
 
@@ -60,8 +60,11 @@ Vor jeder Schemaänderung ein Backup ziehen (siehe oben).
 ## Aufbau
 
 - `app.py`: Startpunkt, importiert die App aus `views.py`.
-- `views.py`: Konfiguration, alle Routen, Bild-Upload und -Zuschnitt, Jinja-Filter sowie die Konstanten für Seiten-Tickboxen, Terminkategorien, Icons und Formular-Modals.
-- `models.py`: SQLAlchemy-Modelle `User`, `Article`, `Section`, `Event`.
+- `views.py`: Konfiguration, öffentliche Seiten und Bedienfeld-Routen, Bild-Upload und -Zuschnitt, Jinja-Filter sowie die Konstanten für Seiten-Tickboxen, Terminkategorien, Icons und Formular-Modals.
+- `members.py`: Blueprint für den Nutzerbereich – eigenes Profil, Profilfoto, Passwort, Einladung annehmen, Passwort vergessen und den öffentlichen Community-Bereich.
+- `admin.py`: Blueprint für den Admin-Bereich – Nutzerverwaltung, Einladungen, Portalkonfiguration (SMTP).
+- `auth.py`: `admin_required` und Passwortregeln. `extensions.py`: CSRF-Schutz und Rate-Limit. `mailer.py`: Mailversand und Verschlüsselung des SMTP-Passworts.
+- `models.py`: SQLAlchemy-Modelle `User`, `Profile`, `Invitation`, `PortalSettings`, `Article`, `Section`, `Event`.
 - `images.py`: Verarbeitung der Beitragsbilder (Verkleinern ohne Zuschnitt, Logo-Erkennung, Wahl der Darstellung) – genutzt vom Bedienfeld und vom CSV-Import.
 - `csv_transfer.py`: CSV-Import und -Export für Beiträge, Termine und Sektionen (siehe unten), auch als Kommandozeilenwerkzeug.
 - `templates/`: Jinja-Templates. `base.html` enthält Navbar, Footer und die zentralen ActiveCampaign-Formular-Modals; `_articles_list.html` und `_sections_list.html` sind die wiederverwendeten Listen-Partials.
@@ -78,7 +81,10 @@ Code-Bezeichner sind englisch, sichtbare Inhalte deutsch. Template-Dateinamen, V
 
 ## Datenmodell
 
-- `User`: Benutzername und Passwort-Hash (bcrypt).
+- `User`: Login (Nutzername bzw. E-Mail-Adresse), Passwort-Hash (bcrypt), Rolle (`admin` oder `member`), aktiv/gesperrt, letzter Login.
+- Profil (`Profile`, 1:1 zum `User`): Vor- und Nachname, Ort (Pflicht), Anzeigename, Organisation, Position, Funktion (Mehrfachauswahl, Optionen in `PROFILE_FUNCTIONS` in `models.py`), Telefon, Bio, Website, Foto sowie die Sichtbarkeit von E-Mail, Telefon und Bio (`public` = alle Besucher, `members` = nur eingeloggte Mitglieder, Standard `members`).
+- Einladung (`Invitation`): E-Mail-Adresse, Hash des Einladungstokens, Ablaufdatum (14 Tage), Zeitpunkt der Annahme.
+- Portalkonfiguration (`PortalSettings`, genau ein Datensatz): SMTP-Zugangsdaten; das Passwort verschlüsselt (abgeleitet vom `SECRET_KEY`).
 - Beitrag (`Article`): Titel, Text, Beschreibung, optional ein Bild, Reihenfolge (`order_number`) und Spaltenbreite (`col_size`). Unabhängige Tickboxen `on_index`, `on_consulting`, `on_academy`, `on_stories` – ein Beitrag kann auf mehreren Seiten erscheinen. `is_banner` markiert höchstens einen Beitrag als Banner.
 - Sektion (`Section`): wie ein Beitrag, zusätzlich mit Kicker und Bildposition (links/rechts), aber ohne Banner, Erfolgsgeschichten und Spaltenbreite. Sektionen werden je Seite in nummerierte Plätze („Slots") zwischen den festen Inhalten eingefügt (Indexseite 10, Beratung 4, Akademie 3).
 - Termin (`Event`): Titel, Untertitel, Kategorie, Ort, Start und Ende (mit Uhrzeit oder ganztägig).
@@ -97,8 +103,19 @@ Code-Bezeichner sind englisch, sichtbare Inhalte deutsch. Template-Dateinamen, V
 - `/` – Indexseite mit Beiträgen, Terminen und Sektionen
 - `/consulting` (Beratung) und `/academy` (Akademie) – Hero, statische Platzhaltersektionen und die jeweils markierten Beiträge und Sektionen
 - `/stories` – Erfolgsgeschichten (Beiträge)
+- `/community` – Kacheln aller Mitglieder mit Profilfoto; ein Klick öffnet das Profil als Modal, `/community/<id>` ist die eigene Detailseite. Profile ohne Foto und gesperrte Konten erscheinen nicht.
 - `/imprint`, `/privacy` – Impressum, Datenschutz
 - `/sitemap.xml`, `robots.txt`
+
+## Rollen und Nutzerbereich
+
+Zwei Rollen: **Admin** pflegt die Website (Bedienfeld, Nutzer, Einladungen, Portalkonfiguration), **Mitglied** sieht nur das eigene Profil. Alle Bedienfeld- und Admin-Routen sind mit `@admin_required` geschützt; Mitglieder bekommen dort 403. Login unter `/login` mit E-Mail-Adresse (Mitglieder) oder Nutzername (Admin); danach landen Admins im Bedienfeld, Mitglieder unter `/account/profile`.
+
+- **Zugang nur per Einladung:** Unter Bedienfeld → Einladungen verschickt der Admin einen Link (14 Tage gültig, einmal nutzbar). Darüber legt das Mitglied Konto, Pflichtfelder und Passwort an. Einladungen und „Passwort vergessen“ brauchen den Mailversand, der unter Bedienfeld → Portalkonfiguration eingerichtet und per Testmail geprüft wird.
+- **Profilfoto als Schalter:** Erst mit Foto erscheint ein Profil im Community-Bereich; Foto entfernen blendet es wieder aus. Fotos werden quadratisch auf 600 × 600 px zugeschnitten, EXIF-Daten entfernt, und als WebP in `data/uploads/avatars/` gespeichert.
+- **Nutzer direkt anlegen:** Alternativ zur Einladung legt der Admin unter Bedienfeld → Nutzer → „Nutzer anlegen“ ein Konto mit Rolle und Profil an – entweder mit selbst festgelegtem Startpasswort oder mit einem Link zum Passwortsetzen per Mail (14 Tage gültig).
+- **Mitglieder** ändern unter `/account/...` Profil, Foto und Passwort und können ihr Konto löschen. **Admins** können unter Bedienfeld → Nutzer jedes Konto bearbeiten: Login-E-Mail, Rolle, Sperre, Profil, neues Passwort setzen oder per Mail einen Link schicken, Konto löschen. Das eigene Konto lässt sich nicht sperren, herabstufen oder löschen; Konten, die Beiträge, Sektionen oder Termine verfasst haben, nur sperren.
+- **Sicherheit:** CSRF-Schutz für alle Formulare (Flask-WTF; jedes POST-Formular braucht `<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">`), Logout nur per POST, Rate-Limit für Login, Einladung und Passwort-Links (Flask-Limiter, im Arbeitsspeicher – passend zu einem gunicorn-Worker), Passwörter mindestens 10 Zeichen, Sitzungs-Cookie in Produktion nur über HTTPS.
 
 ## Bedienfeld
 
@@ -169,8 +186,7 @@ Vor einem öffentlichen Betrieb zu beachten:
 
 - Das Standardpasswort `pw` aus `init_db.py` vor dem Livegang ändern.
 - Datenbank-Zugangsdaten stehen im Klartext in `docker-compose.yml`.
-- Formulare im Bedienfeld haben keinen CSRF-Schutz.
-- Es gibt nur einen Nutzer und keine Rollen oder Berechtigungen.
+- Die Datenschutzerklärung muss den Community-Bereich (Profile, Fotos, Einladungsmails) beschreiben.
 - TLS übernimmt der vorgeschaltete Webserver; die App selbst spricht nur HTTP.
 
 ## Prüfung
