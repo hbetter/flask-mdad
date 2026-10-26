@@ -91,7 +91,17 @@ app = Flask(__name__)
 # (z. B. sitemap.xml) https://playfulfuture.de statt http:// erzeugt. Ohne
 # Proxy (Entwicklung) fehlen die Header, dann aendert sich nichts.
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
-app.config["SECRET_KEY"] = "entwicklungs-schluessel-123"
+# Der Schluessel signiert die Sitzungs-Cookies und kommt deshalb aus der
+# Umgebung (in Produktion aus .env, siehe docker-compose.prod.yml). Nur in der
+# Entwicklung (FLASK_DEBUG=1) gibt es einen festen Ersatzwert; fehlt er in
+# Produktion, startet die App bewusst nicht.
+secret_key = os.environ.get("SECRET_KEY")
+if not secret_key:
+    if os.environ.get("FLASK_DEBUG") == "1":
+        secret_key = "entwicklungs-schluessel-123"
+    else:
+        raise RuntimeError("SECRET_KEY ist nicht gesetzt.")
+app.config["SECRET_KEY"] = secret_key
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL", "sqlite:///app.db"
 )

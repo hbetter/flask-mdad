@@ -19,13 +19,22 @@ $ docker compose exec web python init_db.py
 
 ```
 
+Vor dem ersten Start im Produktionsmodus auf dem Server einmalig eine `.env` mit dem `SECRET_KEY` anlegen (signiert die Sitzungs-Cookies; die Datei ist per `.gitignore` vom Repository ausgeschlossen):
+
+```bash
+$ python3 -c "import secrets; print('SECRET_KEY=' + secrets.token_hex(32))" > .env
+$ chmod 600 .env
+```
+
+Ohne `SECRET_KEY` startet die App nur im Debug-Modus (`FLASK_DEBUG=1`, gesetzt in `docker-compose.override.yml`) und verwendet dann einen festen Entwicklungsschlüssel; sonst bricht sie beim Start mit einer Fehlermeldung ab. Ein neuer Schlüssel meldet alle angemeldeten Nutzer ab.
+
 Im Debug-Modus wird der Projektordner in den Container eingebunden (`.:/app`), Änderungen an Code und Templates sind daher ohne Neubau sofort wirksam.
 
 `init_db.py` legt bei einer leeren Datenbank alle Tabellen an und erzeugt den Nutzer `admin` mit dem Passwort `pw`. Nur einmal bei einer frischen Datenbank ausführen – ein zweiter Aufruf scheitert, weil es den Nutzer `admin` dann schon gibt. `change_pw.py` setzt das Passwort von `admin` wieder auf `pw` zurück.
 
 Die Datenbank liegt in `data/postgres`, hochgeladene Bilder in `data/uploads` (ausgeliefert unter `/uploads/<dateiname>`). Beide Ordner sind nicht im Git-Repository und werden nicht ins Docker-Image kopiert (`.dockerignore`); im Produktionsmodus ist `data/uploads` als Volume eingebunden, damit Bilder Neustarts überstehen und Nginx sie direkt ausliefern kann.
 
-Ohne gesetzte `DATABASE_URL` (also beim Start ohne Docker mit `python app.py`) verwendet die App eine lokale SQLite-Datei `app.db`.
+Ohne gesetzte `DATABASE_URL` (also beim Start ohne Docker mit `FLASK_DEBUG=1 python app.py`) verwendet die App eine lokale SQLite-Datei `app.db`.
 
 DB backup and restore:
 
@@ -158,7 +167,6 @@ Regelmäßig sichern: den Datenbank-Dump (siehe oben) und den Ordner `data/uploa
 
 Vor einem öffentlichen Betrieb zu beachten:
 
-- `SECRET_KEY` ist fest in `views.py` eingetragen und sollte für die Produktion über eine Umgebungsvariable gesetzt werden.
 - Das Standardpasswort `pw` aus `init_db.py` vor dem Livegang ändern.
 - Datenbank-Zugangsdaten stehen im Klartext in `docker-compose.yml`.
 - Formulare im Bedienfeld haben keinen CSRF-Schutz.

@@ -1,5 +1,9 @@
 services:
   web:
+    # SECRET_KEY (und ggf. weitere Geheimnisse) liegen in .env auf dem Server,
+    # nicht im Repository. Erzeugen: siehe README.
+    env_file:
+      - .env
     # Nur lokal erreichbar - von aussen ausschliesslich ueber Nginx
     # (nginx/playfulfuture.de.conf, proxy_pass http://127.0.0.1:5001).
     ports:
