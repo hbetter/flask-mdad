@@ -32,7 +32,7 @@ Die Anmeldung läuft für alle über `/login`; danach landen Admins in der Admin
 3. Passwort eingeben. Nach zu vielen Fehlversuchen (10 pro Minute, 30 pro Stunde) sperrt die Seite vorübergehend weitere Versuche.
 4. Abmelden über das Nutzermenü → „Abmelden“; es sendet ein Formular, ein einfacher Link reicht nicht. Den Link „Anmelden“ gibt es im Footer jeder Seite.
 
-**Die Navigationsleiste** passt sich an: Gäste sehen rechts den Button „Gratis spielen“, der das Spiele-Event-Formular öffnet. Angemeldete sehen dort stattdessen das **Nutzermenü**: ihr Profilfoto bzw. ihre Initialen mit einem Aufklappmenü.
+**Die Navigationsleiste** passt sich an: Gäste sehen rechts den Button „Gratis spielen“, der das Spiele-Event-Formular öffnet. Angemeldete sehen dort stattdessen das **Nutzermenü**: ihr Profilfoto bzw. ihre Initialen mit einem Aufklappmenü. Der Menüpunkt der gerade geöffneten Seite (Beratung, Akademie samt „Begriffe verständlich erklärt“, Erfolgsgeschichten, Community samt Profil-Detailseiten) ist rot hervorgehoben.
 
 | Eintrag im Nutzermenü | Für wen |
 | --- | --- |
@@ -211,7 +211,7 @@ Beides vergibt das System beim Anlegen automatisch; keins von beiden lässt sich
 - **Ausnahme:** Der Admin aus `init_db.py` heißt `admin` und behält diesen Nutzernamen, auch wenn er eine E-Mail-Adresse bekommt. Nur wenn Nutzername und E-Mail verschieden sind, zeigt die Bearbeiten-Seite unter „Konto“ die Zeile „Nutzername“.
 - **Profil-ID:** Das Profil hat eine eigene, unabhängige ID. Die Community-Detailseite nutzt sie (z. B. `/community/12`); sie stimmt nicht unbedingt mit der Nutzer-ID überein.
 
-## A6 Formulare, Lexikon, Export und Import
+## A6 Formulare, „Begriffe verständlich erklärt“ (Lexikon), Export und Import
 
 ### ActiveCampaign-Formulare
 
@@ -227,9 +227,9 @@ Fünf Anmeldeformulare von ActiveCampaign (AC) sind als Fenster in jede Seite ei
 
 Der Button „Platz sichern“ bei einem Termin öffnet automatisch das Formular seiner Kategorie (Tabelle in A4). Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
 
-### Lexikon (`/lexicon`)
+### Begriffe verständlich erklärt (Lexikon, `/lexicon`)
 
-Die Lexikonseite listet Begriffe zu Gesundheit, Resilienz und Wandel alphabetisch, mit Kategorien und einer Liste „Häufig gesucht“. Die Inhalte stehen nicht in der Datenbank, sondern in der Datei `content/lexicon.md`; Änderungen dort sind nach dem Speichern sofort sichtbar. Der Aufbau ist am Anfang der Datei beschrieben: je Begriff ein Abschnitt `## Begriff` mit den Feldern Slug, Kategorie, Auch, Kurz und Siehe auch, danach der Text. Verweise im Fließtext öffnen den Eintrag als Fenster.
+Die Seite „Begriffe verständlich erklärt“ (im Code weiterhin „Lexikon“, Adresse `/lexicon`, Menü Akademie) listet Begriffe zu Gesundheit, Resilienz und Wandel alphabetisch, mit Kategorien und einer Liste „Häufig gesucht“. Die Inhalte stehen nicht in der Datenbank, sondern in der Datei `content/lexicon.md`; Änderungen dort sind nach dem Speichern sofort sichtbar. Der Aufbau ist am Anfang der Datei beschrieben: je Begriff ein Abschnitt `## Begriff` mit den Feldern Slug, Kategorie, Auch, Kurz und Siehe auch, danach der Text. Verweise im Fließtext öffnen den Eintrag als Fenster; dessen Button „Auf der Übersichtsseite ansehen“ springt zum Eintrag auf der Seite.
 
 ### Export und Import
 
@@ -409,7 +409,7 @@ Alle Seiten erben von `templates/base.html`; die Listen auf den öffentlichen Se
 
 | Template | Inhalt |
 | --- | --- |
-| `base.html` | Navbar („Gratis spielen“ für Gäste, sonst Nutzermenü), Footer mit „Anmelden“, fünf AC-Formular-Modals, Lexikon-Modal |
+| `base.html` | Navbar („Gratis spielen“ für Gäste, sonst Nutzermenü; der Menüpunkt der geöffneten Seite bekommt per `request.endpoint` die Klasse `active` und `aria-current="page"`), Footer mit „Anmelden“, fünf AC-Formular-Modals, Lexikon-Modal |
 | `_user_menu.html` | Nutzermenü: Avatar bzw. Initialen mit Dropdown (Mein Profil, Öffentliche Ansicht, Passwort ändern, Administration für Admins, Abmelden); auf dem Handy als Block im aufgeklappten Menü |
 | `index.html`, `consulting.html`, `academy.html`, `stories.html` | Öffentliche Seiten mit festen Abschnitten und Slots für Sektionen |
 | `_articles_list.html`, `_article_tile.html` | Beitragsraster und Kachel inkl. „Weiterlesen“-Fenster (Text vor `##`) |

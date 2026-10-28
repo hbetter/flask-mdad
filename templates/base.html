@@ -49,7 +49,8 @@
             </a>
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto gap-lg-2">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('consulting') }}">Beratung</a></li>
+                    {# Menuepunkt der geoeffneten Seite: Klasse "active" (rot, custom.css) und aria-current #}
+                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}"{% if request.endpoint == 'consulting' %} aria-current="page"{% endif %}>Beratung</a></li>
                     {# Akademie als Aufklappmenue: Uebersichtsseite, Demo-Eintraege
                        (Lorem ipsum, Platzhalter) und das Lexikon. #}
                     {% set academy_active = request.endpoint in ('academy', 'lexicon') %}
@@ -62,11 +63,12 @@
                             <li><a class="dropdown-item" href="#">Consectetur adipiscing</a></li>
                             <li><a class="dropdown-item" href="#">Sed do eiusmod tempor</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item{% if request.endpoint == 'lexicon' %} active{% endif %}" href="{{ url_for('lexicon') }}"{% if request.endpoint == 'lexicon' %} aria-current="page"{% endif %}>Lexikon</a></li>
+                            <li><a class="dropdown-item{% if request.endpoint == 'lexicon' %} active{% endif %}" href="{{ url_for('lexicon') }}"{% if request.endpoint == 'lexicon' %} aria-current="page"{% endif %}>Begriffe verständlich erklärt</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('stories') }}">Erfolgsgeschichten</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint in ('members.community', 'members.community_detail') %} active{% endif %}" href="{{ url_for('members.community') }}">Community</a></li>
+                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'stories' %} active{% endif %}" href="{{ url_for('stories') }}"{% if request.endpoint == 'stories' %} aria-current="page"{% endif %}>Erfolgsgeschichten</a></li>
+                    {% set community_active = request.endpoint in ('members.community', 'members.community_detail') %}
+                    <li class="nav-item"><a class="nav-link{% if community_active %} active{% endif %}" href="{{ url_for('members.community') }}"{% if request.endpoint == 'members.community' %} aria-current="page"{% endif %}>Community</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contact">Kontakt</a></li>
                 </ul>
                 {{ user_menu.user_menu_mobile() }}
@@ -274,14 +276,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <p class="kicker mb-1">Lexikon</p>
+                        <p class="kicker mb-1">Begriffe verständlich erklärt</p>
                         <h2 class="modal-title h4 mb-0" id="lexiconModalLabel"></h2>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
                 </div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
-                    <a class="btn btn-sm btn-outline-blue px-3 border-1" href="{{ url_for('lexicon') }}" data-lexicon-more>Im Lexikon ansehen</a>
+                    <a class="btn btn-sm btn-outline-blue px-3 border-1" href="{{ url_for('lexicon') }}" data-lexicon-more>Auf der Übersichtsseite ansehen</a>
                 </div>
             </div>
         </div>

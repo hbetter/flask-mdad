@@ -1319,7 +1319,7 @@ def lexicon():
     structured_data = {
         "@context": "https://schema.org",
         "@type": "DefinedTermSet",
-        "name": "Lexikon: Gesundheit, Resilienz und Wandel in der Arbeitswelt",
+        "name": "Begriffe verständlich erklärt: Gesundheit, Resilienz und Wandel in der Arbeitswelt",
         "url": page_url,
         "inLanguage": "de",
         "hasDefinedTerm": [

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m %}
-{% block title %}Lexikon: Gesundheit, Resilienz & Wandel in der Arbeitswelt – Mensch denk an Dich{% endblock %}
-{% block meta_description %}Lexikon zu Playfulness, Gamification, Betrieblichem Gesundheitsmanagement, Resilienz und Transformation in der Arbeitswelt: {{ term_count }} Begriffe kompakt erklärt.{% endblock %}
+{% block title %}Begriffe verständlich erklärt: Gesundheit, Resilienz & Wandel in der Arbeitswelt – Mensch denk an Dich{% endblock %}
+{% block meta_description %}Begriffe verständlich erklärt – Playfulness, Gamification, Betrieblichem Gesundheitsmanagement, Resilienz und Transformation in der Arbeitswelt: {{ term_count }} Begriffe kompakt erklärt.{% endblock %}
 {% block head_extra %}
     <meta name="keywords" content="Playfulness, Gamification, Playfulness vs. Gamification, Lexikon, Betriebliches Gesundheitsmanagement, BGM, Resilienz, Psychologie Arbeitswelt, Transformation, Change Management, Serious Games">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lexicon.css') }}">
@@ -16,7 +16,7 @@
 <div class="page-main lexicon-page">
 
   <!-- KOPFBEREICH mit Suche und Themenfilter -->
-  {% call m.section_card("Lexikon", "Begriffe aus der Arbeitswelt – verständlich erklärt", heading_tag='h1', heading_class='display-5 mb-3') %}
+  {% call m.section_card("Begriffe verständlich erklärt", "Gesundheit, Resilienz und Wandel in der Arbeitswelt", heading_tag='h1', heading_class='display-5 mb-3') %}
           <p class="fs-5 mb-4 lexicon-intro">
             Von Resilienz über betriebliches Gesundheitsmanagement bis Playfulness:
             Hier finden Sie zentrale Begriffe rund um Gesundheit, Psychologie, Führung,
@@ -46,7 +46,7 @@
   {% endcall %}
 
   <!-- A-Z-LEISTE -->
-  <nav class="lexicon-az" aria-label="Lexikon nach Anfangsbuchstaben">
+  <nav class="lexicon-az" aria-label="Begriffe nach Anfangsbuchstaben">
     <div class="container">
       <ul class="lexicon-az-list">
         {% for letter in alphabet %}
