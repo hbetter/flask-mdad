@@ -346,8 +346,8 @@ def eventdaterange(item):
 # Bewusst simpel gehalten, damit das auf andere Projekte uebertragbar bleibt.
 PAGE_SLOT_COUNT = {
     "index": 10,
-    "consulting": 4,
-    "academy": 3,
+    "consulting": 6,
+    "academy": 6,
 }
 
 PAGE_LABELS = {"index": "Indexseite", "consulting": "Beratung", "academy": "Akademie"}
@@ -570,6 +570,13 @@ def academy():
         sections_in_slot=sections_in_slot,
         banner=banner,
     )
+
+
+@app.route("/archive")
+def archive():
+    # Archiv ausrangierter fester Sektionen (templates/archive.html).
+    # Bewusst nicht verlinkt und nicht in der Sitemap, noindex im Template.
+    return render_template("archive.html", banner=get_banner_text())
 
 
 @app.route("/login", methods=["GET", "POST"])

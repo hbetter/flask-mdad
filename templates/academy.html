@@ -1,34 +1,59 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m %}
 {% block title %}Akademie – Mensch denk an Dich{% endblock %}
-{% block meta_description %}Spielleiterausbildung bei MENSCH DENK AN DICH®: Werde Spielleiter oder Spielleiterin und leite Spiele zur Resilienzförderung professionell an.{% endblock %}
+{% block meta_description %}Werde zertifizierter Spiele Coach: Mit dem Methodenkoffer MENSCH DENK AN DICH® und der evidenzbasierten Methode play2change© begleitest du Teams, Führungskräfte und ganze Organisationen durch Veränderung.{% endblock %}
 {% block content %}
 
-<!-- Platzhalterseite: Struktur (Hero + 2 statische Sektionen) nach dem Muster der
-     Indexseite, Inhalte sind Lorem-Ipsum-Beispieltexte und Bildplatzhalter, die
-     später durch die echte Akademie-Seite ersetzt werden. -->
+<!-- Akademieseite. Zielgruppe (siehe Aufgabe_Unterseite_Akademie.md):
+     Trainer:innen, Berater:innen, Personal/PE/Change Management und
+     Transformationscoaches, die sich qualifizieren und neue Methoden suchen.
+     Kernbotschaft: ein Methodenkoffer fuer jedes Thema, vom einmaligen
+     Team-Workshop bis zum Prozess fuer die ganze Organisation.
+     Inhalte aus dem Spielebuch (Kap. 1-5) und der Praesentation
+     "Spiele Event" (Okt. 2026). Ansprache mit "du" wie Index und Modals.
+     Slots: nach jeder festen Sektion einer (PAGE_SLOT_COUNT["academy"] = 6). -->
 <div class="page-main">
 
   <!-- HERO -->
-  {% call m.section_card("Akademie", "Lorem ipsum dolor sit amet", heading_tag='h1', heading_class='display-3 mb-3') %}
-          <p class="fs-4 mb-4">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  {% call m.section_card("Akademie", "Dein Methodenkoffer für wirksame Veränderung", heading_tag='h1', heading_class='display-3 mb-3') %}
+          <p class="fs-4 mb-4">Werde zertifizierter {{ m.lexicon_link("spiele-coach", "Spiele Coach") }} und setze play2change© in deinen Prozessen ein.</p>
           <div class="row gy-5">
             <div class="col-lg-6">
               <p class="fs-5 mb-3">
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                Du begleitest Menschen und Organisationen durch Entwicklung und Veränderung und suchst nach einer Methode,
+                die mehr bewegt als Wissen? Mit {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} bekommst du einen
+                erprobten Methodenkoffer an die Hand – und mit {{ m.lexicon_link("play2change", "play2change©") }}
+                eine evidenzbasierte Methode, die Teams in 90 Minuten in einen konstruktiven, lösungsorientierten Modus bringt.
+              </p>
+              <p class="fs-5 mb-4">
+                Das Besondere: Die Methode funktioniert für jedes Thema und in jeder Größenordnung – vom einmaligen
+                Team-Workshop bis zum Veränderungsprozess für die ganze Organisation.
               </p>
               <div class="d-flex flex-wrap gap-3">
-                <a href="#contact" class="btn btn-maroon btn-lg">Spiele Coach werden</a>
+                <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Spiele Coach werden</button>
               </div>
             </div>
-            <div class="col-lg-6">
-              <div class="placeholder-media hero-media">
-                <div>
-                  <i class="bi bi-image"></i>
-                  Bildplatzhalter
-                </div>
+            <div class="col-lg-6 d-flex justify-content-center align-items-center">
+              <figure class="content-figure mb-0">
+                <img src="{{ url_for('static', filename='img/spielebox.webp') }}" alt="Die geöffnete Spielebox MENSCH DENK AN DICH® mit Spielfiguren, Spielkarten, Spielfeld und Spielanleitung" width="1000" height="778">
+                <figcaption>Die Spielebox: Spielfeld, Spielfiguren mit den sieben Resilienz-Symbolen, zwei Kartensets und Twiggy, der Resilienz-Joker.</figcaption>
+              </figure>
+            </div>
+          </div>
+          <div class="row row-cols-1 row-cols-md-3 g-3 mt-4">
+            <div class="col">
+              <div class="card-sm text-center">
+                <p class="mb-0">Seit<span class="stat-inline">9 Jahren</span> erfolgreich im Einsatz</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm text-center">
+                <p class="mb-0">Mehr als<span class="stat-inline">5000</span> zufriedene Teilnehmende</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm text-center">
+                <p class="mb-0"><span class="stat-inline">140</span> begeisterte Spiele Coaches in DACH</p>
               </div>
             </div>
           </div>
@@ -37,44 +62,27 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- AUSBILDUNGSINHALTE (Platzhalter) -->
-  {% call m.section_card("Excepteur sint occaecat", "Sed ut perspiciatis unde omnis") %}
-          <p class="fs-5 mb-5">Iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam:</p>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <div class="card-sm h-100">
-                <div class="placeholder-media mb-3" style="min-height: 160px;">
-                  <div>
-                    <i class="bi bi-image"></i>
-                    Bildplatzhalter
-                  </div>
-                </div>
-                <h3 class="h5 mb-2">Eaque ipsa quae</h3>
-                <p class="mb-0 small">Ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-              </div>
+  <!-- SPIELE COACH QUALIFIZIERUNG: WERDE TEIL DER SPIELE COACH COMMUNITY -->
+  {% call m.section_card("Spiele Coach Qualifizierung", "Werde Teil der Spiele Coach Community", id="qualifizierung") %}
+          <div class="row gy-5 align-items-center">
+            <div class="col-lg-7">
+              <p class="fs-5 mb-3">
+                In der Qualifizierung erlebst du das Spiel selbst, lernst die Methode play2change© kennen und bereitest
+                deinen ersten eigenen Spiele-Workshop vor – vom Fokusgespräch über die Kartenauswahl bis zum Transfer.
+              </p>
+              <p class="mb-4">
+                Danach gehörst du zu einer Community von Spiele Coaches im deutschsprachigen Raum, die das Spiel in
+                vielen Branchen einsetzt.
+              </p>
+              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Jetzt anmelden</button>
             </div>
-            <div class="col-md-4">
-              <div class="card-sm h-100">
-                <div class="placeholder-media mb-3" style="min-height: 160px;">
-                  <div>
-                    <i class="bi bi-image"></i>
-                    Bildplatzhalter
-                  </div>
-                </div>
-                <h3 class="h5 mb-2">Nemo enim ipsam</h3>
-                <p class="mb-0 small">Voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card-sm h-100">
-                <div class="placeholder-media mb-3" style="min-height: 160px;">
-                  <div>
-                    <i class="bi bi-image"></i>
-                    Bildplatzhalter
-                  </div>
-                </div>
-                <h3 class="h5 mb-2">Neque porro quisquam</h3>
-                <p class="mb-0 small">Qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam.</p>
+            <div class="col-lg-5">
+              <div class="card-sm highlight-card">
+                <p class="kicker mb-2">Nächste Termine in Berlin</p>
+                <ul class="list-unstyled mb-0">
+                  <li class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-calendar-event text-purple"></i><span class="fw-semibold">12. und 13. Februar 2027</span></li>
+                  <li class="d-flex align-items-center gap-2"><i class="bi bi-calendar-event text-purple"></i><span class="fw-semibold">25. und 26. Juni 2027</span></li>
+                </ul>
               </div>
             </div>
           </div>
@@ -83,33 +91,175 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- VORAUSSETZUNGEN (Platzhalter) -->
-  {% call m.section_card("At vero eos et accusamus", "Et harum quidem rerum facilis") %}
-          <div class="row gy-5 align-items-center">
-            <div class="col-lg-6">
-              <div class="placeholder-media" style="min-height: 280px;">
-                <div>
-                  <i class="bi bi-image"></i>
-                  Bildplatzhalter
-                </div>
+  <!-- FUER UNTERNEHMEN: FUER ALLE, DIE VERAENDERUNG PROFESSIONELL BEGLEITEN -->
+  {% call m.section_card("Für Unternehmen", "Für alle, die Veränderung professionell begleiten", id="fuer-unternehmen") %}
+          <p class="fs-5 mb-5">Für Unternehmen, die Spiele Coaches im eigenen Haus ausbilden wollen.</p>
+          <div class="row row-cols-1 row-cols-md-3 g-3">
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-people fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Personal und Personalentwicklung</h3>
+                <p class="small mb-0">Für Team- und Führungskräfteentwicklung, Onboarding, Personalbindung und Gesundheitstage – direkt im eigenen Haus.</p>
               </div>
             </div>
-            <div class="col-lg-6">
-              <p class="fs-5 mb-3">
-                Est et expedita distinctio, nam libero tempore, cum soluta nobis est
-                eligendi optio cumque nihil impedit quo minus id quod maxime placeat
-                facere possimus, omnis voluptas assumenda est omnis dolor repellendus.
-              </p>
-              <p class="mb-4">
-                Temporibus autem quibusdam et aut officiis debitis aut rerum
-                necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-                molestiae non recusandae.
-              </p>
-              <a href="#contact" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-arrow-left-right fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Change Management</h3>
+                <p class="small mb-0">Ein Hebel, der Widerstände von innen auflöst und Mitarbeitende zu Mitgestaltenden des Wandels macht.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-signpost-split fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Transformationscoaches</h3>
+                <p class="small mb-0">Ein skalierbares Setting, mit dem du viele Menschen hierarchieübergreifend in kurzer Zeit erreichst.</p>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-maroon btn-lg mt-4" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum buchen</button>
+  {% endcall %}
+  {% with sections=sections_in_slot[3] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- FUER BERATUNG UND TRAINING: MEHR WIRKUNG IN DEINEN TRAININGS UND MANDATEN -->
+  {% call m.section_card("Für Beratung und Training", "Mehr Wirkung in deinen Trainings und Mandaten", id="fuer-beratung-und-training") %}
+          <p class="fs-5 mb-5">
+            Als Trainer:in, Berater:in oder Coach bringst du {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} zu deinen
+            Kund:innen – als eigenen Workshop oder als Baustein in bestehenden Trainings und Beratungsmandaten.
+          </p>
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-puzzle fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">In bestehende Formate integrieren</h3>
+                <p class="small mb-0">Überall dort, wo es um Verhaltensänderung geht – etwa in Trainings zu resilienter Führung oder Selbstmanagement.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-calendar2-check fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Eigene Workshops anbieten</h3>
+                <p class="small mb-0">Vom Spielen als Geschenk am Team- oder Gesundheitstag bis zum begleiteten Workshop mit Ernte und Transfer.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-award fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Ausgezeichnet und evidenzbasiert</h3>
+                <p class="small mb-0">Europäischer Trainingspreis in Gold (2024) und erster Platz beim NewWork Business Award in der Kategorie Leadership Training (2026).</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-people-fill fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Teil einer Community</h3>
+                <p class="small mb-0">Austausch mit rund 140 Spiele Coaches im deutschsprachigen Raum, die das Spiel in vielen Branchen einsetzen.</p>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Spiele Coach werden</button>
+  {% endcall %}
+  {% with sections=sections_in_slot[4] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- EINSATZMOEGLICHKEITEN: FUER JEDES THEMA - VOM TEAM BIS ZUR GANZEN ORGANISATION -->
+  {% call m.section_card("Einsatzmöglichkeiten", "Für jedes Thema – vom Team bis zur ganzen Organisation", id="einsatz") %}
+          <p class="fs-5 mb-3">Typische Themen, für die Spiele Coaches MENSCH DENK AN DICH® einsetzen:</p>
+          <div class="d-flex flex-wrap gap-2 mb-5">
+            <span class="topic-chip">Teamentwicklung und Stärken stärken</span>
+            <span class="topic-chip">Personalpflege und Personalbindung</span>
+            <span class="topic-chip">Gesundheit fördern, Belastung reduzieren</span>
+            <span class="topic-chip">Führungskräfte-Training und -Entwicklung</span>
+            <span class="topic-chip">Kulturveränderung und Transformation</span>
+          </div>
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            <div class="col">
+              <div class="card-sm h-100">
+                <p class="format-duration mb-1">2 – 2,5 Stunden</p>
+                <h3 class="h5 mb-2">Lockeres Zusammenkommen</h3>
+                <p class="small mb-0">Spielen als Geschenk, zum Beispiel an einem Team- oder Gesundheitstag – ohne lange Auswertung.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <p class="format-duration mb-1">3,5 – 4 Stunden</p>
+                <h3 class="h5 mb-2">Begleiteter Workshop</h3>
+                <p class="small mb-0">Mit ausführlicher Ernte und Transfer für einen spürbaren Wachstumsschub im Team oder in der Führung.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <p class="format-duration mb-1">Baustein</p>
+                <h3 class="h5 mb-2">Integriert in Trainings</h3>
+                <p class="small mb-0">Überall dort, wo es um Verhaltensänderung geht – etwa in Trainings zu resilienter Führung oder Selbstmanagement.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <p class="format-duration mb-1">6 Termine</p>
+                <h3 class="h5 mb-2">Führungskräfte-Reihe</h3>
+                <p class="small mb-0">Workshops von drei bis vier Stunden im Abstand von zwei bis drei Wochen, kombinierbar mit weiteren Führungsmethoden.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <p class="format-duration mb-1">4 – 5 Stunden</p>
+                <h3 class="h5 mb-2">Spielesalon für große Gruppen</h3>
+                <p class="small mb-0">Mehrere Spieltische gleichzeitig, danach gemeinsame Ernte – ideal für Klausurtagungen und Großgruppen.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <p class="format-duration mb-1">Prozess</p>
+                <h3 class="h5 mb-2">Ganze Organisation</h3>
+                <p class="small mb-0">Von Kickoff über Spielrunden mit Mitarbeitenden und Führung bis zu Transfer und Best Practices – Resilienz auf allen Ebenen.</p>
+              </div>
             </div>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[3] %}
+  {% with sections=sections_in_slot[5] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- WISSENSCHAFTLICH FUNDIERT: EVIDENZBASIERT, EFFIZIENT UND RESILIENT -->
+  {% call m.section_card("Wissenschaftlich fundiert", "Evidenzbasiert, effizient und resilient", id="wissenschaft") %}
+          <div class="row gy-5">
+            <div class="col-lg-6">
+              <p class="fs-5 mb-4">
+                Eine Evaluationsstudie an der Freien Universität Berlin hat die Wirkung des Spiels mit einer Kontrollgruppe untersucht:
+                Das emotionale Wohlbefinden der Spielenden verbesserte sich signifikant, auch Resilienz und Stresswahrnehmung entwickelten sich positiv.
+              </p>
+              <div class="row row-cols-2 g-3">
+                <div class="col"><div class="card-sm h-100 text-center"><span class="stat-inline">95&nbsp;%</span><p class="small mb-0">finden das Spiel leicht verständlich und zugänglich</p></div></div>
+                <div class="col"><div class="card-sm h-100 text-center"><span class="stat-inline">80&nbsp;%</span><p class="small mb-0">bewerten die Themenvielfalt positiv</p></div></div>
+                <div class="col"><div class="card-sm h-100 text-center"><span class="stat-inline">70&nbsp;%</span><p class="small mb-0">empfinden 90 Minuten als genau richtig</p></div></div>
+                <div class="col"><div class="card-sm h-100 text-center"><span class="stat-inline">50&nbsp;%</span><p class="small mb-0">berichten von mehr Widerstandskraft gegenüber Stress</p></div></div>
+              </div>
+              <p class="stat-source mt-3 mb-0">Quelle: Stück, J. (2022): Evaluation der Wirksamkeit einer Intervention zur Resilienzförderung. Masterarbeit, FU Berlin.</p>
+            </div>
+            <div class="col-lg-6">
+              <h3 class="h5 mb-3">Warum das Spiel wirkt</h3>
+              <ul class="icon-list mb-4">
+                <li><i class="bi bi-brightness-high"></i><span><strong>{{ m.lexicon_link("positive-psychologie", "Positive Psychologie") }}:</strong> Positive Emotionen erweitern Denken und Handeln und bauen langfristig Ressourcen auf (Broaden-and-Build).</span></li>
+                <li><i class="bi bi-graph-up-arrow"></i><span><strong>{{ m.lexicon_link("selbstwirksamkeit", "Selbstwirksamkeit") }}:</strong> Probehandeln im geschützten Rahmen, Zuspruch und Erfolgserlebnisse stärken die Zuversicht, etwas zu bewirken.</span></li>
+                <li><i class="bi bi-shield-check"></i><span><strong>Psychologische Sicherheit:</strong> Ein Klima, in dem Kritik, ungewöhnliche Ideen und Fragen ohne Angst möglich sind – die Basis für Innovation.</span></li>
+                <li><i class="bi bi-link-45deg"></i><span><strong>Soziale Verbundenheit:</strong> Selbst Fremde kommen in kurzer Zeit in einen wertschätzenden Austausch auf Augenhöhe.</span></li>
+              </ul>
+              {# h-auto: .card-sm hat height: 100% (fuer gleich hohe Kacheln in
+                 Reihen); hier steht die Kachel allein unter der Liste und
+                 wuerde sonst bis zur Hoehe der linken Spalte gestreckt. #}
+              <div class="card-sm h-auto">
+                <p class="small mb-2"><strong>{{ m.lexicon_link("playfulness", "Playfulness") }} statt {{ m.lexicon_link("gamification", "Gamification") }}:</strong></p>
+                <p class="small mb-2">Gamification fragt: „Wie motiviere ich Menschen, das zu tun, was ich will?“</p>
+                <p class="small mb-0">Playfulness fragt: „Wie schaffe ich einen Raum, in dem Menschen ihre Potenziale selbst entdecken und entfalten können?“</p>
+              </div>
+            </div>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[6] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
@@ -122,8 +272,6 @@
           </div>
   {% endcall %}
   {% endif %}
-
-
 
 </div>
 

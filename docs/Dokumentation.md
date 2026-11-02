@@ -34,6 +34,8 @@ Die Anmeldung läuft für alle über `/login`; danach landen Admins in der Admin
 
 **Die Navigationsleiste** passt sich an: Gäste sehen rechts den Button „Gratis spielen“, der das Spiele-Event-Formular öffnet. Angemeldete sehen dort stattdessen das **Nutzermenü**: ihr Profilfoto bzw. ihre Initialen mit einem Aufklappmenü. Der Menüpunkt der gerade geöffneten Seite (Beratung, Akademie samt „Begriffe verständlich erklärt“, Erfolgsgeschichten, Community samt Profil-Detailseiten) ist rot hervorgehoben.
 
+**Beratung und Akademie** öffnen in der Navigation ein Aufklappmenü: zuerst die Übersichtsseite, dann die Kapitel der Seite in derselben Reihenfolge wie auf der Seite (bei Akademie zusätzlich „Begriffe verständlich erklärt“). Jeder Kapitel-Eintrag trägt den Kicker der Sektion als Text und springt zu deren `id`. Die Listen stehen in `templates/base.html` (`consulting_chapters`, `academy_chapters`) – ändern sich Kicker, `id` oder Reihenfolge einer Sektion in `consulting.html` bzw. `academy.html`, dort mitziehen.
+
 | Eintrag im Nutzermenü | Für wen |
 | --- | --- |
 | Mein Profil | alle |
@@ -93,8 +95,8 @@ Sektionen gibt es nur auf drei Seiten:
 | Seite | Anzahl Slots |
 | --- | --- |
 | Indexseite (`/`) | 10 |
-| Beratung (`/consulting`) | 4 |
-| Akademie (`/academy`) | 3 |
+| Beratung (`/consulting`) | 6 |
+| Akademie (`/academy`) | 6 |
 
 **So funktionieren Slots:** Slot 1 liegt zwischen dem 1. und 2. festen Abschnitt der Seite, Slot 2 zwischen dem 2. und 3. und so weiter. Ist ein Slot leer, gibt es in der Auswahl nur „Slot 3“. Stehen dort schon Sektionen, bietet die Auswahl jede mögliche Einfügeposition an: „Slot 3a“ (davor), „Slot 3b“ (dahinter) usw. Beim Speichern werden die Positionen im Slot lückenlos neu durchnummeriert.
 
@@ -108,6 +110,8 @@ Sektionen gibt es nur auf drei Seiten:
 In der Administration zeigt jede Sektionskachel, wo sie steht, z. B. „Indexseite: Slot 2b“. Ein Klick auf die Kachel öffnet die Schnellplatzierung mit denselben Slot-Optionen wie im vollständigen Formular.
 
 Anders als Beiträge haben Sektionen kein Banner, keine Erfolgsgeschichten-Seite und keine Spaltenbreite.
+
+**Archiv für feste Abschnitte (`/archive`):** Feste Abschnitte, die von einer Seite genommen werden, landen in `templates/archive.html`, damit Text und Gestaltung erhalten bleiben – derzeit „Der Methodenkoffer“ und „Die Methode“ aus der Akademie. Die Seite ist nirgends verlinkt, steht nicht in der Sitemap und ist per `noindex` für Suchmaschinen gesperrt; sie ist aber für jeden mit der Adresse erreichbar. Sie hat keine Slots. Wird ein Abschnitt zurückgeholt, ihn samt Kommentar in die Zielseite kopieren, dort den Slot-Include danach ergänzen und `PAGE_SLOT_COUNT` in `views.py` sowie gegebenenfalls das Aufklappmenü in `base.html` anpassen. Umgekehrt beim Archivieren: Abschnitt hierher verschieben, Slots der Seite neu durchnummerieren, `PAGE_SLOT_COUNT` verringern, Menüeintrag entfernen. Achtung: Durch das Neunummerieren rutschen bereits eingereihte Datenbank-Sektionen dieser Seite gegebenenfalls an eine andere Stelle.
 
 ## A4 Termine
 
@@ -225,11 +229,11 @@ Fünf Anmeldeformulare von ActiveCampaign (AC) sind als Fenster in jede Seite ei
 | Newsletter | 14 | `#newsletterModal` |
 | Webinar | 22 | `#webinarModal` |
 
-Der Button „Platz sichern“ bei einem Termin öffnet automatisch das Formular seiner Kategorie (Tabelle in A4). Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
+Der Button „Platz sichern“ bei einem Termin öffnet automatisch das Formular seiner Kategorie (Tabelle in A4). Das Probe-Spielraum-Formular öffnet der Button „Probespielraum buchen“ in der Sektion „Für Unternehmen“ der Akademie-Seite. Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
 
 ### Begriffe verständlich erklärt (Lexikon, `/lexicon`)
 
-Die Seite „Begriffe verständlich erklärt“ (im Code weiterhin „Lexikon“, Adresse `/lexicon`, Menü Akademie) listet Begriffe zu Gesundheit, Resilienz und Wandel alphabetisch, mit Kategorien und einer Liste „Häufig gesucht“. Die Inhalte stehen nicht in der Datenbank, sondern in der Datei `content/lexicon.md`; Änderungen dort sind nach dem Speichern sofort sichtbar. Der Aufbau ist am Anfang der Datei beschrieben: je Begriff ein Abschnitt `## Begriff` mit den Feldern Slug, Kategorie, Auch, Kurz und Siehe auch, danach der Text. Verweise im Fließtext öffnen den Eintrag als Fenster; dessen Button „Auf der Übersichtsseite ansehen“ springt zum Eintrag auf der Seite.
+Die Seite „Begriffe verständlich erklärt“ (im Code weiterhin „Lexikon“, Adresse `/lexicon`, Menü Akademie) listet Begriffe zu Gesundheit, Resilienz und Wandel alphabetisch, mit Kategorien und einer Liste „Häufig gesucht“. Die Inhalte stehen nicht in der Datenbank, sondern in der Datei `content/lexicon.md`; Änderungen dort sind nach dem Speichern sofort sichtbar. Der Aufbau ist am Anfang der Datei beschrieben: je Begriff ein Abschnitt `## Begriff` mit den Feldern Slug, Kategorie, Auch, Kurz und Siehe auch, danach der Text. Verweise im Fließtext öffnen den Eintrag als Fenster – mit der Maus erst, wenn sie 0,8 Sekunden ruhig auf dem Begriff steht (jede Bewegung startet die Wartezeit neu, einstellbar über `HOVER_DELAY` im Skript in `base.html`), auf Touch-Geräten und per Tastatur durch Antippen bzw. Enter; dessen Button „Auf der Übersichtsseite ansehen“ springt zum Eintrag auf der Seite.
 
 ### Export und Import
 
@@ -351,6 +355,7 @@ Jede Route hat genau eine von drei Schutzstufen: öffentlich, `login_required` (
 | Route | Methode | Schutz | Datei / Funktion |
 | --- | --- | --- | --- |
 | `/`, `/consulting`, `/academy`, `/stories` | GET | öffentlich | `views.py` |
+| `/archive` | GET | öffentlich, aber nicht verlinkt (`noindex`) | `views.py` |
 | `/lexicon`, `/lexicon/<slug>/preview` | GET | öffentlich | `views.py` |
 | `/imprint`, `/privacy`, `/sitemap.xml`, `/uploads/<pfad>` | GET | öffentlich | `views.py` |
 | `/login` | GET, POST | öffentlich, Limit 10/min, 30/h | `views.login` |
@@ -412,6 +417,7 @@ Alle Seiten erben von `templates/base.html`; die Listen auf den öffentlichen Se
 | `base.html` | Navbar („Gratis spielen“ für Gäste, sonst Nutzermenü; der Menüpunkt der geöffneten Seite bekommt per `request.endpoint` die Klasse `active` und `aria-current="page"`), Footer mit „Anmelden“, fünf AC-Formular-Modals, Lexikon-Modal |
 | `_user_menu.html` | Nutzermenü: Avatar bzw. Initialen mit Dropdown (Mein Profil, Öffentliche Ansicht, Passwort ändern, Administration für Admins, Abmelden); auf dem Handy als Block im aufgeklappten Menü |
 | `index.html`, `consulting.html`, `academy.html`, `stories.html` | Öffentliche Seiten mit festen Abschnitten und Slots für Sektionen |
+| `archive.html` | Archiv ausrangierter fester Abschnitte (nicht verlinkt, ohne Slots) |
 | `_articles_list.html`, `_article_tile.html` | Beitragsraster und Kachel inkl. „Weiterlesen“-Fenster (Text vor `##`) |
 | `_sections_list.html` | Sektionen eines Slots |
 | `_macros.html` | Makros, u. a. `lexicon_link` für Lexikon-Verweise im Text |

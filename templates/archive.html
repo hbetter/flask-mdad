@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}Archiv – Mensch denk an Dich{% endblock %}
+{% block meta_description %}Archiv nicht mehr verwendeter Seitenabschnitte.{% endblock %}
+{% block head_extra %}
+    {# Nicht verlinkt und nicht in der Sitemap; Suchmaschinen sollen die
+       Seite weder aufnehmen noch ihren Links folgen. #}
+    <meta name="robots" content="noindex, nofollow">
+{% endblock %}
+{% block content %}
+
+<!-- Archivseite (/archive): Zwischenspeicher fuer feste Sektionen, die von
+     den oeffentlichen Seiten genommen wurden, damit Text und Markup nicht
+     verloren gehen. Bewusst nirgends verlinkt (Navigation, Footer, Sitemap)
+     und mit noindex versehen. Keine Slots fuer Datenbank-Sektionen.
+     Zum Zurueckholen eine Sektion samt Kommentar in die Zielseite kopieren
+     (dort Slot-Include danach ergaenzen, PAGE_SLOT_COUNT in views.py und
+     ggf. das Aufklappmenue in base.html anpassen). -->
+<div class="page-main">
+
+  {% call m.section_card("Intern", "Archiv", heading_tag='h1', heading_class='display-5 mb-3') %}
+          <p class="fs-5 mb-0">
+            Ausrangierte Abschnitte der Website, zwischengespeichert zur späteren Verwendung.
+            Diese Seite ist nicht verlinkt und für Suchmaschinen gesperrt.
+          </p>
+  {% endcall %}
+
+  {# ----- aus der Akademie-Seite (academy.html) ----- #}
+
+  <!-- DER METHODENKOFFER: EIN SETTING, UNZAEHLIGE THEMEN -->
+  {% call m.section_card("Der Methodenkoffer", "Ein Setting, unzählige Themen", id="methodenkoffer") %}
+          <div class="row gy-5 align-items-center">
+            <div class="col-lg-7">
+              <p class="fs-5 mb-4">
+                Das Spielsetting ist immer gleich – den inhaltlichen Fokus bestimmen die Karten. Mit der passenden Auswahl
+                und wenigen eigenen Karten aus dem Kontext deiner Kund:innen machst du aus dem Spiel genau den Workshop, den es braucht.
+              </p>
+              <ul class="icon-list mb-0">
+                <li><i class="bi bi-collection"></i><span><strong>Zwei Kartensets mit je 60 Karten:</strong> rot für Selbstführung, blau für Mitarbeitendenführung – jede Karte ist einem der sieben {{ m.lexicon_link("resilienzfaktoren", "Resilienzfaktoren") }} zugeordnet.</span></li>
+                <li><i class="bi bi-puzzle"></i><span><strong>Erweiterungen je nach Setting:</strong> Karten für Teams, für offene Gruppen und Seminare sowie für die Gesundheitsförderung mit Pausen- und Überstundenkarten.</span></li>
+                <li><i class="bi bi-pencil-square"></i><span><strong>Blankokarten:</strong> für kund:innenspezifische Aufgaben – oft reichen drei bis fünf eigene Karten, um die Lebenswelt der Spielenden abzubilden.</span></li>
+                <li><i class="bi bi-grid-3x3"></i><span><strong>Zweiseitiges Spielfeld:</strong> eine allgemeine Seite und eine Seite für den Einsatz in der Gesundheitsförderung.</span></li>
+                <li><i class="bi bi-bookmark-heart"></i><span><strong>Stärkenkarte und Twiggy-Karte:</strong> Erinnerungsanker, mit denen die Spielenden ihre Stärken und nächsten Schritte in den Alltag mitnehmen.</span></li>
+                <li><i class="bi bi-book"></i><span><strong>Das Spielebuch:</strong> Hintergründe zur Psychologie des Spiels und ein Praxisleitfaden von der Auftragsklärung bis zum Transfer.</span></li>
+              </ul>
+            </div>
+            <div class="col-lg-5 d-flex justify-content-center">
+              <figure class="content-figure mb-0" style="max-width: 360px;">
+                <img src="{{ url_for('static', filename='img/twiggy-karte.webp') }}" alt="Twiggy-Karte in Form einer Spielfigur, Vorderseite mit Smiley, Rückseite mit Linien für eigene Notizen" width="520" height="474" loading="lazy">
+                <figcaption>Die Twiggy-Karte: Hier halten die Spielenden fest, was sie in ihren Alltag mitnehmen.</figcaption>
+              </figure>
+            </div>
+          </div>
+  {% endcall %}
+
+  <!-- DIE METHODE: PLAY2CHANGE - SPIELEN, ERNTEN, TRANSFERIEREN (mit der Rolle des Spiele Coach) -->
+  {% call m.section_card("Die Methode", "play2change©: Spielen, Ernten, Transferieren", id="methode") %}
+          <p class="fs-5 mb-5">
+            Aus vielen Jahren Spielpraxis ist eine Systematik entstanden, die für alle Formate und Settings geeignet ist.
+            Entscheidend ist ein Raum gegenseitiger Wertschätzung und {{ m.lexicon_link("psychologische-sicherheit", "psychologischer Sicherheit") }}.
+          </p>
+          <div class="row g-4 mb-5">
+            <div class="col-md-4">
+              <figure class="content-figure mb-3">
+                <img src="{{ url_for('static', filename='img/play2change-play.webp') }}" alt="Illustration der Phase Play mit den Aufgaben des Spiele Coach: Hosting, Begleitung, Bezeugen" width="733" height="1037" loading="lazy">
+              </figure>
+              <h3 class="h5 mb-2">Play – Spielen</h3>
+              <p class="mb-0">Intrinsische Motivation entsteht. Du bist Gastgeber:in, ziehst dich ab der zweiten Runde zurück und notierst, was du an Stärken, Ideen und Lösungen beobachtest.</p>
+            </div>
+            <div class="col-md-4">
+              <figure class="content-figure mb-3">
+                <img src="{{ url_for('static', filename='img/play2change-earn.webp') }}" alt="Illustration der Phase Earn mit den Aufgaben des Spiele Coach: Spiegeln, Wertschätzen, Verstärken" width="733" height="1037" loading="lazy">
+              </figure>
+              <h3 class="h5 mb-2">Earn – Ernten</h3>
+              <p class="mb-0">Die Spielenden benennen ihre Stärken, du spiegelst die Potenziale der Gruppe. So wächst der Wille zur Veränderung.</p>
+            </div>
+            <div class="col-md-4">
+              <figure class="content-figure mb-3">
+                <img src="{{ url_for('static', filename='img/play2change-transfer.webp') }}" alt="Illustration der Phase Transfer mit den Aufgaben des Spiele Coach: Ermutigen, Zukünfte eröffnen" width="733" height="1037" loading="lazy">
+              </figure>
+              <h3 class="h5 mb-2">Transfer – Verankern</h3>
+              <p class="mb-0">Erkenntnisse werden zu konkreten Vorhaben, Ritualen und Visionen – mental verankert und bereit für den Alltag.</p>
+            </div>
+          </div>
+          <div class="card-sm highlight-card">
+            <div class="row g-4">
+              <div class="col-lg-4">
+                <p class="kicker mb-2">Deine Rolle</p>
+                <h3 class="h5 mb-0">Das Spiel moderiert mit – du hältst den Raum.</h3>
+              </div>
+              <div class="col-lg-8">
+                <p class="mb-2">
+                  Die Spielkarten setzen die Interventionen, etwa zirkuläre Fragen, die Wunderfrage oder Perspektivwechsel.
+                  Ab der zweiten Runde beziehen sich die Spielenden wie von selbst aufeinander. Deine Aufgabe ist es, einen
+                  sicheren, wertschätzenden Raum zu schaffen, das Geschehen zuzulassen und das Erlebte wertfrei zu bezeugen.
+                </p>
+                <p class="mb-0 small text-muted">
+                  Haltung: Neugier, Neutralität, Allparteilichkeit, Ressourcen- und Lösungsorientierung –
+                  ein {{ m.lexicon_link("systemische-beratung", "systemischer") }} und lösungsfokussierter Ansatz.
+                </p>
+              </div>
+            </div>
+          </div>
+  {% endcall %}
+
+</div>
+{% endblock %}

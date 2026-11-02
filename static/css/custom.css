@@ -280,6 +280,19 @@ h1, h2, h3 {
    unveraendert uebernommen statt mit btn-primary/btn-outline-primary
    zusammengelegt. */
 .btn-maroon {
+    /* Bootstrap-Variablen fuer Fokus-/Aktiv-Zustand: ohne sie wird der
+       Button transparent, sobald er den Fokus hat - z. B. nachdem ein von
+       ihm geoeffnetes Modal geschlossen wurde und der Fokus zurueckkehrt. */
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--sm-maroon);
+    --bs-btn-border-color: var(--sm-maroon);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--sm-maroon-bright);
+    --bs-btn-hover-border-color: var(--sm-maroon-bright);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--sm-maroon-bright);
+    --bs-btn-active-border-color: var(--sm-maroon-bright);
+    --bs-btn-focus-shadow-rgb: 156, 14, 23;
     background-color: var(--sm-maroon);
     border-color: var(--sm-maroon);
     color: #fff;
@@ -1495,4 +1508,138 @@ body.hide-dev-labels .dev-label {
 .profile-edit-link:focus-visible {
     color: var(--sm-maroon);
     border-color: var(--sm-maroon);
+}
+
+
+/* =========================================================
+   Unterseiten Beratung und Akademie (consulting.html, academy.html)
+   ========================================================= */
+
+/* Bilder im Inhalt (Grafiken aus dem Spielebuch) */
+.content-figure img {
+    width: 100%;
+    height: auto;
+    border-radius: .6rem;
+    display: block;
+}
+
+.content-figure figcaption {
+    font-size: .85rem;
+    color: var(--sm-muted);
+    margin-top: .6rem;
+}
+
+/* Einstiegskarten im Hero der Beratungsseite (Sprung zu den beiden Faellen) */
+.entry-card {
+    border-left: 4px solid var(--sm-maroon) !important;
+}
+
+.entry-card:focus-visible {
+    outline: 3px solid var(--sm-purple);
+    outline-offset: 2px;
+}
+
+/* Hervorgehobene Kachel (Modellvorhaben, Rolle, Termine) */
+.card .card-sm.highlight-card {
+    background: #fff;
+    border-left: 4px solid var(--sm-purple);
+}
+
+/* Liste mit Icon vor jedem Punkt */
+.icon-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.icon-list li {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: .9rem;
+}
+
+.icon-list li:last-child {
+    margin-bottom: 0;
+}
+
+.icon-list li > i {
+    color: var(--sm-purple);
+    font-size: 1.15rem;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+/* Nummerierte Schrittfolge */
+.step-list {
+    list-style: none;
+    counter-reset: step;
+    padding-left: 0;
+}
+
+.step-list li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 3rem;
+    margin-bottom: 1.1rem;
+    min-height: 2.2rem;
+}
+
+.step-list li:last-child {
+    margin-bottom: 0;
+}
+
+.step-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    background: var(--sm-maroon);
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Referenzliste */
+.reference-list {
+    padding-left: 1.1rem;
+}
+
+.reference-list li {
+    margin-bottom: .45rem;
+}
+
+.reference-list li::marker {
+    color: var(--sm-maroon);
+}
+
+/* Themen-Chips (Akademie, Einsatzmoeglichkeiten) */
+.topic-chip {
+    display: inline-block;
+    padding: .45rem .9rem;
+    border-radius: 2rem;
+    background: #fff;
+    border: 1px solid var(--sm-line);
+    color: var(--sm-dark);
+    font-weight: 600;
+    font-size: .9rem;
+}
+
+/* Dauer/Umfang ueber den Formatkacheln */
+.format-duration {
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--sm-maroon);
+}
+
+/* Sprungziele der Unterkapitel (Aufklappmenues Beratung/Akademie):
+   Abstand oben, damit die Ueberschrift nicht unter der klebenden
+   Navigationsleiste verschwindet. */
+.page-main section[id] {
+    scroll-margin-top: 110px;
 }

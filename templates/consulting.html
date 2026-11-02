@@ -1,36 +1,56 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m %}
 {% block title %}Beratung – Mensch denk an Dich{% endblock %}
-{% block meta_description %}Beratung rund um MENSCH DENK AN DICH® – Platzhalterseite, wird mit echten Inhalten gefüllt.{% endblock %}
+{% block meta_description %}Beratung mit MENSCH DENK AN DICH®: Wir begleiten Unternehmen spielerisch und evidenzbasiert durch Transformation und hin zu mentaler Gesundheit, gesunder Führung und zukunftssicherer Arbeit.{% endblock %}
 {% block content %}
 
-<!-- Platzhalterseite: Struktur (Hero + 2 statische Sektionen) nach dem Muster der
-     Indexseite, Inhalte sind Lorem-Ipsum-Beispieltexte und Bildplatzhalter, die
-     später durch die echte Beratungs-Seite ersetzt werden. Danach folgt die
-     echte Sektion "Neue Wege gehen" (von der Startseite verschoben). -->
+<!-- Beratungsseite. Zwei Zielgruppen (siehe Aufgabe_Unterseite_Beratung.md):
+     1. Geschaeftsfuehrung und Entscheider, die eine Transformation begleiten
+        lassen (#geschaeftsfuehrung),
+     2. Personal- und BGM-Verantwortliche mit den Themen mentale Gesundheit,
+        gesunde Fuehrung, zukunftssichere Arbeit (#personal-und-bgm).
+     Inhalte aus dem Spielebuch (Kap. 1, 4, 5.4) und der Praesentation
+     "Spiele Event" (Okt. 2026). Bilder in static/img (aus dem Spielebuch).
+     Slots: nach jeder festen Sektion einer (PAGE_SLOT_COUNT["consulting"] = 6). -->
 <div class="page-main">
 
   <!-- HERO -->
-  {% call m.section_card("Beratung", "Lorem ipsum dolor sit amet", heading_tag='h1', heading_class='display-3 mb-3') %}
-          <p class="fs-4 mb-4">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  {% call m.section_card("Beratung", "Veränderung, die von innen getragen wird", heading_tag='h1', heading_class='display-3 mb-3') %}
+          <p class="fs-4 mb-4">Spielerisch, evidenzbasiert und mit allen an Bord – vom Vorstand bis ins Team.</p>
           <div class="row gy-5">
             <div class="col-lg-6">
-              <p class="fs-5 mb-3">
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+              <p class="fs-5 mb-4">
+                Wir begleiten Unternehmen und Organisationen durch Entwicklungs- und Veränderungsprozesse.
+                Mit dem {{ m.lexicon_link("resilienz-spiele", "Resilienzspiel") }} {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }}
+                und der Methode {{ m.lexicon_link("play2change", "play2change©") }} entsteht in kurzer Zeit ein Raum,
+                in dem Menschen offen sprechen, Lösungen selbst entwickeln und Veränderung aktiv mittragen.
               </p>
-              <div class="d-flex flex-wrap gap-3">
-                <a href="#contact" class="btn btn-maroon btn-lg">Beratungsgespräch vereinbaren</a>
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="placeholder-media hero-media">
-                <div>
-                  <i class="bi bi-image"></i>
-                  Bildplatzhalter
+              <p class="fw-semibold mb-3">Womit können wir Sie unterstützen?</p>
+              <div class="row g-3 mb-4">
+                <div class="col-sm-6">
+                  <a href="#geschaeftsfuehrung" class="card-sm entry-card d-block text-reset text-decoration-none">
+                    <i class="bi bi-arrow-repeat fs-3 text-purple"></i>
+                    <h2 class="h6 mt-2 mb-1">Transformation begleiten</h2>
+                    <p class="small mb-0">Für Geschäftsführungen, die einen Wandel mit ihrem Unternehmen gehen wollen.</p>
+                  </a>
+                </div>
+                <div class="col-sm-6">
+                  <a href="#personal-und-bgm" class="card-sm entry-card d-block text-reset text-decoration-none">
+                    <i class="bi bi-heart-pulse fs-3 text-purple"></i>
+                    <h2 class="h6 mt-2 mb-1">Gesunde Arbeit gestalten</h2>
+                    <p class="small mb-0">Für BGM und Vorstand: mentale Gesundheit, gesunde Führung, zukunftssichere Arbeit.</p>
+                  </a>
                 </div>
               </div>
+              <div class="d-flex flex-wrap gap-3">
+                <a href="#contact" class="btn btn-maroon btn-lg">Kostenfreies Beratungsgespräch</a>
+              </div>
+            </div>
+            <div class="col-lg-6 d-flex justify-content-center align-items-center">
+              <figure class="content-figure mb-0" style="max-width: 440px;">
+                <img src="{{ url_for('static', filename='img/resilienz-ebenen.webp') }}" alt="Grafik: Resilienz auf drei Ebenen – individuelle Resilienz (Stress- und Krisenbewältigung), kollektive Resilienz (Verbundenheit und Problemlösung) und organisationale Resilienz (Flexibilität und Anpassungsfähigkeit)" width="900" height="1106">
+                <figcaption>Wir stärken Resilienz dort, wo sie wirkt: bei jedem Einzelnen, in Teams und Führung und in der ganzen Organisation.</figcaption>
+              </figure>
             </div>
           </div>
   {% endcall %}
@@ -38,84 +58,181 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- ABLAUF (Platzhalter) -->
-  {% call m.section_card("Excepteur sint occaecat", "Sed ut perspiciatis unde omnis") %}
-          <p class="fs-5 mb-5">Iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam:</p>
-          <div class="row g-3">
-            <div class="col-md-4">
+  <!-- GESCHAEFTSFUEHRUNG UND ENTSCHEIDER: TRANSFORMATION GEMEINSAM DURCHLAUFEN -->
+  {% call m.section_card("Für die Geschäftsführung und Entscheider", "Transformation gemeinsam durchlaufen", id="geschaeftsfuehrung") %}
+          <p class="fs-5 mb-4">
+            Ob Automobilzulieferer im Strukturwandel oder kommunales Unternehmen der Daseinsvorsorge – Stadtreinigung,
+            Energieversorgung, öffentlicher Nahverkehr: Wenn sich Märkte, Technik und Erwartungen verschieben, reicht ein
+            gutes Konzept allein nicht. Nachhaltig verändert sich nur, was von der Mehrheit getragen und gelebt wird.
+            Wir liefern deshalb nicht nur Folien, sondern gehen den Weg mit Ihnen und Ihren Leuten.
+          </p>
+          <div class="row g-4">
+            <div class="col-lg-5">
               <div class="card-sm h-100">
-                <div class="placeholder-media mb-3" style="min-height: 160px;">
-                  <div>
-                    <i class="bi bi-image"></i>
-                    Bildplatzhalter
-                  </div>
-                </div>
-                <h3 class="h5 mb-2">Eaque ipsa quae</h3>
-                <p class="mb-0 small">Ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                <h3 class="h5 mb-3">Warum Veränderung so oft stockt</h3>
+                <ul class="icon-list mb-0">
+                  <li><i class="bi bi-arrow-clockwise"></i><span><strong>Autopilot:</strong> Routinen und Gewohnheiten entlasten im Alltag – und halten am Bekannten fest.</span></li>
+                  <li><i class="bi bi-lightning"></i><span><strong>Stress:</strong> Unter Druck schaltet das Gehirn auf Flucht oder Angriff und blockiert kreatives Denken.</span></li>
+                  <li><i class="bi bi-hourglass-split"></i><span><strong>Kurzfristdenken:</strong> Unser Belohnungssystem sucht schnelle Erfolge statt langfristiger Veränderung.</span></li>
+                </ul>
+                <p class="small text-muted mt-3 mb-0">
+                  Genau hier setzt das Spiel an: Es senkt Stress, öffnet einen sicheren Raum und macht Erfolge sofort erlebbar.
+                </p>
               </div>
             </div>
-            <div class="col-md-4">
-              <div class="card-sm h-100">
-                <div class="placeholder-media mb-3" style="min-height: 160px;">
-                  <div>
-                    <i class="bi bi-image"></i>
-                    Bildplatzhalter
-                  </div>
-                </div>
-                <h3 class="h5 mb-2">Nemo enim ipsam</h3>
-                <p class="mb-0 small">Voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.</p>
+            <div class="col-lg-7">
+              <h3 class="h5 mb-3">So begleiten wir Ihre Transformation</h3>
+              <ol class="step-list mb-0">
+                <li><strong>Fokusgespräch:</strong> Wir klären mit Ihnen Anliegen, Ziel und ein Motto für den Prozess und sammeln die kritischen Situationen aus Ihrem Alltag.</li>
+                <li><strong>Führung zuerst:</strong> Ihre Führungskräfte spielen als Erste – als Multiplikatoren begleiten sie später die Ergebnisse ihrer Teams.</li>
+                <li><strong>Ihre Themen ins Spiel:</strong> Kritische Situationen werden zu eigenen Aktionskarten, Visionen und Ziele entstehen mit allen Beteiligten.</li>
+                <li><strong>Möglichst viele beteiligen:</strong> Teams sammeln konkrete Ideen, wie die Veränderung gelebt werden kann – bei großen Gruppen im Spielesalon an mehreren Tischen gleichzeitig.</li>
+                <li><strong>Umsetzen und verankern:</strong> Ideen werden schnell umgesetzt, Follow-ups und flankierende Maßnahmen sichern die Nachhaltigkeit von Anfang an.</li>
+              </ol>
+            </div>
+          </div>
+          <div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
+            <div class="col">
+              <div class="card-sm h-100 text-center">
+                <i class="bi bi-diagram-3 fs-2 text-purple mb-2"></i>
+                <p class="mb-0">Wirkt <strong>hierarchieübergreifend</strong> – Führung und Mitarbeitende begegnen sich auf Augenhöhe.</p>
               </div>
             </div>
-            <div class="col-md-4">
-              <div class="card-sm h-100">
-                <div class="placeholder-media mb-3" style="min-height: 160px;">
-                  <div>
-                    <i class="bi bi-image"></i>
-                    Bildplatzhalter
-                  </div>
-                </div>
-                <h3 class="h5 mb-2">Neque porro quisquam</h3>
-                <p class="mb-0 small">Qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam.</p>
+            <div class="col">
+              <div class="card-sm h-100 text-center">
+                <i class="bi bi-unlock fs-2 text-purple mb-2"></i>
+                <p class="mb-0">Der <strong>Widerstand fällt von innen weg</strong>, weil die Lösungen von den Beteiligten selbst kommen.</p>
               </div>
             </div>
+            <div class="col">
+              <div class="card-sm h-100 text-center">
+                <i class="bi bi-buildings fs-2 text-purple mb-2"></i>
+                <p class="mb-0">Stärkt die <strong>Resilienz auf allen Ebenen</strong>: Individuum, Team, Führung und Organisation.</p>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-3 mt-5">
+            <a href="#contact" class="btn btn-maroon btn-lg">Beratungsgespräch vereinbaren</a>
+            <button type="button" class="btn btn-outline-dark-sm btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probe-Spielraum buchen</button>
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[2] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- FÜR WEN (Platzhalter) -->
-  {% call m.section_card("At vero eos et accusamus", "Et harum quidem rerum facilis") %}
-          <div class="row gy-5 align-items-center">
-            <div class="col-lg-6">
-              <div class="placeholder-media" style="min-height: 280px;">
-                <div>
-                  <i class="bi bi-image"></i>
-                  Bildplatzhalter
-                </div>
+  <!-- PERSONAL- UND BGM-VERANTWORTLICHE: MENTALE GESUNDHEIT, GESUNDE FUEHRUNG, ZUKUNFTSSICHERE ARBEIT -->
+  {% call m.section_card("Für Personal- und BGM-Verantwortliche", "Mentale Gesundheit, gesunde Führung, zukunftssichere Arbeit", id="personal-und-bgm") %}
+          <p class="fs-5 mb-4">
+            Belastungen werden sichtbar – in der {{ m.lexicon_link("gefaehrdungsbeurteilung", "psychischen Gefährdungsbeurteilung") }},
+            in zunehmenden Konflikten, einem steigenden Krankenstand oder mehr Burnout-Fällen. Statt einzelner Maßnahmen
+            setzen wir im {{ m.lexicon_link("bgm", "Betrieblichen Gesundheitsmanagement") }} auf mehreren Ebenen zugleich an.
+          </p>
+          <div class="row row-cols-1 row-cols-md-3 g-3 mb-5">
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-emoji-smile fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Mentale Gesundheit</h3>
+                <p class="small mb-0">
+                  Die Spielvariante Gesundheitsförderung macht Erholung und Überlastung zum Thema – mit eigenen Pausen- und
+                  Überstundenkarten. Aus Ihren Befragungsergebnissen entstehen passgenaue Aktionskarten, zu denen die
+                  Mitarbeitenden selbst Lösungen finden.
+                </p>
               </div>
             </div>
-            <div class="col-lg-6">
-              <p class="fs-5 mb-3">
-                Est et expedita distinctio, nam libero tempore, cum soluta nobis est
-                eligendi optio cumque nihil impedit quo minus id quod maxime placeat
-                facere possimus, omnis voluptas assumenda est omnis dolor repellendus.
-              </p>
-              <p class="mb-4">
-                Temporibus autem quibusdam et aut officiis debitis aut rerum
-                necessitatibus saepe eveniet ut et voluptates repudiandae sint et
-                molestiae non recusandae.
-              </p>
-              <a href="#contact" class="btn btn-outline-dark-sm btn-lg">Beratungsgespräch vereinbaren</a>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-person-check fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Gesunde Führung</h3>
+                <p class="small mb-2">
+                  Resilienz ist ansteckend: Nur <strong>4&nbsp;Monate</strong> braucht es, bis sich die Resilienz einer
+                  Führungskraft auf ihre Mitarbeitenden überträgt – mit weniger Burnout und mehr Wohlbefinden.
+                </p>
+                <p class="small mb-0">Führungskräfte erhalten deshalb Umsetzungs-Workshops über mindestens sechs Monate.</p>
+                <p class="stat-source mt-2 mb-0">Quelle: Brady, Hammer &amp; Westman 2025</p>
+              </div>
             </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-compass fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Zukunftssichere Arbeit</h3>
+                <p class="small mb-0">
+                  Resiliente Organisationen erkennen Signale früh, entwickeln gemeinsam Lösungen und verändern Abläufe dauerhaft.
+                  Wir verbinden individuelle, Team- und organisationale Resilienz zu einem Prozess, der im Alltag trägt.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row g-4 align-items-start">
+            <div class="col-lg-7">
+              <h3 class="h5 mb-3">So gehen wir im Unternehmen vor</h3>
+              <ol class="step-list mb-0">
+                <li><strong>Steuerkreis sensibilisieren:</strong> Die Stakeholder spielen zuerst und entwickeln ggf. unternehmensspezifische Aktionskarten.</li>
+                <li><strong>Teamworkshops:</strong> Das Spiel wird zur Ideen- und Umsetzungsschmiede in den Bereichen, die am stärksten belastet sind.</li>
+                <li><strong>Führungskräfte stärken:</strong> Umsetzungs-Workshops über mindestens sechs Monate machen Führung zur wichtigsten Stütze der Teams.</li>
+                <li><strong>Begleiten und nachhalten:</strong> Veränderungen werden auf allen drei Ebenen – Individuum, Team, Organisation – begleitet und überprüft.</li>
+              </ol>
+            </div>
+            <div class="col-lg-5">
+              <div class="card-sm highlight-card">
+                <p class="kicker mb-2">Modellvorhaben mit der BARMER</p>
+                <h3 class="h5 mb-2">MENSCH-PFLEGE!</h3>
+                <p class="small mb-2">
+                  Seit November 2024 erproben und evaluieren wir ein spielerisches Konzept der Betrieblichen Gesundheitsförderung
+                  in drei Einrichtungen der stationären Pflege in Bad Waldsee, Dresden und Berlin.
+                </p>
+                <p class="small mb-0">
+                  Gemessen werden Spielerlebnis, intrinsische Motivation, soziale Verbundenheit, psychologische Sicherheit,
+                  Resilienz und Stresswahrnehmung – <strong>alle Mittelwerte liegen im oberen Bereich.</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-3 mt-5">
+            <a href="#contact" class="btn btn-maroon btn-lg">Beratungsgespräch vereinbaren</a>
+            <button type="button" class="btn btn-outline-dark-sm btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probe-Spielraum buchen</button>
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[3] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- LÖSUNGSWEG (von der Startseite hierher verschoben) -->
-  {% call m.section_card("Der spielerische Lösungsansatz", "Neue Wege gehen") %}
+  <!-- FALLBEISPIELE: MIT PLAY2CHANGE VERAENDERUNG MEISTERN -->
+  {% call m.section_card("Unsere Fallbeispiele", "Mit play2change© Veränderung meistern", id="fallbeispiele") %}
+          <p class="fs-5 mb-5">
+            Herzstück jedes Einsatzes ist ein 90-minütiges Spiel. Eingebettet in die drei Phasen von
+            {{ m.lexicon_link("play2change", "play2change©") }} wird daraus ein Veränderungsprozess, der von positiven Emotionen getragen ist –
+            als einzelner Workshop von etwa vier Stunden oder als Baustein in einem längeren Prozess.
+          </p>
+          <div class="row g-4">
+            <div class="col-md-4">
+              <figure class="content-figure mb-3">
+                <img src="{{ url_for('static', filename='img/play2change-play.webp') }}" alt="Illustration der Phase Play: Freude und Spaß, Co-Creation, Lösungen beim Probehandeln" width="733" height="1037" loading="lazy">
+              </figure>
+              <h3 class="h5 mb-2">Spielen</h3>
+              <p class="mb-0">Öffnet Räume für Kreativität und Lösungsfokussierung. Stressbedingte und systemische Denkblockaden lösen sich.</p>
+            </div>
+            <div class="col-md-4">
+              <figure class="content-figure mb-3">
+                <img src="{{ url_for('static', filename='img/play2change-earn.webp') }}" alt="Illustration der Phase Earn: Potenziale und Fähigkeiten heben, Stärken stärken, Veränderungsbereitschaft fördern" width="733" height="1037" loading="lazy">
+              </figure>
+              <h3 class="h5 mb-2">Ernten</h3>
+              <p class="mb-0">Hebt Potenziale und erhöht die Motivation. Stärken werden sichtbar, der Wille zur Veränderung wächst.</p>
+            </div>
+            <div class="col-md-4">
+              <figure class="content-figure mb-3">
+                <img src="{{ url_for('static', filename='img/play2change-transfer.webp') }}" alt="Illustration der Phase Transfer: Ressourcen auf den Alltag übertragen, Rituale kreieren, Verhalten und Kultur verändern" width="733" height="1037" loading="lazy">
+              </figure>
+              <h3 class="h5 mb-2">Transferieren</h3>
+              <p class="mb-0">Stärkt die Selbstwirksamkeit und beschleunigt Veränderung. Ideen werden zu konkreten Vorhaben im Alltag.</p>
+            </div>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[4] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- WIRKSAMER HEBEL DURCH SPIEL: INNOVATIV IN DIE ZUKUNFT -->
+  {% call m.section_card("Wirksamer Hebel durch Spiel", "Innovativ in die Zukunft", id="hebel-durch-spiel") %}
           <p class="fs-5 mb-5">Fünf Gründe, warum MENSCH DENK AN DICH® einen Unterschied macht:</p>
           <div class="table-responsive">
             <table class="table schmerz-table mb-0">
@@ -171,7 +288,49 @@
             </table>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[4] %}
+  {% with sections=sections_in_slot[5] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- REFERENZEN: PROJEKTE MIT MENSCH DENK AN DICH (Praesentation "Spiele Event", Okt. 2026) -->
+  {% call m.section_card("Referenzen", "Projekte mit MENSCH DENK AN DICH®", id="referenzen") %}
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card-sm h-100">
+                <h3 class="h5 mb-3">Entwicklungs- und Veränderungsprozesse</h3>
+                <ul class="reference-list mb-0">
+                  <li>Johannesstift Diakonie <span class="text-muted">– BGM</span></li>
+                  <li>Sana Paulinenkrankenhaus <span class="text-muted">– psychische Gefährdungsbeurteilung</span></li>
+                  <li>Takeda Pharma <span class="text-muted">– BGM</span></li>
+                  <li>BKH Landshut <span class="text-muted">– Kulturwandel</span></li>
+                  <li>BG Kliniken <span class="text-muted">– Frankfurt, Bad Reichenhall, Bochum</span></li>
+                  <li>MENSCH-PFLEGE! <span class="text-muted">– dreijähriges Modellvorhaben mit der BARMER</span></li>
+                  <li>Diakonie München <span class="text-muted">– Werteprozess</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card-sm h-100">
+                <h3 class="h5 mb-3">Einzelprojekte</h3>
+                <ul class="reference-list mb-0">
+                  <li><strong>Resilienzförderung:</strong> vdek MehrWert:Pflege, mkk – meine krankenkasse</li>
+                  <li><strong>Gesunde Führung:</strong> Sparkasse, Stadt Potsdam, Stromnetz</li>
+                  <li><strong>Teamentwicklung:</strong> BAD, BGW, Stromnetz, BSR</li>
+                  <li><strong>Gesundheitstage:</strong> Viadrina, Max Delbrück, TU Berlin, Proclusio</li>
+                  <li><strong>Trainings:</strong> VW Autostadt, BVG, diverse KMU</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-5">
+            <h3 class="h4 mb-4">Lassen Sie uns über Ihr Vorhaben sprechen.</h3>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+              <a href="#contact" class="btn btn-maroon btn-lg">Kostenfreies Beratungsgespräch</a>
+              <button type="button" class="btn btn-outline-dark-sm btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probe-Spielraum buchen</button>
+            </div>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[6] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
@@ -184,8 +343,6 @@
           </div>
   {% endcall %}
   {% endif %}
-
-
 
 </div>
 

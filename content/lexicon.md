@@ -776,7 +776,7 @@ Führungskräfte-Coaching ist kein einmaliges Seminar, sondern ein Entwicklungsp
 - Kurz: Führungsverständnis, das spielerische Formate nicht als Auflockerung am Rand, sondern als Kern ernsthafter Führungsarbeit begreift.
 - Siehe auch: playfulness; selbstwirksamkeit; play2change; positive-leadership
 
-Irene Preußner beschreibt die play2change-Methode als Playful Leadership: Im ergebnisoffenen Spielraum erleben Führungskräfte hierarchieübergreifend ihre eigene Innovationskraft und Selbstwirksamkeit. Weil Wissen und Appelle Verhalten selten verändern, setzt dieser Ansatz auf Erfahrung – notwendige Veränderungen lassen sich dann leichter und schneller umsetzen.
+Irene Preußner beschreibt die play2change©-Methode als Playful Leadership: Im ergebnisoffenen Spielraum erleben Führungskräfte hierarchieübergreifend ihre eigene Innovationskraft und Selbstwirksamkeit. Weil Wissen und Appelle Verhalten selten verändern, setzt dieser Ansatz auf Erfahrung – notwendige Veränderungen lassen sich dann leichter und schneller umsetzen.
 
 Spielerische Führung bedeutet nicht, Arbeit in einen Wettbewerb um Punkte zu verwandeln. Sie schafft Räume, in denen Menschen sich trauen, Neues auszuprobieren, Fehler als Lernschritte zu sehen und gemeinsam Lösungen zu entwickeln.
 
@@ -934,7 +934,7 @@ Eine Viertelstunde am Tischkicker verändert einen durchgetakteten Arbeitstag al
 
 Mit Spielkarten und einem interaktiven Spielfeld werden berufliche Situationen aufgegriffen, in denen Teilnehmende Entscheidungen treffen, mit Belastungen umgehen und Krisen bewältigen. So werden Resilienzfaktoren erlebbar und individuelle Unterschiede im Umgang mit Stress bewusst.
 
-## play2change-Methode
+## play2change©-Methode
 
 - Slug: play2change
 - Kategorie: Spielbasierte Methoden
@@ -948,7 +948,7 @@ Mit Spielkarten und einem interaktiven Spielfeld werden berufliche Situationen a
 
 Der Transfer sorgt dafür, dass die im Spiel erarbeiteten Lösungen nicht im Workshop bleiben, sondern langfristig wirken. Dafür ist das Spiel in einen übergeordneten Veränderungsprozess eingebettet: Interventionsfragen, Vereinbarungen, Workshops oder Prozessbegleitung verankern das neue Verhalten.
 
-play2change versteht Spielen ausdrücklich nicht als Belohnungssystem, sondern als Erfahrungsraum – im Sinne von Playfulness statt Gamification.
+play2change© versteht Spielen ausdrücklich nicht als Belohnungssystem, sondern als Erfahrungsraum – im Sinne von Playfulness statt Gamification.
 
 ## MENSCH DENK AN DICH®
 

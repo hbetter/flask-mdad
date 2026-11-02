@@ -50,18 +50,48 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto gap-lg-2">
                     {# Menuepunkt der geoeffneten Seite: Klasse "active" (rot, custom.css) und aria-current #}
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}"{% if request.endpoint == 'consulting' %} aria-current="page"{% endif %}>Beratung</a></li>
-                    {# Akademie als Aufklappmenue: Uebersichtsseite, Demo-Eintraege
-                       (Lorem ipsum, Platzhalter) und das Lexikon. #}
+                    {# Unterkapitel fuer die Aufklappmenues Beratung und Akademie:
+                       (Sprungmarke, Text). Der Text ist jeweils der Kicker der
+                       Sektion in consulting.html bzw. academy.html, die
+                       Sprungmarke deren id - bei Aenderungen dort hier
+                       mitziehen. #}
+                    {% set consulting_chapters = [
+                        ("geschaeftsfuehrung", "Für die Geschäftsführung und Entscheider"),
+                        ("personal-und-bgm", "Für Personal- und BGM-Verantwortliche"),
+                        ("fallbeispiele", "Unsere Fallbeispiele"),
+                        ("hebel-durch-spiel", "Wirksamer Hebel durch Spiel"),
+                        ("referenzen", "Referenzen"),
+                    ] %}
+                    {% set academy_chapters = [
+                        ("qualifizierung", "Spiele Coach Qualifizierung"),
+                        ("fuer-unternehmen", "Für Unternehmen"),
+                        ("fuer-beratung-und-training", "Für Beratung und Training"),
+                        ("einsatz", "Einsatzmöglichkeiten"),
+                        ("wissenschaft", "Wissenschaftlich fundiert"),
+                    ] %}
+                    {# Beratung als Aufklappmenue: Uebersichtsseite, dann die
+                       Unterkapitel der Seite. #}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">Beratung</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}"{% if request.endpoint == 'consulting' %} aria-current="page"{% endif %}>Beratung im Überblick</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% for anchor, label in consulting_chapters %}
+                            <li><a class="dropdown-item" href="{{ url_for('consulting') }}#{{ anchor }}">{{ label }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {# Akademie als Aufklappmenue: Uebersichtsseite, die
+                       Unterkapitel der Seite und das Lexikon. #}
                     {% set academy_active = request.endpoint in ('academy', 'lexicon') %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle{% if academy_active %} active{% endif %}" href="{{ url_for('academy') }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">Akademie</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item{% if request.endpoint == 'academy' %} active{% endif %}" href="{{ url_for('academy') }}"{% if request.endpoint == 'academy' %} aria-current="page"{% endif %}>Akademie im Überblick</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Lorem ipsum dolor</a></li>
-                            <li><a class="dropdown-item" href="#">Consectetur adipiscing</a></li>
-                            <li><a class="dropdown-item" href="#">Sed do eiusmod tempor</a></li>
+                            {% for anchor, label in academy_chapters %}
+                            <li><a class="dropdown-item" href="{{ url_for('academy') }}#{{ anchor }}">{{ label }}</a></li>
+                            {% endfor %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item{% if request.endpoint == 'lexicon' %} active{% endif %}" href="{{ url_for('lexicon') }}"{% if request.endpoint == 'lexicon' %} aria-current="page"{% endif %}>Begriffe verständlich erklärt</a></li>
                         </ul>
@@ -155,9 +185,8 @@
     </footer>
 
     <!-- Spielraum-Anmeldung (ActiveCampaign-Formular ID 16) als Modal -
-         derzeit ohne Ausloeser (der Navigations-Button "Probe Spielraum
-         buchen" wurde durch "Gratis spielen" ersetzt); oeffnen per
-         data-bs-target="#spielraumModal". Liegt
+         geoeffnet ueber den Button "Probespielraum buchen" in der Sektion
+         "Für Unternehmen" der Akademie-Seite (data-bs-target="#spielraumModal"). Liegt
          hier zentral in base.html, damit es auf jeder Seite nur einmal
          im DOM steht, unabhaengig davon, von welcher Seite/welchem
          Button aus geoeffnet wird. -->
@@ -292,9 +321,10 @@
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script>
         // Lexikon-Links (Makro lexicon_link in _macros.html): Eintrag als
-        // Modal oeffnen - mit der Maus nach kurzem Verweilen (300 ms, damit
-        // ein zufaelliges Darueberfahren nichts ausloest), auf Touch-Geraeten
-        // und per Tastatur ueber Klick bzw. Enter. "Siehe auch"-Links im Modal
+        // Modal oeffnen - mit der Maus erst, wenn sie HOVER_DELAY ms ruhig auf
+        // dem Begriff steht (jede Bewegung startet die Wartezeit neu, damit
+        // Darueberfahren oder Lesen mit bewegter Maus nichts ausloest), auf
+        // Touch-Geraeten und per Tastatur ueber Klick bzw. Enter. "Siehe auch"-Links im Modal
         // sind ebenfalls Lexikon-Links und wechseln den Inhalt im offenen Modal.
         (function () {
             var modalEl = document.getElementById("lexiconModal");
@@ -304,6 +334,7 @@
             var moreEl = modalEl.querySelector("[data-lexicon-more]");
             var cache = {};
             var hoverTimer = null;
+            var HOVER_DELAY = 800;
             var suppressUntil = 0;
             var canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
@@ -341,13 +372,22 @@
             modalEl.addEventListener("hide.bs.modal", function () { clearTimeout(hoverTimer); suppressUntil = Infinity; });
             modalEl.addEventListener("hidden.bs.modal", function () { suppressUntil = Date.now() + 400; });
 
+            function startHoverTimer(link) {
+                clearTimeout(hoverTimer);
+                hoverTimer = setTimeout(function () { open(link); }, HOVER_DELAY);
+            }
+
             if (canHover) {
                 document.addEventListener("mouseover", function (event) {
                     var link = event.target.closest("a.lexicon-link[data-lexicon]");
                     if (!link || Date.now() < suppressUntil || modalEl.classList.contains("show")) { return; }
-                    clearTimeout(hoverTimer);
                     load(link.dataset.lexicon).catch(function () {});
-                    hoverTimer = setTimeout(function () { open(link); }, 300);
+                    startHoverTimer(link);
+                });
+                document.addEventListener("mousemove", function (event) {
+                    var link = event.target.closest("a.lexicon-link[data-lexicon]");
+                    if (!link || Date.now() < suppressUntil || modalEl.classList.contains("show")) { return; }
+                    startHoverTimer(link);
                 });
                 document.addEventListener("mouseout", function (event) {
                     var link = event.target.closest("a.lexicon-link[data-lexicon]");
