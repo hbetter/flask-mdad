@@ -32,9 +32,9 @@ Die Anmeldung läuft für alle über `/login`; danach landen Admins in der Admin
 3. Passwort eingeben. Nach zu vielen Fehlversuchen (10 pro Minute, 30 pro Stunde) sperrt die Seite vorübergehend weitere Versuche.
 4. Abmelden über das Nutzermenü → „Abmelden“; es sendet ein Formular, ein einfacher Link reicht nicht. Den Link „Anmelden“ gibt es im Footer jeder Seite.
 
-**Die Navigationsleiste** passt sich an: Gäste sehen rechts den Button „Gratis spielen“, der das Spiele-Event-Formular öffnet. Angemeldete sehen dort stattdessen das **Nutzermenü**: ihr Profilfoto bzw. ihre Initialen mit einem Aufklappmenü. Der Menüpunkt der gerade geöffneten Seite (Beratung, Akademie samt „Begriffe verständlich erklärt“, Erfolgsgeschichten, Community samt Profil-Detailseiten) ist rot hervorgehoben.
+**Die Navigationsleiste** passt sich an: Gäste sehen rechts einen Call-to-Action, der von der aufgerufenen Seite abhängt – Beratung: „Kostenfreies Beratungsgespräch“ (öffnet die Terminbuchung, auf schmalen Bildschirmen kurz „Beratungsgespräch“), Akademie: „Spiele Coach werden“ (Spiele-Coach-Formular), Community samt Profilseiten: „Login“, alle übrigen Seiten (Indexseite, Erfolgsgeschichten, Lexikon usw.): „Gratis spielen“ (Spiele-Event-Formular). Die Zuordnung steht in `templates/base.html` und richtet sich nach `request.endpoint`. Unter 1200 px Breite ist das Menü eingeklappt (Menü-Icon), damit Logo, Menüpunkte und Call-to-Action in eine Zeile passen. Angemeldete sehen dort stattdessen das **Nutzermenü**: ihr Profilfoto bzw. ihre Initialen mit einem Aufklappmenü. Der Menüpunkt der gerade geöffneten Seite (Beratung, Akademie samt „Begriffe verständlich erklärt“, Erfolgsgeschichten, Community samt Profil-Detailseiten) ist rot hervorgehoben.
 
-**Beratung und Akademie** öffnen in der Navigation ein Aufklappmenü: zuerst die Übersichtsseite, dann die Kapitel der Seite in derselben Reihenfolge wie auf der Seite (bei Akademie zusätzlich „Begriffe verständlich erklärt“). Jeder Kapitel-Eintrag trägt den Kicker der Sektion als Text und springt zu deren `id`. Die Listen stehen in `templates/base.html` (`consulting_chapters`, `academy_chapters`) – ändern sich Kicker, `id` oder Reihenfolge einer Sektion in `consulting.html` bzw. `academy.html`, dort mitziehen.
+**Beratung und Akademie** führen in der Navigation direkt zur jeweiligen Seite (oben). Fährt man mit der Maus darüber oder erreicht sie per Tab-Taste, klappt ein Menü mit den Kapiteln der Seite auf, in derselben Reihenfolge wie auf der Seite (bei Akademie zusätzlich „Begriffe verständlich erklärt“). Auf Touch-Geräten und bei eingeklappter Navigation (unter 1200 px) öffnet der erste Tipp das Menü, der zweite die Seite. Gesteuert wird das über die Klasse `nav-hover` (CSS in `custom.css`, kleines Skript in `base.html`). Jeder Kapitel-Eintrag trägt den Kicker der Sektion als Text und springt zu deren `id`. Die Listen stehen in `templates/base.html` (`consulting_chapters`, `academy_chapters`) – ändern sich Kicker, `id` oder Reihenfolge einer Sektion in `consulting.html` bzw. `academy.html`, dort mitziehen.
 
 | Eintrag im Nutzermenü | Für wen |
 | --- | --- |
@@ -111,24 +111,26 @@ In der Administration zeigt jede Sektionskachel, wo sie steht, z. B. „Indexsei
 
 Anders als Beiträge haben Sektionen kein Banner, keine Erfolgsgeschichten-Seite und keine Spaltenbreite.
 
+**Angebotsübersicht der Indexseite:** In der Sektion „Termine“ (direkt nach dem Kopfbereich) listet die Indexseite alle Angebote als Kacheln mit kurzer Einleitung und Button: Kostenfreies Beratungsgespräch (Terminbuchung), Kostenfreie Teilnahme an einem Spiele Event (Spiele-Event-Formular, mit Terminen), Probespielraum anfragen (Spielraum-Formular), Newsletter bestellen (Newsletter-Formular) und Spiele Coach werden (Spiele-Coach-Formular und Link zur Akademie, mit Terminen). Texte und Reihenfolge stehen direkt in `templates/index.html`.
+
 **Archiv für feste Abschnitte (`/archive`):** Feste Abschnitte, die von einer Seite genommen werden, landen in `templates/archive.html`, damit Text und Gestaltung erhalten bleiben – derzeit „Der Methodenkoffer“ und „Die Methode“ aus der Akademie. Die Seite ist nirgends verlinkt, steht nicht in der Sitemap und ist per `noindex` für Suchmaschinen gesperrt; sie ist aber für jeden mit der Adresse erreichbar. Sie hat keine Slots. Wird ein Abschnitt zurückgeholt, ihn samt Kommentar in die Zielseite kopieren, dort den Slot-Include danach ergänzen und `PAGE_SLOT_COUNT` in `views.py` sowie gegebenenfalls das Aufklappmenü in `base.html` anpassen. Umgekehrt beim Archivieren: Abschnitt hierher verschieben, Slots der Seite neu durchnummerieren, `PAGE_SLOT_COUNT` verringern, Menüeintrag entfernen. Achtung: Durch das Neunummerieren rutschen bereits eingereihte Datenbank-Sektionen dieser Seite gegebenenfalls an eine andere Stelle.
 
 ## A4 Termine
 
-Termine erscheinen chronologisch auf der Indexseite; jeder Termin hat eine Kategorie, die Symbol und Anmeldeformular bestimmt.
+Jeder Termin hat eine Kategorie, die Symbol und Anmeldeformular bestimmt. Auf der Indexseite erscheinen Termine nicht mehr als eigene Kacheln: Die **Angebotsübersicht** in der Sektion „Termine“ zeigt bei „Spiele Event“ und „Spiele Coach werden“ die nächsten drei noch nicht beendeten Termine der Kategorien `trial` bzw. `certification` (Datum und Untertitel); gibt es keinen, steht dort „Neue Termine folgen in Kürze“. Die Termine der Spiele Coach Qualifizierung auf der Akademie-Seite sind dagegen fest im Template eingetragen.
 
 **Felder:** Titel, Untertitel, Kategorie, Ort (Pflicht), Start und Ende. Mit „ganztägig“ entfallen die Uhrzeiten. Alle Zeiten gelten in deutscher Ortszeit.
 
 **Kategorien:**
 
-| Kategorie (Anzeige) | Interner Wert | Symbol | „Platz sichern“ öffnet |
+| Kategorie (Anzeige) | Interner Wert | Symbol | Formular (`EVENT_CATEGORY_MODAL`) |
 | --- | --- | --- | --- |
 | Webinar | `webinar` | Videokamera | Webinar-Formular (AC 22) |
 | Probe Spielraum | `inhouse` | Haus | Sprung zum Kontaktbereich |
 | Spiele Coach Zertifizierung | `certification` | Auszeichnung | Spiele-Coach-Formular (AC 8) |
 | Spiele Event | `trial` | Würfel | Spiele-Event-Formular (AC 11) |
 
-Das Symbol steht dezent im Hintergrund der Terminkarte; ein farbiges Kategorie-Etikett gibt es auf den öffentlichen Karten nicht mehr. Beim **Anlegen** wird der Titel daher automatisch mit der gewählten Kategorie vorbelegt, solange noch kein eigener Titel eingetragen ist. Beim Bearbeiten passiert das nicht.
+Das Symbol steht dezent im Hintergrund der Terminkarten in der Administration. Die Zuordnung Kategorie → Formular (`EVENT_CATEGORY_MODAL`, Filter `eventcategorymodal`) wird derzeit auf keiner öffentlichen Seite genutzt, seit die Indexseite keine einzelnen Terminkarten mehr zeigt. Beim **Anlegen** wird der Titel daher automatisch mit der gewählten Kategorie vorbelegt, solange noch kein eigener Titel eingetragen ist. Beim Bearbeiten passiert das nicht.
 
 **Datumsanzeige:** Die Seite fasst Start und Ende lesbar zusammen, z. B. „12.11.2026, 10:00 – 11:30“ am selben Tag oder „12.11.2026 – 14.11.2026“ bei mehrtägigen ganztägigen Terminen.
 
@@ -229,11 +231,15 @@ Fünf Anmeldeformulare von ActiveCampaign (AC) sind als Fenster in jede Seite ei
 | Newsletter | 14 | `#newsletterModal` |
 | Webinar | 22 | `#webinarModal` |
 
-Der Button „Platz sichern“ bei einem Termin öffnet automatisch das Formular seiner Kategorie (Tabelle in A4). Das Probe-Spielraum-Formular öffnet der Button „Probespielraum buchen“ in der Sektion „Für Unternehmen“ der Akademie-Seite. Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
+Die Angebotskacheln der Indexseite (Sektion „Termine“) öffnen Spiele-Event-, Probe-Spielraum-, Newsletter- und Spiele-Coach-Formular sowie die Terminbuchung. Das Probe-Spielraum-Formular öffnen die roten Buttons „Probespielraum anfragen“ in der Sektion „Für Unternehmen“ der Akademie-Seite sowie in drei Sektionen der Beratungs-Seite (Geschäftsführung, Personal/BGM, Referenzen). Am Ende der Referenzen stehen drei Buttons nebeneinander: „Gratis spielen“ (Spiele-Event-Formular), „Beratungsgespräch“ (Terminbuchung) und „Probespielraum“ (Probe-Spielraum-Formular). Das Spiele-Coach-Formular öffnen der Call-to-Action „Spiele Coach werden“ in der Navigationsleiste der Akademie-Seite (für Gäste) und „Jetzt anmelden“ in der Angebotsübersicht der Indexseite; die Akademie-Seite selbst hat keinen eigenen Anmelde-Button. Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
+
+### Terminbuchung Beratungsgespräch
+
+Alle Buttons zum kostenfreien Beratungsgespräch (Navigationsleiste der Beratungs-Seite, Ende der Referenzen auf der Beratungs-Seite, auf der Indexseite „Termin wählen“ in der Angebotsübersicht) öffnen das Fenster `#bookingModal` in `base.html`. Es zeigt die Microsoft-Bookings-Seite von SMEO in einem eingebetteten Rahmen (iframe), auf dem Smartphone bildschirmfüllend; die Seite wird erst beim ersten Öffnen geladen. Darunter führt ein Link „Buchungsseite in neuem Tab öffnen“ zur Seite selbst, ebenso die Buttons, falls JavaScript fehlt. Die Adresse steht als `BOOKING_URL` in `views.py` und ist in allen Templates als `{{ BOOKING_URL }}` verfügbar.
 
 ### Begriffe verständlich erklärt (Lexikon, `/lexicon`)
 
-Die Seite „Begriffe verständlich erklärt“ (im Code weiterhin „Lexikon“, Adresse `/lexicon`, Menü Akademie) listet Begriffe zu Gesundheit, Resilienz und Wandel alphabetisch, mit Kategorien und einer Liste „Häufig gesucht“. Die Inhalte stehen nicht in der Datenbank, sondern in der Datei `content/lexicon.md`; Änderungen dort sind nach dem Speichern sofort sichtbar. Der Aufbau ist am Anfang der Datei beschrieben: je Begriff ein Abschnitt `## Begriff` mit den Feldern Slug, Kategorie, Auch, Kurz und Siehe auch, danach der Text. Verweise im Fließtext öffnen den Eintrag als Fenster – mit der Maus erst, wenn sie 0,8 Sekunden ruhig auf dem Begriff steht (jede Bewegung startet die Wartezeit neu, einstellbar über `HOVER_DELAY` im Skript in `base.html`), auf Touch-Geräten und per Tastatur durch Antippen bzw. Enter; dessen Button „Auf der Übersichtsseite ansehen“ springt zum Eintrag auf der Seite.
+Die Seite „Begriffe verständlich erklärt“ (im Code weiterhin „Lexikon“, Adresse `/lexicon`, Menü Akademie) listet Begriffe zu Gesundheit, Resilienz und Wandel alphabetisch, mit Kategorien und einer Liste „Häufig gesucht“. Die Inhalte stehen nicht in der Datenbank, sondern in der Datei `content/lexicon.md`; Änderungen dort sind nach dem Speichern sofort sichtbar. Der Aufbau ist am Anfang der Datei beschrieben: je Begriff ein Abschnitt `## Begriff` mit den Feldern Slug, Kategorie, Auch, Kurz und Siehe auch, danach der Text. Verweise im Fließtext öffnen den Eintrag als Fenster – mit der Maus erst, wenn sie 0,5 Sekunden ruhig auf dem Begriff steht (jede Bewegung startet die Wartezeit neu, einstellbar über `HOVER_DELAY` im Skript in `base.html`), auf Touch-Geräten und per Tastatur durch Antippen bzw. Enter; dessen Button „Auf der Übersichtsseite ansehen“ springt zum Eintrag auf der Seite.
 
 ### Export und Import
 
@@ -404,8 +410,8 @@ Nach dem Login leitet `home_for(user)` Admins nach `/dashboard`, Mitglieder nach
 
 ### Jinja-Filter und Konstanten in `views.py`
 
-- Filter: `datetimeformat`, `dateinput`, `timeinput`, `eventdaterange`, `eventcategorylabel`, `eventcategoryicon`, `eventcategorymodal`.
-- Konstanten: `ARTICLE_FLAGS`, `SECTION_FLAGS`, `EVENT_CATEGORIES`, `EVENT_CATEGORY_ICONS`, `EVENT_CATEGORY_MODAL`, `PAGE_SLOT_COUNT`, Bildmaße `LANDSCAPE_*`/`PORTRAIT_*`.
+- Filter: `datetimeformat`, `dateinput`, `timeinput`, `eventdaterange`, `eventcategorylabel`, `eventcategoryicon`, `eventcategorymodal`, `keep_terms` (setzt Begriffe aus `UNBREAKABLE_TERMS` in Überschriften in ein `text-nowrap`-Span, damit die Silbentrennung sie nicht zerlegt; genutzt in `section_card`).
+- Konstanten: `BOOKING_URL` (als Jinja-Global verfügbar), `ARTICLE_FLAGS`, `SECTION_FLAGS`, `EVENT_CATEGORIES`, `EVENT_CATEGORY_ICONS`, `EVENT_CATEGORY_MODAL`, `PAGE_SLOT_COUNT`, `UNBREAKABLE_TERMS`, Bildmaße `LANDSCAPE_*`/`PORTRAIT_*`.
 - Kontextprozessor in `members.py` stellt allen Templates `password_policy`, `password_policy_text`, `visible_fields`, `profile_functions` und `visibility_choices` bereit.
 
 ## B4 Templates und statische Dateien
@@ -432,7 +438,7 @@ Alle Seiten erben von `templates/base.html`; die Listen auf den öffentlichen Se
 | `lexicon.html`, `_lexicon_preview.html`, `_lexicon_entry_text.html` | Lexikonseite und -fenster |
 | `alle_ac_formulare.html` | Sammelseite **ohne Route**, wird als Datei geöffnet; bindet CSS/JS deshalb mit relativen Pfaden statt `url_for()` ein |
 
-**Statische Dateien (`static/`):** `bootstrap.min.css`, `bootstrap.bundle.min.js`, `custom.css` (Hausstil, Kartenoptik, `.termin-title` u. a.), `lexicon.css`, `ac-formulare.css`/`ac-formulare.js` (Styling der AC-Formulare, inkl. Ausblenden der doppelten AC-Titel im Modal; Formular 11 braucht eine eigene Regel) sowie feste Bilder in `static/img/`. Hochgeladene Bilder liegen nicht hier, sondern in `data/uploads`.
+**Statische Dateien (`static/`):** `bootstrap.min.css`, `bootstrap.bundle.min.js`, `custom.css` (Hausstil, Kartenoptik, `.termin-title`, automatische Silbentrennung in Überschriften über `hyphens: auto` mit `lang="de"` u. a.), `lexicon.css`, `ac-formulare.css`/`ac-formulare.js` (Styling der AC-Formulare, inkl. Ausblenden der doppelten AC-Titel im Modal; Formular 11 braucht eine eigene Regel) sowie feste Bilder in `static/img/`. Hochgeladene Bilder liegen nicht hier, sondern in `data/uploads`.
 
 **Inhalt vs. Code:** Feste Texte der Seiten stehen in den Templates. Im Ordner `docs/` liegen diese Dokumentation (`Dokumentation.md`) und eine Sicherung der Erfolgsgeschichten-Texte (`erfolgsgeschichten-backup.md`).
 

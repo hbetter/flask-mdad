@@ -43,7 +43,7 @@
 
 {%- macro user_menu_desktop() -%}
 {% if current_user.is_authenticated %}
-<div class="dropdown d-none d-lg-block">
+<div class="dropdown d-none d-xl-block">
     <button class="btn user-menu-toggle dropdown-toggle d-flex align-items-center gap-1" type="button"
             data-bs-toggle="dropdown" aria-expanded="false" aria-label="Nutzermenü: {{ current_user.profile.name if current_user.profile else current_user.username }}">
         {{ user_avatar(current_user) }}
@@ -62,7 +62,7 @@
 
 {%- macro user_menu_mobile() -%}
 {% if current_user.is_authenticated %}
-<ul class="navbar-nav user-menu-mobile d-lg-none">
+<ul class="navbar-nav user-menu-mobile d-xl-none">
     <li class="nav-item user-menu-mobile-head">
         {{ user_avatar(current_user, 28) }}
         <span>{{ current_user.profile.name if current_user.profile else current_user.username }}</span>

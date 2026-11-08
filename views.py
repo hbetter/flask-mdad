@@ -218,6 +218,31 @@ def get_banner_text():
     return banner.description if banner else None
 
 
+# Microsoft-Bookings-Seite fuer das kostenfreie Beratungsgespraech. Alle
+# Buttons "Beratungsgespraech" oeffnen sie im Modal #bookingModal (base.html);
+# ohne JavaScript fuehrt der Link direkt dorthin (neuer Tab).
+BOOKING_URL = "https://outlook.office365.com/owa/calendar/MENSCHDENKANDICHEINZELGESPRCHE@smeo-now.de/bookings/"
+app.jinja_env.globals["BOOKING_URL"] = BOOKING_URL
+
+
+# Markennamen, die in Ueberschriften nicht per Silbentrennung (hyphens:
+# auto, custom.css) zerlegt werden sollen. Nur kurze Namen - laengere wie
+# "MENSCH DENK AN DICH®" wuerden ungetrennt auf schmalen Bildschirmen
+# ueber den Rand laufen.
+UNBREAKABLE_TERMS = ["play2change©"]
+
+
+@app.template_filter("keep_terms")
+def keep_terms(value):
+    # Text escapen und die Begriffe aus UNBREAKABLE_TERMS in
+    # <span class="text-nowrap"> setzen (genutzt im Makro section_card).
+    from markupsafe import Markup, escape
+    text = escape(value)
+    for term in UNBREAKABLE_TERMS:
+        text = text.replace(escape(term), Markup('<span class="text-nowrap">') + escape(term) + Markup("</span>"))
+    return Markup(text)
+
+
 @app.template_filter("datetimeformat")
 def datetimeformat(value, format="%d.%m.%Y %H:%M"):
     if value is None:
@@ -504,18 +529,29 @@ def index():
         .all()
     )
     sections_in_slot = sections_by_slot("index")
-    # Alle Termine chronologisch, wie in der Administration, aber ohne Filterung nach
-    # user_id: die Indexseite ist oeffentlich und zeigt saemtliche Termine.
+    # Alle Termine chronologisch, ohne Filterung nach user_id (die Indexseite
+    # ist oeffentlich); daraus die naechsten Termine je Kategorie fuer die
+    # Angebotskacheln in der Sektion "Termine".
     events = (
         Event.query
         .order_by(Event.starts_at.asc(), Event.id.asc())
         .all()
     )
+    # Fuer die Angebotsuebersicht im Kopfbereich: je Kategorie die naechsten
+    # (noch nicht beendeten) Termine, hoechstens drei. Gespeichert wird in
+    # UTC ohne Zeitzonenangabe, daher "naive" UTC-Zeit vergleichen.
+    now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+    upcoming_by_category = {}
+    for event in events:
+        if event.ends_at >= now_utc:
+            upcoming_by_category.setdefault(event.category, [])
+            if len(upcoming_by_category[event.category]) < 3:
+                upcoming_by_category[event.category].append(event)
     return render_template(
         "index.html",
         articles=articles,
         sections_in_slot=sections_in_slot,
-        events=events,
+        upcoming_by_category=upcoming_by_category,
         banner=banner,
     )
 

@@ -25,13 +25,10 @@
                 erprobten Methodenkoffer an die Hand – und mit {{ m.lexicon_link("play2change", "play2change©") }}
                 eine evidenzbasierte Methode, die Teams in 90 Minuten in einen konstruktiven, lösungsorientierten Modus bringt.
               </p>
-              <p class="fs-5 mb-4">
+              <p class="fs-5 mb-0">
                 Das Besondere: Die Methode funktioniert für jedes Thema und in jeder Größenordnung – vom einmaligen
                 Team-Workshop bis zum Veränderungsprozess für die ganze Organisation.
               </p>
-              <div class="d-flex flex-wrap gap-3">
-                <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Spiele Coach werden</button>
-              </div>
             </div>
             <div class="col-lg-6 d-flex justify-content-center align-items-center">
               <figure class="content-figure mb-0">
@@ -70,11 +67,10 @@
                 In der Qualifizierung erlebst du das Spiel selbst, lernst die Methode play2change© kennen und bereitest
                 deinen ersten eigenen Spiele-Workshop vor – vom Fokusgespräch über die Kartenauswahl bis zum Transfer.
               </p>
-              <p class="mb-4">
+              <p class="mb-0">
                 Danach gehörst du zu einer Community von Spiele Coaches im deutschsprachigen Raum, die das Spiel in
                 vielen Branchen einsetzt.
               </p>
-              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Jetzt anmelden</button>
             </div>
             <div class="col-lg-5">
               <div class="card-sm highlight-card">
@@ -94,7 +90,7 @@
   <!-- FUER UNTERNEHMEN: FUER ALLE, DIE VERAENDERUNG PROFESSIONELL BEGLEITEN -->
   {% call m.section_card("Für Unternehmen", "Für alle, die Veränderung professionell begleiten", id="fuer-unternehmen") %}
           <p class="fs-5 mb-5">Für Unternehmen, die Spiele Coaches im eigenen Haus ausbilden wollen.</p>
-          <div class="row row-cols-1 row-cols-md-3 g-3">
+          <div class="row row-cols-1 row-cols-md-2 g-3">
             <div class="col">
               <div class="card-sm h-100">
                 <i class="bi bi-people fs-2 text-purple"></i>
@@ -116,8 +112,15 @@
                 <p class="small mb-0">Ein skalierbares Setting, mit dem du viele Menschen hierarchieübergreifend in kurzer Zeit erreichst.</p>
               </div>
             </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-heart-pulse fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Mentale Gesundheit und Betriebliches Gesundheitsmanagement</h3>
+                <p class="small mb-0">Resilienz stärken, Belastungen reduzieren, psychische Gesundheit fördern – wissenschaftlich evaluiert und ideal für Gesundheitstage und BGM-Programme.</p>
+              </div>
+            </div>
           </div>
-          <button type="button" class="btn btn-maroon btn-lg mt-4" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum buchen</button>
+          <button type="button" class="btn btn-maroon btn-lg mt-4" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
   {% endcall %}
   {% with sections=sections_in_slot[3] %}
   {% include "_sections_list.html" %}
@@ -129,7 +132,7 @@
             Als Trainer:in, Berater:in oder Coach bringst du {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} zu deinen
             Kund:innen – als eigenen Workshop oder als Baustein in bestehenden Trainings und Beratungsmandaten.
           </p>
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
+          <div class="row row-cols-1 row-cols-md-3 g-3">
             <div class="col">
               <div class="card-sm h-100">
                 <i class="bi bi-puzzle fs-2 text-purple"></i>
@@ -146,20 +149,12 @@
             </div>
             <div class="col">
               <div class="card-sm h-100">
-                <i class="bi bi-award fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Ausgezeichnet und evidenzbasiert</h3>
-                <p class="small mb-0">Europäischer Trainingspreis in Gold (2024) und erster Platz beim NewWork Business Award in der Kategorie Leadership Training (2026).</p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100">
                 <i class="bi bi-people-fill fs-2 text-purple"></i>
                 <h3 class="h5 mt-2 mb-2">Teil einer Community</h3>
                 <p class="small mb-0">Austausch mit rund 140 Spiele Coaches im deutschsprachigen Raum, die das Spiel in vielen Branchen einsetzen.</p>
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Spiele Coach werden</button>
   {% endcall %}
   {% with sections=sections_in_slot[4] %}
   {% include "_sections_list.html" %}

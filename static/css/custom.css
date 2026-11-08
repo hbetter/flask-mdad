@@ -124,7 +124,7 @@ h1, h2, h3 {
 
 /* Logo und Button/Menue-Icon sollen auf JEDER Breite in einer Zeile
    bleiben (kein Umbruch auf dem Smartphone) - deshalb hier ohne
-   Media-Query, nicht erst ab 992px. */
+   Media-Query, nicht erst ab 1200px. */
 .navbar > .container {
     flex-wrap: nowrap;
 }
@@ -134,7 +134,7 @@ h1, h2, h3 {
     min-width: 0;
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
     .navbar-logo {
         height: 70px;
     }
@@ -155,10 +155,9 @@ h1, h2, h3 {
     color: var(--sm-maroon) !important;
 }
 
-/* Aufklappmenue unterhalb 992px als rechtsbuendige Dropdown-Box statt
-   vollbreiter Zeile (Stand v20 der statischen Seite). Wirkt sichtbar,
-   sobald die zugehoerige Navbar-Markup-Struktur uebernommen ist. */
-@media (max-width: 991.98px) {
+/* Aufklappmenue unterhalb 1200px (navbar-expand-xl) als rechtsbuendige
+   Dropdown-Box statt vollbreiter Zeile (Stand v20 der statischen Seite). */
+@media (max-width: 1199.98px) {
     .navbar > .container {
         position: relative;
     }
@@ -185,9 +184,9 @@ h1, h2, h3 {
     }
 }
 
-/* Zwischen 992 und 1199px ist die ausgeklappte Leiste knapp (Logo, fuenf
-   Menuepunkte, Button): Menuepunkte etwas enger. */
-@media (min-width: 992px) and (max-width: 1199.98px) {
+/* Zwischen 1200 und 1399px ist die ausgeklappte Leiste knapp (Logo, fuenf
+   Menuepunkte, Call-to-Action): Menuepunkte etwas enger. */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
     .navbar-custom .nav-link {
         padding: 0 .6rem !important;
     }
@@ -1249,11 +1248,17 @@ body.hide-dev-labels .dev-label {
     }
 }
 
-/* Sehr schmale Smartphones (unter 360px): kleineres Logo, damit Logo, Button
-   und Menue-Icon in eine Zeile passen. */
-@media (max-width: 359.98px) {
+/* Schmale Smartphones: kleineres Logo, damit Logo, Call-to-Action (bis
+   "Spiele Coach werden") und Menue-Icon in eine Zeile passen. */
+@media (max-width: 399.98px) {
     .navbar-logo {
         height: 40px;
+    }
+}
+
+@media (max-width: 359.98px) {
+    .navbar-logo {
+        height: 28px;
     }
 }
 
@@ -1306,8 +1311,8 @@ body.hide-dev-labels .dev-label {
     cursor: pointer;
 }
 
-/* Aufklappmenue in der Navigation (Akademie): Schrift und Farben wie die
-   Menuepunkte, Hover/aktiv in Markenfarbe. Unter 992px (eingeklappte
+/* Aufklappmenues in der Navigation (Beratung, Akademie, Nutzermenue): Schrift und Farben wie die
+   Menuepunkte, Hover/aktiv in Markenfarbe. Unter 1200px (eingeklappte
    Navigation) erscheint es eingerueckt innerhalb der Aufklappbox. */
 .navbar-custom .dropdown-menu {
     --bs-dropdown-link-color: var(--sm-dark);
@@ -1322,12 +1327,48 @@ body.hide-dev-labels .dev-label {
     box-shadow: 0 8px 24px rgba(40, 19, 81, .12);
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 1199.98px) {
     .navbar-custom .dropdown-menu {
         box-shadow: none;
         border: 0;
         text-align: right;
         padding: .25rem 0;
+    }
+}
+
+/* Beratung/Akademie (.nav-hover in base.html): kein Bootstrap-Klick-Toggle,
+   sondern Oeffnen beim Ueberfahren mit der Maus oder bei Tastatur-Fokus
+   (ab 1200px, ausgeklappte Navigation). Der unsichtbare Streifen (::before)
+   ueberbrueckt den Abstand zwischen Menuepunkt und Liste, damit das Menue
+   beim Hinunterfahren nicht zuklappt. Klasse "open" setzt das Skript in
+   base.html bei Touch bzw. eingeklappter Navigation. */
+.navbar-nav .nav-hover.open > .dropdown-menu {
+    display: block;
+}
+
+@media (min-width: 1200px) {
+    .navbar-nav .nav-hover > .dropdown-menu {
+        margin-top: .6rem;
+    }
+    .navbar-nav .nav-hover > .dropdown-menu::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -.8rem;
+        height: .8rem;
+    }
+}
+
+@media (min-width: 1200px) and (hover: hover) and (pointer: fine) {
+    .navbar-nav .nav-hover:hover > .dropdown-menu {
+        display: block;
+    }
+}
+
+@media (min-width: 1200px) {
+    .navbar-nav .nav-hover:focus-within > .dropdown-menu {
+        display: block;
     }
 }
 
@@ -1642,4 +1683,43 @@ body.hide-dev-labels .dev-label {
    Navigationsleiste verschwindet. */
 .page-main section[id] {
     scroll-margin-top: 110px;
+}
+
+/* Silbentrennung in Ueberschriften: Lange deutsche Woerter (z. B.
+   "Veraenderungsprozess", "Fuehrungskraefteentwicklung") werden bei
+   schmalen Fenstern an Silbengrenzen getrennt statt ueber den Rand zu
+   laufen. Funktioniert ueber lang="de" in base.html mit dem Woerterbuch des
+   Browsers. hyphenate-limit-chars: nur Woerter ab 8 Zeichen, mindestens
+   4 Zeichen vor und 3 nach dem Trennstrich. overflow-wrap als Rueckfall
+   fuer Browser ohne deutsches Trennwoerterbuch. */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    hyphenate-limit-chars: 8 4 3;
+    overflow-wrap: break-word;
+}
+
+/* Terminbuchung (Modal #bookingModal, base.html): Microsoft-Bookings-Seite
+   im iframe. Am Desktop eine feste Hoehe, auf dem Smartphone (Vollbild-
+   Modal) fuellt der iframe den Platz zwischen Kopf und Fuss. */
+.booking-frame {
+    display: block;
+    width: 100%;
+    height: min(75vh, 760px);
+    height: min(75dvh, 760px);
+    border: 0;
+}
+
+@media (max-width: 575.98px) {
+    .booking-modal .modal-body {
+        display: flex;
+        padding-bottom: 0 !important;
+    }
+    .booking-modal .booking-frame {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 100%;
+    }
 }

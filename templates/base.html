@@ -42,13 +42,16 @@
 
     <a class="skip-link btn btn-maroon" href="#main">Zum Inhalt springen</a>
 
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3">
+    {# navbar-expand-xl: Menue erst ab 1200px ausgeklappt - darunter passen
+       Logo, Menuepunkte und der (je nach Seite unterschiedlich lange)
+       Call-to-Action nicht in eine Zeile. #}
+    <nav class="navbar navbar-expand-xl navbar-custom sticky-top py-3">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <img src="{{ url_for('static', filename='img/logo_maroon.png') }}" alt="MENSCH DENK AN DICH®" class="navbar-logo">
             </a>
             <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav mx-auto gap-lg-2">
+                <ul class="navbar-nav mx-auto gap-xl-2">
                     {# Menuepunkt der geoeffneten Seite: Klasse "active" (rot, custom.css) und aria-current #}
                     {# Unterkapitel fuer die Aufklappmenues Beratung und Akademie:
                        (Sprungmarke, Text). Der Text ist jeweils der Kicker der
@@ -69,26 +72,23 @@
                         ("einsatz", "Einsatzmöglichkeiten"),
                         ("wissenschaft", "Wissenschaftlich fundiert"),
                     ] %}
-                    {# Beratung als Aufklappmenue: Uebersichtsseite, dann die
-                       Unterkapitel der Seite. #}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">Beratung</a>
+                    {# Beratung und Akademie: Der Menuepunkt selbst fuehrt zur Seite
+                       (nach oben), das Aufklappmenue mit den Kapiteln oeffnet beim
+                       Ueberfahren mit der Maus bzw. per Tastatur-Fokus (CSS
+                       .nav-hover in custom.css). Auf Touch-Geraeten oeffnet der
+                       erste Tipp das Menue, der zweite die Seite (Skript unten). #}
+                    {% set academy_active = request.endpoint in ('academy', 'lexicon') %}
+                    <li class="nav-item dropdown nav-hover">
+                        <a class="nav-link dropdown-toggle{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}" aria-haspopup="true" aria-expanded="false"{% if request.endpoint == 'consulting' %} aria-current="page"{% endif %}>Beratung</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}"{% if request.endpoint == 'consulting' %} aria-current="page"{% endif %}>Beratung im Überblick</a></li>
-                            <li><hr class="dropdown-divider"></li>
                             {% for anchor, label in consulting_chapters %}
                             <li><a class="dropdown-item" href="{{ url_for('consulting') }}#{{ anchor }}">{{ label }}</a></li>
                             {% endfor %}
                         </ul>
                     </li>
-                    {# Akademie als Aufklappmenue: Uebersichtsseite, die
-                       Unterkapitel der Seite und das Lexikon. #}
-                    {% set academy_active = request.endpoint in ('academy', 'lexicon') %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle{% if academy_active %} active{% endif %}" href="{{ url_for('academy') }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">Akademie</a>
+                    <li class="nav-item dropdown nav-hover">
+                        <a class="nav-link dropdown-toggle{% if academy_active %} active{% endif %}" href="{{ url_for('academy') }}" aria-haspopup="true" aria-expanded="false"{% if request.endpoint == 'academy' %} aria-current="page"{% endif %}>Akademie</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item{% if request.endpoint == 'academy' %} active{% endif %}" href="{{ url_for('academy') }}"{% if request.endpoint == 'academy' %} aria-current="page"{% endif %}>Akademie im Überblick</a></li>
-                            <li><hr class="dropdown-divider"></li>
                             {% for anchor, label in academy_chapters %}
                             <li><a class="dropdown-item" href="{{ url_for('academy') }}#{{ anchor }}">{{ label }}</a></li>
                             {% endfor %}
@@ -104,11 +104,24 @@
                 {{ user_menu.user_menu_mobile() }}
             </div>
             <div class="d-flex align-items-center gap-2 btn-toggle-group">
-                {# "Gratis spielen" nur fuer Besucher (oeffnet das Spiele-Event-
-                   Formular, spieleEventModal). Angemeldete sehen stattdessen
-                   das Nutzermenue (_user_menu.html). #}
+                {# Call-to-Action nur fuer Besucher, je nach Seite (request.endpoint):
+                   Beratung -> Terminbuchung (Modal #bookingModal), Akademie -> Spiele-Coach-
+                   Formular, Community (Uebersicht und Profile) -> Login, alle
+                   anderen Seiten (Index, Erfolgsgeschichten usw.) -> Spiele-Event-
+                   Formular. Angemeldete sehen stattdessen das Nutzermenue
+                   (_user_menu.html). Auf schmalen Bildschirmen kurze Texte,
+                   damit die Leiste in eine Zeile passt. #}
                 {% if not current_user.is_authenticated %}
+                    {% set endpoint = request.endpoint or '' %}
+                    {% if endpoint == 'consulting' %}
+                <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" data-bs-toggle="modal" data-bs-target="#bookingModal" class="btn btn-maroon text-nowrap"><span class="d-none d-md-inline">Kostenfreies Beratungsgespräch</span><span class="d-md-none">Beratungsgespräch</span></a>
+                    {% elif endpoint == 'academy' %}
+                <button type="button" class="btn btn-maroon text-nowrap" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Spiele Coach werden</button>
+                    {% elif endpoint.startswith('members.community') %}
+                <a href="{{ url_for('login') }}" class="btn btn-maroon text-nowrap">Login</a>
+                    {% else %}
                 <button type="button" class="btn btn-maroon text-nowrap" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Gratis spielen</button>
+                    {% endif %}
                 {% endif %}
                 {{ user_menu.user_menu_desktop() }}
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Navigation umschalten">
@@ -185,7 +198,7 @@
     </footer>
 
     <!-- Spielraum-Anmeldung (ActiveCampaign-Formular ID 16) als Modal -
-         geoeffnet ueber den Button "Probespielraum buchen" in der Sektion
+         geoeffnet ueber den Button "Probespielraum anfragen" in der Sektion
          "Für Unternehmen" der Akademie-Seite (data-bs-target="#spielraumModal"). Liegt
          hier zentral in base.html, damit es auf jeder Seite nur einmal
          im DOM steht, unabhaengig davon, von welcher Seite/welchem
@@ -296,6 +309,37 @@
         </div>
     </div>
 
+    <!-- Terminbuchung fuer das kostenfreie Beratungsgespraech: Microsoft-
+         Bookings-Seite (BOOKING_URL in views.py) im iframe. Die Seite wird
+         erst beim ersten Oeffnen geladen (data-src, Skript unten). Geoeffnet
+         von allen Buttons "Beratungsgespraech" (data-bs-target="#bookingModal"). -->
+    <div class="modal fade booking-modal" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h2 class="h4 mb-1 fw-bold" id="bookingModalLabel">Kostenfreies Beratungsgespräch</h2>
+                        <div class="text-secondary">Wähle einen freien Termin aus.</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe data-src="{{ BOOKING_URL }}" title="Terminbuchung Beratungsgespräch" class="booking-frame"></iframe>
+                </div>
+                <div class="modal-footer justify-content-start">
+                    <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" class="small">Buchungsseite in neuem Tab öffnen <i class="bi bi-box-arrow-up-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Buchungsseite erst laden, wenn das Modal das erste Mal geoeffnet wird
+        document.getElementById("bookingModal").addEventListener("show.bs.modal", function () {
+            var frame = this.querySelector("iframe[data-src]");
+            if (frame && !frame.getAttribute("src")) { frame.setAttribute("src", frame.dataset.src); }
+        });
+    </script>
+
     <!-- Lexikon-Modal: zeigt einen Lexikoneintrag, wenn man einen per
          lexicon_link (_macros.html) verknuepften Begriff mit der Maus
          ueberfaehrt, antippt oder per Tastatur aktiviert. Inhalt kommt per
@@ -320,6 +364,43 @@
 
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script>
+        // Navigation Beratung/Akademie (.nav-hover): Mit Maus oeffnet das
+        // Kapitelmenue per CSS beim Ueberfahren. Ohne Hover (Touch) oder bei
+        // eingeklappter Navigation (< 1200px) oeffnet der erste Tipp auf den
+        // Menuepunkt das Menue (Klasse "open"), der zweite fuehrt zur Seite.
+        (function () {
+            var hoverNav = window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 1200px)");
+            var items = document.querySelectorAll(".navbar .nav-hover");
+            function closeAll(except) {
+                items.forEach(function (item) {
+                    if (item === except) { return; }
+                    item.classList.remove("open");
+                    item.querySelector(".nav-link").setAttribute("aria-expanded", "false");
+                });
+            }
+            items.forEach(function (item) {
+                var link = item.querySelector(".nav-link");
+                item.addEventListener("mouseenter", function () { if (hoverNav.matches) { link.setAttribute("aria-expanded", "true"); } });
+                item.addEventListener("mouseleave", function () { if (hoverNav.matches) { link.setAttribute("aria-expanded", "false"); } });
+                // Nach Klick auf ein Kapitel (Sprung auf derselben Seite) den
+                // Fokus loesen, sonst bliebe das Menue per :focus-within offen.
+                item.querySelectorAll(".dropdown-item").forEach(function (entry) {
+                    entry.addEventListener("click", function () { entry.blur(); closeAll(null); });
+                });
+                link.addEventListener("click", function (event) {
+                    if (hoverNav.matches || item.classList.contains("open")) { return; }
+                    event.preventDefault();
+                    closeAll(item);
+                    item.classList.add("open");
+                    link.setAttribute("aria-expanded", "true");
+                });
+            });
+            document.addEventListener("click", function (event) {
+                if (!event.target.closest(".navbar .nav-hover")) { closeAll(null); }
+            });
+        })();
+    </script>
+    <script>
         // Lexikon-Links (Makro lexicon_link in _macros.html): Eintrag als
         // Modal oeffnen - mit der Maus erst, wenn sie HOVER_DELAY ms ruhig auf
         // dem Begriff steht (jede Bewegung startet die Wartezeit neu, damit
@@ -334,7 +415,7 @@
             var moreEl = modalEl.querySelector("[data-lexicon-more]");
             var cache = {};
             var hoverTimer = null;
-            var HOVER_DELAY = 800;
+            var HOVER_DELAY = 500;
             var suppressUntil = 0;
             var canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 

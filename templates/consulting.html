@@ -42,9 +42,6 @@
                   </a>
                 </div>
               </div>
-              <div class="d-flex flex-wrap gap-3">
-                <a href="#contact" class="btn btn-maroon btn-lg">Kostenfreies Beratungsgespräch</a>
-              </div>
             </div>
             <div class="col-lg-6 d-flex justify-content-center align-items-center">
               <figure class="content-figure mb-0" style="max-width: 440px;">
@@ -112,8 +109,7 @@
             </div>
           </div>
           <div class="d-flex flex-wrap gap-3 mt-5">
-            <a href="#contact" class="btn btn-maroon btn-lg">Beratungsgespräch vereinbaren</a>
-            <button type="button" class="btn btn-outline-dark-sm btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probe-Spielraum buchen</button>
+            <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[2] %}
@@ -188,8 +184,7 @@
             </div>
           </div>
           <div class="d-flex flex-wrap gap-3 mt-5">
-            <a href="#contact" class="btn btn-maroon btn-lg">Beratungsgespräch vereinbaren</a>
-            <button type="button" class="btn btn-outline-dark-sm btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probe-Spielraum buchen</button>
+            <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[3] %}
@@ -323,10 +318,12 @@
             </div>
           </div>
           <div class="text-center mt-5">
-            <h3 class="h4 mb-4">Lassen Sie uns über Ihr Vorhaben sprechen.</h3>
+            <h3 class="h4 mb-4">Lassen Sie uns über Ihr Vorhaben sprechen und nutzen Sie eines unserer kostenfreien Angebote:</h3>
             <div class="d-flex flex-wrap justify-content-center gap-3">
-              <a href="#contact" class="btn btn-maroon btn-lg">Kostenfreies Beratungsgespräch</a>
-              <button type="button" class="btn btn-outline-dark-sm btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probe-Spielraum buchen</button>
+              <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" data-bs-toggle="modal" data-bs-target="#bookingModal" class="btn btn-maroon btn-lg">Beratungsgespräch</a>
+              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Gratisspielen</button>
+              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum</button>
+              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter</button>
             </div>
           </div>
   {% endcall %}

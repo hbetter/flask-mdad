@@ -4,7 +4,7 @@
     <div class="card shadow-sm">
       <div class="card-body p-4 p-lg-5">
         {% if kicker %}<p class="kicker mb-2">{{ kicker }}</p>{% endif %}
-        {% if heading %}<{{ heading_tag }} class="{{ heading_class }}">{{ heading }}</{{ heading_tag }}>{% endif %}
+        {% if heading %}<{{ heading_tag }} class="{{ heading_class }}">{{ heading|keep_terms }}</{{ heading_tag }}>{% endif %}
         {{ caller() }}
       </div>
     </div>

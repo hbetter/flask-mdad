@@ -16,18 +16,6 @@
                 in jedem Unternehmen. Mit dem mehrfach ausgezeichneten {{ m.lexicon_link("resilienz-spiele", "Resilienzspiel") }}
                 {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} - evidenzbasiert und skalierbar.
               </p>
-              <p class="fs-5 mb-2">
-                Für Unternehmen, die keine Zeit verlieren wollen:
-              </p>
-              <div class="d-flex flex-wrap gap-3 mb-4">
-                <a href="{{ url_for('consulting') }}" class="btn btn-outline-dark-sm btn-lg">kostenfreies Beratungsgespräch</a>
-              </div>
-              <p class="fs-5 mb-2">
-                Als Spiele Coach bringst du echte Veränderungen in Teams, Führung und ganzen Organisationen – effizient mit nachhaltiger Wirkung:
-              </p>
-              <div class="d-flex flex-wrap gap-3">
-                <a href="{{ url_for('academy') }}" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
-              </div>
             </div>
             <div class="col-lg-6 d-flex justify-content-center align-items-center">
               {# Web-Fassung von static/img/Irene.png: 840x1120 = doppelte Anzeigegroesse
@@ -44,48 +32,80 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- TERMINE: dynamisch aus den in der Administration gepflegten Terminen (views.py:
-       index()), gleiche Sortierung wie in der Administration (chronologisch). Darstellung
-       angelehnt an die Administrations-Terminkarten (Datum/Zeitspanne ueber
-       eventdaterange), aber ohne die dort gezeigten internen Angaben (ID,
-       Erstellungsdatum) - hier oeffentlich, kein Bearbeiten/Loeschen. Das
-       rote Kategorie-Badge aus der Administration wird hier bewusst NICHT
-       gezeigt (nur noch das dezente Hintergrund-Icon); die Kategorie
-       steckt stattdessen im Titel selbst, da dieser beim Anlegen eines
-       Termins mit der Eventkategorie vorausgefuellt wird (siehe
-       add_event.html). Hintergrund der Karte (.termin-card) bleibt wie
-       zuvor. "Platz sichern" oeffnet das zur Kategorie passende
-       Formular-Modal (siehe EVENT_CATEGORY_MODAL in views.py sowie die
-       Modals in base.html); Kategorien ohne Eintrag dort springen
-       weiterhin zu #contact. Abschnitt erscheint nur, wenn mindestens
-       ein Termin existiert. -->
-  {% if events %}
+  <!-- TERMINE / ANGEBOTE: alle Angebote als Kacheln mit kurzer Einleitung
+       und Button; bei Spiele Event und Spiele Coach die naechsten Termine aus
+       der Administration (upcoming_by_category in views.py index()). Die
+       Kacheln erscheinen immer, auch ohne Termine. -->
   {% call m.section_card("Termine", "Risikofrei starten", id="events") %}
-          <div class="row g-3">
-            {% for item in events %}
-            <div class="col-sm-6 col-lg-3">
-              <div class="termin-card">
-                <i class="bi bi-{{ item.category|eventcategoryicon }} category-icon-bg" aria-hidden="true"></i>
-                <h3 class="h3 mb-1 termin-title">{{ item.title }}</h3>
-                {% if item.subtitle %}
-                <p class="fs-5 text-muted mb-0">{{ item.subtitle }}</p>
-                {% endif %}
-                <p class="small text-muted mb-3"><i class="bi bi-calendar-event"></i> {{ item|eventdaterange }}</p>
-                {% set modal_id = item.category|eventcategorymodal %}
-                {% if modal_id %}
-                <button type="button" class="btn btn-outline-dark-sm btn-sm mt-auto" data-bs-toggle="modal" data-bs-target="#{{ modal_id }}">Platz sichern</button>
-                {% else %}
-                <a href="#contact" class="btn btn-outline-dark-sm btn-sm mt-auto">Platz sichern</a>
-                {% endif %}
+          {# ANGEBOTSUEBERSICHT: alle Angebote mit kurzer Einleitung und CTA. Die
+             Termine bei Spiele Event und Spiele Coach kommen aus der Administration
+             (Kategorien "trial" bzw. "certification", naechste drei, siehe
+             upcoming_by_category in views.py index()). Ohne anstehenden Termin
+             erscheint "Neue Termine folgen in Kürze". #}
+          {% macro offer_dates(category) %}
+            {% set dates = upcoming_by_category.get(category, []) %}
+            <p class="small fw-semibold mb-1">Nächste Termine</p>
+            {% if dates %}
+            <ul class="list-unstyled small mb-3">
+              {% for item in dates %}
+              <li class="d-flex gap-2 mb-1"><i class="bi bi-calendar-event text-purple"></i><span>{{ item|eventdaterange }}{% if item.subtitle %} · {{ item.subtitle }}{% endif %}</span></li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p class="small text-muted mb-3">Neue Termine folgen in Kürze.</p>
+            {% endif %}
+          {% endmacro %}
+          <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 offer-grid">
+            <div class="col">
+              <div class="card-sm h-100 d-flex flex-column">
+                <i class="bi bi-chat-dots fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Kostenfreies Beratungsgespräch</h3>
+                <p class="small mb-3">Du willst wissen, was das Spiel in deinem Unternehmen bewirken kann? In einem persönlichen Gespräch klären wir dein Anliegen – unverbindlich und kostenfrei.</p>
+                <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" data-bs-toggle="modal" data-bs-target="#bookingModal" class="btn btn-maroon mt-auto align-self-start">Termin wählen</a>
               </div>
             </div>
-            {% endfor %}
+            <div class="col">
+              <div class="card-sm h-100 d-flex flex-column">
+                <i class="bi bi-dice-5 fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Kostenfreie Teilnahme an einem Spiele Event</h3>
+                <p class="small mb-3">Erlebe {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} selbst am Spieltisch und spüre, was das Spiel in 90 Minuten bewegt.</p>
+                {{ offer_dates("trial") }}
+                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Platz sichern</button>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100 d-flex flex-column">
+                <i class="bi bi-house-door fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Probespielraum anfragen</h3>
+                <p class="small mb-3">Hole das Spiel in dein Unternehmen: In einem firmeninternen Probespielraum erlebt dein Team, wie das Spiel bei euch wirkt.</p>
+                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100 d-flex flex-column">
+                <i class="bi bi-envelope-paper fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Newsletter bestellen</h3>
+                <p class="small mb-3">Neuigkeiten, Termine und Impulse rund um spielerische Veränderung – direkt in dein Postfach.</p>
+                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter bestellen</button>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100 d-flex flex-column">
+                <i class="bi bi-award fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Spiele Coach werden</h3>
+                <p class="small mb-3">In der zweitägigen Qualifizierung lernst du, das Spiel selbst anzuleiten, und setzt {{ m.lexicon_link("play2change", "play2change©") }} in deinen Prozessen ein.</p>
+                {{ offer_dates("certification") }}
+                <div class="d-flex flex-wrap gap-2 mt-auto">
+                  <button type="button" class="btn btn-maroon" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Jetzt anmelden</button>
+                  <a href="{{ url_for('academy') }}" class="btn btn-outline-dark-sm">Zur Akademie</a>
+                </div>
+              </div>
+            </div>
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[10] %}
   {% include "_sections_list.html" %}
   {% endwith %}
-  {% endif %}
 
   <!-- AWARDS -->
   {% call m.section_plain() %}
@@ -174,13 +194,7 @@
             </div>
           </div>
           <div class="text-center mt-5">
-            <h3 class="h4 mb-4">MENSCH DENK AN DICH<sup>®</sup> ist der Lösungsweg, der alle abholt <br />und Unternehmen resilient macht.</h3>
-            <div class="d-flex flex-wrap justify-content-center gap-3">
-              <a href="{{ url_for('consulting') }}" class="btn btn-outline-dark-sm btn-lg">kostenfreies Beratungsgespräch</a>
-              <a href="{{ url_for('academy') }}" class="btn btn-outline-dark-sm btn-lg">Spiele Coach werden</a>
-
-              <button type="button" class="btn btn-outline-dark-sm btn-lg" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter bestellen</button>
-            </div>
+            <h3 class="h4 mb-0">MENSCH DENK AN DICH<sup>®</sup> ist der Lösungsweg, der alle abholt <br />und Unternehmen resilient macht.</h3>
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[3] %}
