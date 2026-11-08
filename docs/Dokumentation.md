@@ -95,7 +95,7 @@ Sektionen gibt es nur auf drei Seiten:
 | Seite | Anzahl Slots |
 | --- | --- |
 | Indexseite (`/`) | 10 |
-| Beratung (`/consulting`) | 6 |
+| Beratung (`/consulting`) | 5 |
 | Akademie (`/academy`) | 6 |
 
 **So funktionieren Slots:** Slot 1 liegt zwischen dem 1. und 2. festen Abschnitt der Seite, Slot 2 zwischen dem 2. und 3. und so weiter. Ist ein Slot leer, gibt es in der Auswahl nur „Slot 3“. Stehen dort schon Sektionen, bietet die Auswahl jede mögliche Einfügeposition an: „Slot 3a“ (davor), „Slot 3b“ (dahinter) usw. Beim Speichern werden die Positionen im Slot lückenlos neu durchnummeriert.
@@ -231,7 +231,7 @@ Fünf Anmeldeformulare von ActiveCampaign (AC) sind als Fenster in jede Seite ei
 | Newsletter | 14 | `#newsletterModal` |
 | Webinar | 22 | `#webinarModal` |
 
-Die Angebotskacheln der Indexseite (Sektion „Termine“) öffnen Spiele-Event-, Probe-Spielraum-, Newsletter- und Spiele-Coach-Formular sowie die Terminbuchung. Das Probe-Spielraum-Formular öffnen die roten Buttons „Probespielraum anfragen“ in der Sektion „Für Unternehmen“ der Akademie-Seite sowie in drei Sektionen der Beratungs-Seite (Geschäftsführung, Personal/BGM, Referenzen). Am Ende der Referenzen stehen drei Buttons nebeneinander: „Gratis spielen“ (Spiele-Event-Formular), „Beratungsgespräch“ (Terminbuchung) und „Probespielraum“ (Probe-Spielraum-Formular). Das Spiele-Coach-Formular öffnen der Call-to-Action „Spiele Coach werden“ in der Navigationsleiste der Akademie-Seite (für Gäste) und „Jetzt anmelden“ in der Angebotsübersicht der Indexseite; die Akademie-Seite selbst hat keinen eigenen Anmelde-Button. Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
+Die Angebotskacheln der Indexseite (Sektion „Termine“) öffnen Spiele-Event-, Probe-Spielraum-, Newsletter- und Spiele-Coach-Formular sowie die Terminbuchung. Das Probe-Spielraum-Formular öffnen die roten Buttons „Probespielraum anfragen“ in der Sektion „Für Unternehmen“ der Akademie-Seite sowie in drei Sektionen der Beratungs-Seite (Geschäftsführung, Personal/Gesundheit, Referenzen). Am Ende der Referenzen stehen drei Buttons nebeneinander: „Gratis spielen“ (Spiele-Event-Formular), „Beratungsgespräch“ (Terminbuchung) und „Probespielraum“ (Probe-Spielraum-Formular). Das Spiele-Coach-Formular öffnen der Call-to-Action „Spiele Coach werden“ in der Navigationsleiste der Akademie-Seite (für Gäste) und „Jetzt anmelden“ in der Angebotsübersicht der Indexseite; die Akademie-Seite selbst hat keinen eigenen Anmelde-Button. Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
 
 ### Terminbuchung Beratungsgespräch
 

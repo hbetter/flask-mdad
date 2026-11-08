@@ -371,7 +371,7 @@ def eventdaterange(item):
 # Bewusst simpel gehalten, damit das auf andere Projekte uebertragbar bleibt.
 PAGE_SLOT_COUNT = {
     "index": 10,
-    "consulting": 6,
+    "consulting": 5,
     "academy": 6,
 }
 

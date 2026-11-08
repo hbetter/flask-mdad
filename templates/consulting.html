@@ -4,41 +4,38 @@
 {% block meta_description %}Beratung mit MENSCH DENK AN DICH®: Wir begleiten Unternehmen spielerisch und evidenzbasiert durch Transformation und hin zu mentaler Gesundheit, gesunder Führung und zukunftssicherer Arbeit.{% endblock %}
 {% block content %}
 
-<!-- Beratungsseite. Zwei Zielgruppen (siehe Aufgabe_Unterseite_Beratung.md):
-     1. Geschaeftsfuehrung und Entscheider, die eine Transformation begleiten
-        lassen (#geschaeftsfuehrung),
-     2. Personal- und BGM-Verantwortliche mit den Themen mentale Gesundheit,
-        gesunde Fuehrung, zukunftssichere Arbeit (#personal-und-bgm).
-     Inhalte aus dem Spielebuch (Kap. 1, 4, 5.4) und der Praesentation
-     "Spiele Event" (Okt. 2026). Bilder in static/img (aus dem Spielebuch).
-     Slots: nach jeder festen Sektion einer (PAGE_SLOT_COUNT["consulting"] = 6). -->
+<!-- Beratungsseite. Zwei Zielgruppen, im Kopfbereich als Einstiegskacheln
+     verlinkt (siehe Aufgabe_Unterseite_Beratung.md):
+     1. Geschaeftsfuehrung und Fuehrungskraefte (#geschaeftsfuehrung),
+     2. Personal- und Gesundheitsverantwortliche mit den Themen mentale
+        Gesundheit, resiliente Fuehrung, engagierte Teams (#personal-und-gesundheit).
+     Reihenfolge: Hero, Wirksamer Hebel durch Spiel, Geschaeftsfuehrung,
+     Personal/Gesundheit, Referenzen, Einblicke (Beitraege).
+     Slots: nach jeder festen Sektion einer (PAGE_SLOT_COUNT["consulting"] = 5).
+     Kapitel im Aufklappmenue: consulting_chapters in base.html. -->
 <div class="page-main">
 
   <!-- HERO -->
-  {% call m.section_card("Beratung", "Veränderung, die von innen getragen wird", heading_tag='h1', heading_class='display-3 mb-3') %}
-          <p class="fs-4 mb-4">Spielerisch, evidenzbasiert und mit allen an Bord – vom Vorstand bis ins Team.</p>
+  {% call m.section_card("Beratung", "Veränderung, die nachhaltig wirkt", heading_tag='h1', heading_class='display-3 mb-3') %}
+          <p class="fs-4 mb-4">Du suchst nach einer effizienten Methode, die dein Unternehmen zukunftssicher macht?</p>
           <div class="row gy-5">
             <div class="col-lg-6">
               <p class="fs-5 mb-4">
-                Wir begleiten Unternehmen und Organisationen durch Entwicklungs- und Veränderungsprozesse.
-                Mit dem {{ m.lexicon_link("resilienz-spiele", "Resilienzspiel") }} {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }}
-                und der Methode {{ m.lexicon_link("play2change", "play2change©") }} entsteht in kurzer Zeit ein Raum,
-                in dem Menschen offen sprechen, Lösungen selbst entwickeln und Veränderung aktiv mittragen.
+                Mit dem evidenzbasierten {{ m.lexicon_link("resilienz-spiele", "Resilienzspiel") }} {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} bringen wir auch dein Unternehmen in die Zukunft.
               </p>
-              <p class="fw-semibold mb-3">Womit können wir Sie unterstützen?</p>
+              <p class="fs-5 mb-4">
+                Mit der preisgekrönten Methode bringst du dein Unternehmen schneller durch jeden Entwicklungs- und Veränderungsprozess und stärkst die Resilienz der ganzen Organisation.
+              </p>
+              {# Einstiegskacheln zu den beiden Zielgruppen-Sektionen #}
               <div class="row g-3 mb-4">
                 <div class="col-sm-6">
                   <a href="#geschaeftsfuehrung" class="card-sm entry-card d-block text-reset text-decoration-none">
-                    <i class="bi bi-arrow-repeat fs-3 text-purple"></i>
-                    <h2 class="h6 mt-2 mb-1">Transformation begleiten</h2>
-                    <p class="small mb-0">Für Geschäftsführungen, die einen Wandel mit ihrem Unternehmen gehen wollen.</p>
+                    <h2 class="h6 mb-0">Für Geschäftsführende und Führungskräfte</h2>
                   </a>
                 </div>
                 <div class="col-sm-6">
-                  <a href="#personal-und-bgm" class="card-sm entry-card d-block text-reset text-decoration-none">
-                    <i class="bi bi-heart-pulse fs-3 text-purple"></i>
-                    <h2 class="h6 mt-2 mb-1">Gesunde Arbeit gestalten</h2>
-                    <p class="small mb-0">Für BGM und Vorstand: mentale Gesundheit, gesunde Führung, zukunftssichere Arbeit.</p>
+                  <a href="#personal-und-gesundheit" class="card-sm entry-card d-block text-reset text-decoration-none">
+                    <h2 class="h6 mb-0">Für Personal- und Gesundheitsverantwortliche</h2>
                   </a>
                 </div>
               </div>
@@ -46,183 +43,11 @@
             <div class="col-lg-6 d-flex justify-content-center align-items-center">
               <figure class="content-figure mb-0" style="max-width: 440px;">
                 <img src="{{ url_for('static', filename='img/resilienz-ebenen.webp') }}" alt="Grafik: Resilienz auf drei Ebenen – individuelle Resilienz (Stress- und Krisenbewältigung), kollektive Resilienz (Verbundenheit und Problemlösung) und organisationale Resilienz (Flexibilität und Anpassungsfähigkeit)" width="900" height="1106">
-                <figcaption>Wir stärken Resilienz dort, wo sie wirkt: bei jedem Einzelnen, in Teams und Führung und in der ganzen Organisation.</figcaption>
               </figure>
             </div>
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[1] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- GESCHAEFTSFUEHRUNG UND ENTSCHEIDER: TRANSFORMATION GEMEINSAM DURCHLAUFEN -->
-  {% call m.section_card("Für die Geschäftsführung und Entscheider", "Transformation gemeinsam durchlaufen", id="geschaeftsfuehrung") %}
-          <p class="fs-5 mb-4">
-            Ob Automobilzulieferer im Strukturwandel oder kommunales Unternehmen der Daseinsvorsorge – Stadtreinigung,
-            Energieversorgung, öffentlicher Nahverkehr: Wenn sich Märkte, Technik und Erwartungen verschieben, reicht ein
-            gutes Konzept allein nicht. Nachhaltig verändert sich nur, was von der Mehrheit getragen und gelebt wird.
-            Wir liefern deshalb nicht nur Folien, sondern gehen den Weg mit Ihnen und Ihren Leuten.
-          </p>
-          <div class="row g-4">
-            <div class="col-lg-5">
-              <div class="card-sm h-100">
-                <h3 class="h5 mb-3">Warum Veränderung so oft stockt</h3>
-                <ul class="icon-list mb-0">
-                  <li><i class="bi bi-arrow-clockwise"></i><span><strong>Autopilot:</strong> Routinen und Gewohnheiten entlasten im Alltag – und halten am Bekannten fest.</span></li>
-                  <li><i class="bi bi-lightning"></i><span><strong>Stress:</strong> Unter Druck schaltet das Gehirn auf Flucht oder Angriff und blockiert kreatives Denken.</span></li>
-                  <li><i class="bi bi-hourglass-split"></i><span><strong>Kurzfristdenken:</strong> Unser Belohnungssystem sucht schnelle Erfolge statt langfristiger Veränderung.</span></li>
-                </ul>
-                <p class="small text-muted mt-3 mb-0">
-                  Genau hier setzt das Spiel an: Es senkt Stress, öffnet einen sicheren Raum und macht Erfolge sofort erlebbar.
-                </p>
-              </div>
-            </div>
-            <div class="col-lg-7">
-              <h3 class="h5 mb-3">So begleiten wir Ihre Transformation</h3>
-              <ol class="step-list mb-0">
-                <li><strong>Fokusgespräch:</strong> Wir klären mit Ihnen Anliegen, Ziel und ein Motto für den Prozess und sammeln die kritischen Situationen aus Ihrem Alltag.</li>
-                <li><strong>Führung zuerst:</strong> Ihre Führungskräfte spielen als Erste – als Multiplikatoren begleiten sie später die Ergebnisse ihrer Teams.</li>
-                <li><strong>Ihre Themen ins Spiel:</strong> Kritische Situationen werden zu eigenen Aktionskarten, Visionen und Ziele entstehen mit allen Beteiligten.</li>
-                <li><strong>Möglichst viele beteiligen:</strong> Teams sammeln konkrete Ideen, wie die Veränderung gelebt werden kann – bei großen Gruppen im Spielesalon an mehreren Tischen gleichzeitig.</li>
-                <li><strong>Umsetzen und verankern:</strong> Ideen werden schnell umgesetzt, Follow-ups und flankierende Maßnahmen sichern die Nachhaltigkeit von Anfang an.</li>
-              </ol>
-            </div>
-          </div>
-          <div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
-            <div class="col">
-              <div class="card-sm h-100 text-center">
-                <i class="bi bi-diagram-3 fs-2 text-purple mb-2"></i>
-                <p class="mb-0">Wirkt <strong>hierarchieübergreifend</strong> – Führung und Mitarbeitende begegnen sich auf Augenhöhe.</p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100 text-center">
-                <i class="bi bi-unlock fs-2 text-purple mb-2"></i>
-                <p class="mb-0">Der <strong>Widerstand fällt von innen weg</strong>, weil die Lösungen von den Beteiligten selbst kommen.</p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100 text-center">
-                <i class="bi bi-buildings fs-2 text-purple mb-2"></i>
-                <p class="mb-0">Stärkt die <strong>Resilienz auf allen Ebenen</strong>: Individuum, Team, Führung und Organisation.</p>
-              </div>
-            </div>
-          </div>
-          <div class="d-flex flex-wrap gap-3 mt-5">
-            <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
-          </div>
-  {% endcall %}
-  {% with sections=sections_in_slot[2] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- PERSONAL- UND BGM-VERANTWORTLICHE: MENTALE GESUNDHEIT, GESUNDE FUEHRUNG, ZUKUNFTSSICHERE ARBEIT -->
-  {% call m.section_card("Für Personal- und BGM-Verantwortliche", "Mentale Gesundheit, gesunde Führung, zukunftssichere Arbeit", id="personal-und-bgm") %}
-          <p class="fs-5 mb-4">
-            Belastungen werden sichtbar – in der {{ m.lexicon_link("gefaehrdungsbeurteilung", "psychischen Gefährdungsbeurteilung") }},
-            in zunehmenden Konflikten, einem steigenden Krankenstand oder mehr Burnout-Fällen. Statt einzelner Maßnahmen
-            setzen wir im {{ m.lexicon_link("bgm", "Betrieblichen Gesundheitsmanagement") }} auf mehreren Ebenen zugleich an.
-          </p>
-          <div class="row row-cols-1 row-cols-md-3 g-3 mb-5">
-            <div class="col">
-              <div class="card-sm h-100">
-                <i class="bi bi-emoji-smile fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Mentale Gesundheit</h3>
-                <p class="small mb-0">
-                  Die Spielvariante Gesundheitsförderung macht Erholung und Überlastung zum Thema – mit eigenen Pausen- und
-                  Überstundenkarten. Aus Ihren Befragungsergebnissen entstehen passgenaue Aktionskarten, zu denen die
-                  Mitarbeitenden selbst Lösungen finden.
-                </p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100">
-                <i class="bi bi-person-check fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Gesunde Führung</h3>
-                <p class="small mb-2">
-                  Resilienz ist ansteckend: Nur <strong>4&nbsp;Monate</strong> braucht es, bis sich die Resilienz einer
-                  Führungskraft auf ihre Mitarbeitenden überträgt – mit weniger Burnout und mehr Wohlbefinden.
-                </p>
-                <p class="small mb-0">Führungskräfte erhalten deshalb Umsetzungs-Workshops über mindestens sechs Monate.</p>
-                <p class="stat-source mt-2 mb-0">Quelle: Brady, Hammer &amp; Westman 2025</p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100">
-                <i class="bi bi-compass fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Zukunftssichere Arbeit</h3>
-                <p class="small mb-0">
-                  Resiliente Organisationen erkennen Signale früh, entwickeln gemeinsam Lösungen und verändern Abläufe dauerhaft.
-                  Wir verbinden individuelle, Team- und organisationale Resilienz zu einem Prozess, der im Alltag trägt.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="row g-4 align-items-start">
-            <div class="col-lg-7">
-              <h3 class="h5 mb-3">So gehen wir im Unternehmen vor</h3>
-              <ol class="step-list mb-0">
-                <li><strong>Steuerkreis sensibilisieren:</strong> Die Stakeholder spielen zuerst und entwickeln ggf. unternehmensspezifische Aktionskarten.</li>
-                <li><strong>Teamworkshops:</strong> Das Spiel wird zur Ideen- und Umsetzungsschmiede in den Bereichen, die am stärksten belastet sind.</li>
-                <li><strong>Führungskräfte stärken:</strong> Umsetzungs-Workshops über mindestens sechs Monate machen Führung zur wichtigsten Stütze der Teams.</li>
-                <li><strong>Begleiten und nachhalten:</strong> Veränderungen werden auf allen drei Ebenen – Individuum, Team, Organisation – begleitet und überprüft.</li>
-              </ol>
-            </div>
-            <div class="col-lg-5">
-              <div class="card-sm highlight-card">
-                <p class="kicker mb-2">Modellvorhaben mit der BARMER</p>
-                <h3 class="h5 mb-2">MENSCH-PFLEGE!</h3>
-                <p class="small mb-2">
-                  Seit November 2024 erproben und evaluieren wir ein spielerisches Konzept der Betrieblichen Gesundheitsförderung
-                  in drei Einrichtungen der stationären Pflege in Bad Waldsee, Dresden und Berlin.
-                </p>
-                <p class="small mb-0">
-                  Gemessen werden Spielerlebnis, intrinsische Motivation, soziale Verbundenheit, psychologische Sicherheit,
-                  Resilienz und Stresswahrnehmung – <strong>alle Mittelwerte liegen im oberen Bereich.</strong>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="d-flex flex-wrap gap-3 mt-5">
-            <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
-          </div>
-  {% endcall %}
-  {% with sections=sections_in_slot[3] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- FALLBEISPIELE: MIT PLAY2CHANGE VERAENDERUNG MEISTERN -->
-  {% call m.section_card("Unsere Fallbeispiele", "Mit play2change© Veränderung meistern", id="fallbeispiele") %}
-          <p class="fs-5 mb-5">
-            Herzstück jedes Einsatzes ist ein 90-minütiges Spiel. Eingebettet in die drei Phasen von
-            {{ m.lexicon_link("play2change", "play2change©") }} wird daraus ein Veränderungsprozess, der von positiven Emotionen getragen ist –
-            als einzelner Workshop von etwa vier Stunden oder als Baustein in einem längeren Prozess.
-          </p>
-          <div class="row g-4">
-            <div class="col-md-4">
-              <figure class="content-figure mb-3">
-                <img src="{{ url_for('static', filename='img/play2change-play.webp') }}" alt="Illustration der Phase Play: Freude und Spaß, Co-Creation, Lösungen beim Probehandeln" width="733" height="1037" loading="lazy">
-              </figure>
-              <h3 class="h5 mb-2">Spielen</h3>
-              <p class="mb-0">Öffnet Räume für Kreativität und Lösungsfokussierung. Stressbedingte und systemische Denkblockaden lösen sich.</p>
-            </div>
-            <div class="col-md-4">
-              <figure class="content-figure mb-3">
-                <img src="{{ url_for('static', filename='img/play2change-earn.webp') }}" alt="Illustration der Phase Earn: Potenziale und Fähigkeiten heben, Stärken stärken, Veränderungsbereitschaft fördern" width="733" height="1037" loading="lazy">
-              </figure>
-              <h3 class="h5 mb-2">Ernten</h3>
-              <p class="mb-0">Hebt Potenziale und erhöht die Motivation. Stärken werden sichtbar, der Wille zur Veränderung wächst.</p>
-            </div>
-            <div class="col-md-4">
-              <figure class="content-figure mb-3">
-                <img src="{{ url_for('static', filename='img/play2change-transfer.webp') }}" alt="Illustration der Phase Transfer: Ressourcen auf den Alltag übertragen, Rituale kreieren, Verhalten und Kultur verändern" width="733" height="1037" loading="lazy">
-              </figure>
-              <h3 class="h5 mb-2">Transferieren</h3>
-              <p class="mb-0">Stärkt die Selbstwirksamkeit und beschleunigt Veränderung. Ideen werden zu konkreten Vorhaben im Alltag.</p>
-            </div>
-          </div>
-  {% endcall %}
-  {% with sections=sections_in_slot[4] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
@@ -283,11 +108,131 @@
             </table>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[5] %}
+  {% with sections=sections_in_slot[2] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- REFERENZEN: PROJEKTE MIT MENSCH DENK AN DICH (Praesentation "Spiele Event", Okt. 2026) -->
+  <!-- FUER DIE GESCHAEFTSFUEHRUNG UND FUEHRUNGSKRAEFTE: HERAUSFORDERUNGEN SCHNELL UND SICHER MEISTERN -->
+  {% call m.section_card("Für die Geschäftsführung und Führungskräfte", "Herausforderungen schnell und sicher meistern", id="geschaeftsfuehrung") %}
+          <p class="fs-5 mb-4">
+            Ob IT/KI Transformation, Kulturwandel oder Innovationen - eine bloße Strategie reicht nicht aus, um erfolgreich zu sein. Unternehmen, die Veränderungen resilient meistern, bleiben auch in der Zukunft handlungsfähig.
+          </p>
+          <div class="row g-4 align-items-start">
+            <div class="col-lg-7">
+              <h3 class="h5 mb-3">Spielend leicht und erfolgreich durch:</h3>
+              <ol class="step-list mb-0">
+                <li><strong>Potentiale entfalten:</strong> Im Spiel findet ein wertschätzender Austausch mit konstruktiver Lösungsfindung statt – mit Spaßgarantie.</li>
+                <li><strong>Resilienz stärken:</strong> Alle Lösungen werden mithilfe der 7 Kraftquellen der Resilienz bewältigt – so werden Stärken gestärkt.</li>
+                <li><strong>Wirksamkeit erhöhen:</strong> Ideen werden schnell umgesetzt, Follow-ups und flankierende Maßnahmen sichern die Nachhaltigkeit von Anfang an.</li>
+              </ol>
+            </div>
+            <div class="col-lg-5">
+              <div class="card-sm highlight-card">
+                <p class="kicker mb-2">Fallbeispiel Kulturwandel</p>
+                <h3 class="h5 mb-2">XYZ</h3>
+                <p class="small mb-2">
+                  xxx
+                </p>
+                <p class="small mb-0">
+                  xxx
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
+            <div class="col">
+              <div class="card-sm h-100 text-center">
+                <i class="bi bi-diagram-3 fs-2 text-purple mb-2"></i>
+                <p class="mb-0"><strong>Hierarchieübergreifend wirksam:</strong> Führung und Mitarbeitende begegnen sich auf Augenhöhe.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100 text-center">
+                <i class="bi bi-fire fs-2 text-purple mb-2"></i>
+                <p class="mb-0"><strong>Hohe intrinsische Motivation:</strong> Beteiligte wollen ihre Lösungen selbst umsetzen.</p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100 text-center">
+                <i class="bi bi-people-fill fs-2 text-purple mb-2"></i>
+                <p class="mb-0"><strong>Erfolgreich bei der Umsetzung,</strong> durch soziale Verbundenheit und Engagement.</p>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-3 mt-5">
+            <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[3] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- FUER PERSONAL- UND GESUNDHEITS-VERANTWORTLICHE: MENTAL GESUND, RESILIENT UND ENGAGIERT? -->
+  {% call m.section_card("Für Personal- und Gesundheits-Verantwortliche", "Mental gesund, resilient und engagiert?", id="personal-und-gesundheit") %}
+          <p class="fs-5 mb-4">
+            Ständige Veränderungen, Unsicherheiten und Krisen gefährden die Produktivität jedes Unternehmens. Eine resiliente Veränderungsbegleitung und ein strategisch verankertes Gesundheitsmanagement bilden ein starkes Rückgrat im Unternehmen.
+          </p>
+          <div class="row row-cols-1 row-cols-md-3 g-3 mb-5">
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-heart-pulse fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Mentale Gesundheit</h3>
+                <p class="small mb-0">
+                  Psychische Erkrankungen sind in 2026 erstmals auf Platz Nr. 1 für Arbeitsunfähigkeit. Wo Belastungen früh erkannt und Ressourcen gezielt gestärkt werden, entsteht ein Arbeitsumfeld, in dem Menschen ihr Potenzial entfalten.
+                </p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-person-up fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Resiliente Führung</h3>
+                <p class="small mb-0">
+                  Führungskräfte sind der wichtigste Hebel für Resilienz. Nur 4 Monate braucht es, bis sich die Resilienz einer Führungskraft auf ihre Mitarbeitenden überträgt, und in 9 Monaten hat sie auch einen Effekt auf Burnout und Wohlbefinden.
+                </p>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100">
+                <i class="bi bi-people fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Engagierte Teams</h3>
+                <p class="small mb-0">
+                  Resiliente Teams erkennen früh kritische Ereignisse, entwickeln gemeinsam Lösungen und verändern situativ Abläufe. Die Bereitschaft und Fähigkeit zur Flexibilität und Anpassungsfähigkeit ist ein Ausdruck von Engagement.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row g-4 align-items-start">
+            <div class="col-lg-7">
+              <h3 class="h5 mb-3">Das sollte in keinem erfolgreichen Gesundheitsmanagement fehlen:</h3>
+              <ol class="step-list mb-0">
+                <li><strong>Lösungen spielerisch finden:</strong> Belastungen erkennen und gemeinsam umsetzbare Veränderungen entwickeln.</li>
+                <li><strong>Teams spielerisch stärken:</strong> Psychologische Sicherheit, Zusammenhalt fördern und gesunde Zusammenarbeit gestalten.</li>
+                <li><strong>Führung spielerisch entwickeln:</strong> Führungsverhalten reflektieren und gesundheitsfördernde Routinen etablieren.</li>
+              </ol>
+            </div>
+            <div class="col-lg-5">
+              <div class="card-sm highlight-card">
+                <p class="kicker mb-2">Fallbeispiel Belastungsreduktion</p>
+                <h3 class="h5 mb-2">XYZ</h3>
+                <p class="small mb-2">
+                  xxx
+                </p>
+                <p class="small mb-0">
+                  yyy
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-3 mt-5">
+            <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[4] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- REFERENZEN: PROJEKTE MIT MENSCH DENK AN DICH (Praesentation "Spiele Event", Okt. 2026);
+       am Ende die kostenfreien Angebote als Buttons -->
   {% call m.section_card("Referenzen", "Projekte mit MENSCH DENK AN DICH®", id="referenzen") %}
           <div class="row g-4">
             <div class="col-lg-6">
@@ -318,21 +263,21 @@
             </div>
           </div>
           <div class="text-center mt-5">
-            <h3 class="h4 mb-4">Lassen Sie uns über Ihr Vorhaben sprechen und nutzen Sie eines unserer kostenfreien Angebote:</h3>
+            <h3 class="h4 mb-4">Lass uns über dein Vorhaben sprechen und nutze eines unserer kostenfreien Angebote:</h3>
             <div class="d-flex flex-wrap justify-content-center gap-3">
               <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" data-bs-toggle="modal" data-bs-target="#bookingModal" class="btn btn-maroon btn-lg">Beratungsgespräch</a>
-              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Gratisspielen</button>
+              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Gratis spielen</button>
               <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum</button>
               <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter</button>
             </div>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[6] %}
+  {% with sections=sections_in_slot[5] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- BEITRAGKARTEN: datenbankgetriebene Beitragkarten (Administrations-Verwaltung) mit angehaktem
-       "Beratung"-Häkchen. Section erscheint nur, wenn es mindestens eine gibt. -->
+  <!-- EINBLICKE: Beitraege aus der Administration mit angehaktem "Beratung".
+       Erscheint nur, wenn es mindestens einen gibt. -->
   {% if articles %}
   {% call m.section_card("Einblicke", "Neuigkeiten aus der Beratung") %}
           <div class="row g-3">
