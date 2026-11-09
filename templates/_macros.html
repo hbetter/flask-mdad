@@ -39,3 +39,11 @@
 {% macro lexicon_link(slug, text) -%}
 <a href="{{ url_for('lexicon') }}#{{ slug }}" class="lexicon-link" data-lexicon="{{ slug }}">{{ text }}</a>
 {%- endmacro %}
+
+{# Sichtbarer Hinweis auf noch fehlenden Inhalt (gelb markiert, custom.css
+   .todo-marker). Bewusst sichtbar statt ausgeblendet, solange die Seiten
+   noch nicht live sind; vor dem Livegang alle Aufrufe entfernen
+   (Suche nach "m.todo("). Aufruf: {{ m.todo("Preis ergaenzen") }} #}
+{% macro todo(text) -%}
+<span class="todo-marker"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> TODO: {{ text }}</span>
+{%- endmacro %}

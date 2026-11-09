@@ -4,27 +4,58 @@
 {% block meta_description %}MENSCH DENK AN DICH® – das preisgekrönte Resilienz-Spiel, ausgezeichnet mit dem Europäischen Trainingspreis (BDVT). Zeit, auch an dich selbst zu denken.{% endblock %}
 {% block content %}
 
+{# Termine einer Kategorie fuer die Angebotskacheln (Sektionen "Kostenfreies
+   Angebot" und "Kostenpflichtiges Angebot"): die naechsten drei noch nicht
+   beendeten Termine aus der Administration (upcoming_by_category in views.py
+   index()) als kleines Fenster (Popover wie bei den Awards), damit alle
+   Kacheln etwa gleich hoch bleiben. Ohne Termin: "Neue Termine folgen in Kürze". #}
+{% macro offer_dates(category) %}
+  {% set dates = upcoming_by_category.get(category, []) %}
+  {% if dates %}
+  {% set dates_html %}<ul class="list-unstyled mb-0">{% for item in dates %}<li class="mb-1"><strong>{{ item|eventdaterange }}</strong>{% if item.subtitle %}<br>{{ item.subtitle }}{% endif %}</li>{% endfor %}</ul>{% endset %}
+  <button type="button" class="btn btn-link p-0 small text-start mb-3 offer-dates-toggle"
+          data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
+          data-bs-html="true" data-bs-custom-class="info-popover"
+          data-bs-title="Nächste Termine" data-bs-content="{{ dates_html|forceescape }}">
+    <i class="bi bi-calendar-event"></i> Nächste Termine ({{ dates|length }})
+  </button>
+  {% else %}
+  <p class="small text-muted mb-3"><i class="bi bi-calendar-event"></i> Neue Termine folgen in Kürze.</p>
+  {% endif %}
+{% endmacro %}
+
 <div class="page-main">
 
-  <!-- HERO -->
-  {% call m.section_card("Der Hebel für resiliente Unternehmen", "Zukunft spielend gestalten", heading_tag='h1', heading_class='display-3 mb-3') %}
-          <p class="fs-4 mb-4">90 Minuten, die einen Unterschied machen</p>
-          <div class="row gy-5">
-            <div class="col-lg-6">
-              <p class="fs-5 mb-3">
+  <!-- HERO: links das quadratische Video "Das Spiel spricht selbst", rechts
+       Kicker, Hauptueberschrift und Einleitung. Auf schmalen Bildschirmen
+       steht der Text oben, das Video darunter. Kicker und Ueberschrift sind
+       hier direkt gesetzt (section_card ohne kicker/heading), damit sie in
+       der rechten Spalte stehen. -->
+  {% call m.section_card() %}
+          <div class="row g-4 g-lg-5 align-items-center">
+            <div class="col-lg-5 order-2 order-lg-1">
+              {# Video (1080x1080, 40 s, ohne Ton): laeuft stumm in Schleife,
+                 mit Bedienelementen, fuellt die Spaltenbreite. Bei "Bewegung
+                 reduzieren" im Betriebssystem startet es nicht von selbst
+                 (Skript in base.html). Bis zum Start zeigt es das Standbild. #}
+              <figure class="hero-video mb-0">
+                <video autoplay muted loop playsinline controls preload="metadata"
+                       poster="{{ url_for('static', filename='img/twiggy-quadrat-poster.webp') }}"
+                       width="1080" height="1080"
+                       aria-label="Video: Twiggy, die Spielfigur von MENSCH DENK AN DICH®, nennt Gründe für das Spiel – Das Spiel spricht selbst">
+                  <source src="{{ url_for('static', filename='video/twiggy-spricht.mp4') }}" type="video/mp4">
+                </video>
+              </figure>
+            </div>
+            <div class="col-lg-7 order-1 order-lg-2">
+              <p class="kicker mb-2">Der Hebel für resiliente Unternehmen</p>
+              <h1 class="display-3 mb-3">Zukunft spielend gestalten</h1>
+              <p class="fs-4 mb-4">90 Minuten, die einen Unterschied machen</p>
+              <p class="fs-5 mb-0">
                 In nur 90 Minuten heben wir das brachliegende Innovations- und Veränderungspotenzial
                 in jedem Unternehmen. Mit dem mehrfach ausgezeichneten {{ m.lexicon_link("resilienz-spiele", "Resilienzspiel") }}
                 {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} - evidenzbasiert und skalierbar.
               </p>
-            </div>
-            <div class="col-lg-6 d-flex justify-content-center align-items-center">
-              {# Web-Fassung von static/img/Irene.png: 840x1120 = doppelte Anzeigegroesse
-                 (420px) fuer scharfe Darstellung auf Retina-Bildschirmen, leicht
-                 nachgeschaerft, JPEG #}
-              <figure class="hero-photo mb-0">
-                <img src="{{ url_for('static', filename='img/Irene-web.jpg') }}" alt="Dr. Irene Preußner am Laptop in einem Café" width="840" height="1120">
-                <figcaption>Dr. Irene Preußner · Spieleentwicklerin · Geschäftsführerin SMEO GmbH</figcaption>
-              </figure>
             </div>
           </div>
   {% endcall %}
@@ -32,29 +63,91 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- TERMINE / ANGEBOTE: alle Angebote als Kacheln mit kurzer Einleitung
-       und Button; bei Spiele Event und Spiele Coach die naechsten Termine aus
-       der Administration (upcoming_by_category in views.py index()). Die
-       Kacheln erscheinen immer, auch ohne Termine. -->
-  {% call m.section_card("Termine", "Risikofrei starten", id="events") %}
-          {# ANGEBOTSUEBERSICHT: alle Angebote mit kurzer Einleitung und CTA. Die
-             Termine bei Spiele Event und Spiele Coach kommen aus der Administration
-             (Kategorien "trial" bzw. "certification", naechste drei, siehe
-             upcoming_by_category in views.py index()). Ohne anstehenden Termin
-             erscheint "Neue Termine folgen in Kürze". #}
-          {% macro offer_dates(category) %}
-            {% set dates = upcoming_by_category.get(category, []) %}
-            <p class="small fw-semibold mb-1">Nächste Termine</p>
-            {% if dates %}
-            <ul class="list-unstyled small mb-3">
-              {% for item in dates %}
-              <li class="d-flex gap-2 mb-1"><i class="bi bi-calendar-event text-purple"></i><span>{{ item|eventdaterange }}{% if item.subtitle %} · {{ item.subtitle }}{% endif %}</span></li>
-              {% endfor %}
-            </ul>
-            {% else %}
-            <p class="small text-muted mb-3">Neue Termine folgen in Kürze.</p>
-            {% endif %}
-          {% endmacro %}
+  <!-- AWARDS: Logos der Auszeichnungen; der Text zu jeder Auszeichnung
+       erscheint als kleines Fenster (Bootstrap-Popover), wenn man mit der
+       Maus darueberfaehrt, sie per Tab-Taste fokussiert oder antippt
+       (Initialisierung in base.html, Aussehen .info-popover in custom.css).
+       Fuer Screenreader steht der Text zusaetzlich unsichtbar beim Logo.
+       Alle Logos stehen gemeinsam auf einer Sektionskarte. -->
+  {% call m.section_card() %}
+          {# Logos ohne eigene Kachel direkt auf dem Hintergrund der
+             Sektionskarte, wie die "Bekannt aus"-Logos #}
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 g-lg-4 align-items-center">
+        <div class="col">
+          <div class="text-center award-card" tabindex="0"
+               data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
+               data-bs-custom-class="info-popover"
+               data-bs-title="Nachhaltigkeit Finalist" data-bs-content="Die Einreichung gehört zu den Leuchttürmen der Transformation in Deutschland.">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/NachhaltigkeitFinalist.png') }}" alt="Nachhaltigkeit Finalist" class="award-logo">
+            </div>
+            <p class="visually-hidden">Die Einreichung gehört zu den Leuchttürmen der Transformation in Deutschland.</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center award-card" tabindex="0"
+               data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
+               data-bs-custom-class="info-popover"
+               data-bs-title="New Work Business Award – Gold" data-bs-content="Playful Leadership: Führungskultur nachhaltig transformieren, Resilienz spielerisch stärken">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/newwork_gold_web.jpg') }}" alt="New Work Business Award – Gold" class="award-logo">
+            </div>
+            <p class="visually-hidden">Playful Leadership: Führungskultur nachhaltig transformieren, Resilienz spielerisch stärken</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center award-card" tabindex="0"
+               data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
+               data-bs-custom-class="info-popover"
+               data-bs-title="New Work Business Award – Gold" data-bs-content="Playful Impact: Transformative Kraft des Spielens – Wandel aus dem Inneren bewirken">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/newwork_gold_web.jpg') }}" alt="New Work Business Award – Gold" class="award-logo">
+            </div>
+            <p class="visually-hidden">Playful Impact: Transformative Kraft des Spielens – Wandel aus dem Inneren bewirken</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center award-card" tabindex="0"
+               data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
+               data-bs-custom-class="info-popover"
+               data-bs-title="New Work Business Award – Silber" data-bs-content="Playful Collaboration: Potenziale entfalten, Vertrauen stärken und gemeinsam wachsen">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/newwork_silber_web.jpg') }}" alt="New Work Business Award – Silber" class="award-logo">
+            </div>
+            <p class="visually-hidden">Playful Collaboration: Potenziale entfalten, Vertrauen stärken und gemeinsam wachsen</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center award-card" tabindex="0"
+               data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
+               data-bs-custom-class="info-popover"
+               data-bs-title="Europäischer Trainingspreis (BDVT)" data-bs-content="Prozess der Lösungsfindung - Agiler Ansatz, der die Gruppendynamik nachhaltig beeinflusst">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/bdvt_web.png') }}" alt="Europäischer Trainingspreis (BDVT)" class="award-logo">
+            </div>
+            <p class="visually-hidden">Prozess der Lösungsfindung - Agiler Ansatz, der die Gruppendynamik nachhaltig beeinflusst</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="text-center award-card" tabindex="0"
+               data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
+               data-bs-custom-class="info-popover"
+               data-bs-title="Innovationspreis Bundesverband BGM" data-bs-content="Beeindruckende und inspirierende Inspiration im BGM - neue Maßstäbe gesetzt">
+            <div class="award-logo-frame">
+              <img src="{{ url_for('static', filename='img/bbgm_web.png') }}" alt="Innovationspreis Bundesverband BGM" class="award-logo">
+            </div>
+            <p class="visually-hidden">Beeindruckende und inspirierende Inspiration im BGM - neue Maßstäbe gesetzt</p>
+          </div>
+        </div>
+      </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[2] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- KOSTENFREIES ANGEBOT: RISIKOFREI STARTEN - Beratungsgespraech, Spiele
+       Event und Newsletter als Kacheln mit kurzer Einleitung und Button. -->
+  {% call m.section_card("Kostenfreies Angebot", "Risikofrei starten", id="events") %}
           <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 offer-grid">
             <div class="col">
               <div class="card-sm h-100 d-flex flex-column">
@@ -75,92 +168,66 @@
             </div>
             <div class="col">
               <div class="card-sm h-100 d-flex flex-column">
-                <i class="bi bi-house-door fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Probespielraum anfragen</h3>
-                <p class="small mb-3">Hole das Spiel in dein Unternehmen: In einem firmeninternen Probespielraum erlebt dein Team, wie das Spiel bei euch wirkt.</p>
-                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
+                <i class="bi bi-envelope-paper fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Newsletter abonieren</h3>
+                <p class="small mb-3">Neuigkeiten, Termine und Impulse rund um spielerische Veränderung – direkt in dein Postfach.</p>
+                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter abonieren</button>
               </div>
             </div>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[3] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- BEKANNT -->
+  {% call m.section_card() %}
+          <div class="row g-4 align-items-center">
+            <div class="col-12 col-md-6">
+              <img src="{{ url_for('static', filename='img/bekannt-aus-logo-1.webp') }}" alt="Bekannt aus: Human Resources Manager, Coaching Magazin, StartupValley.news, Praxis Kommunikation" class="img-fluid w-100">
+            </div>
+            <div class="col-12 col-md-6">
+              <img src="{{ url_for('static', filename='img/bekannt-aus-logo-2.webp') }}" alt="Bekannt aus: gmbhchef, KU Gesundheitsmanagement, Betriebliche Prävention, Health&amp;Care Management, health@work, rbb" class="img-fluid w-100">
+            </div>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[4] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- KOSTENPFLICHTIGES ANGEBOT: STARTE DURCH - links Probespielraum im
+       Unternehmen ("Probespielraum anfragen" -> Spielraum-Formular, "Unser
+       Angebot" -> Beratungs-Seite), rechts Spiele Coach
+       Qualifizierung mit Terminen ("Platz sichern" -> Spiele-Coach-Formular,
+       "Unser Angebot" -> Akademie-Seite). -->
+  {% call m.section_card("Kostenpflichtiges Angebot", "Starte durch", id="starte-durch") %}
+          <div class="row row-cols-1 row-cols-md-2 g-3 offer-grid">
             <div class="col">
               <div class="card-sm h-100 d-flex flex-column">
-                <i class="bi bi-envelope-paper fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Newsletter bestellen</h3>
-                <p class="small mb-3">Neuigkeiten, Termine und Impulse rund um spielerische Veränderung – direkt in dein Postfach.</p>
-                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter bestellen</button>
+                <i class="bi bi-house-door fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Hole das Spiel in dein Unternehmen</h3>
+                <p class="small mb-3">In einem firmeninternen Probespielraum erlebt dein Team, wie das Spiel bei euch wirkt.</p>
+                <div class="d-flex flex-wrap gap-2 mt-auto">
+                  <a href="{{ url_for('consulting') }}" class="btn btn-maroon">Unser Angebot</a>
+                  <button type="button" class="btn btn-maroon" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
+                </div>
               </div>
             </div>
             <div class="col">
               <div class="card-sm h-100 d-flex flex-column">
                 <i class="bi bi-award fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Spiele Coach werden</h3>
+                <h3 class="h5 mt-2 mb-2">Werde Spiele Coach</h3>
                 <p class="small mb-3">In der zweitägigen Qualifizierung lernst du, das Spiel selbst anzuleiten, und setzt {{ m.lexicon_link("play2change", "play2change©") }} in deinen Prozessen ein.</p>
                 {{ offer_dates("certification") }}
                 <div class="d-flex flex-wrap gap-2 mt-auto">
-                  <button type="button" class="btn btn-maroon" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Jetzt anmelden</button>
-                  <a href="{{ url_for('academy') }}" class="btn btn-outline-dark-sm">Zur Akademie</a>
+                  <a href="{{ url_for('academy') }}" class="btn btn-maroon">Unser Angebot</a>
+                  <button type="button" class="btn btn-maroon" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Platz sichern</button>
                 </div>
               </div>
             </div>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[10] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- AWARDS -->
-  {% call m.section_plain() %}
-      <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
-        <div class="col">
-          <div class="card shadow-sm h-100 text-center p-3">
-            <div class="award-logo-frame">
-              <img src="{{ url_for('static', filename='img/NachhaltigkeitFinalist.png') }}" alt="Nachhaltigkeit Finalist" class="award-logo">
-            </div>
-            <p class="award-caption mt-3 mb-0">Die Einreichung gehört zu den Leuchttürmen der Transformation in Deutschland.</p>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm h-100 text-center p-3">
-            <div class="award-logo-frame">
-              <img src="{{ url_for('static', filename='img/newwork_gold_web.jpg') }}" alt="New Work Business Award – Gold" class="award-logo">
-            </div>
-            <p class="award-caption mt-3 mb-0">Playful Leadership: Führungskultur nachhaltig transformieren, Resilienz spielerisch stärken</p>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm h-100 text-center p-3">
-            <div class="award-logo-frame">
-              <img src="{{ url_for('static', filename='img/newwork_gold_web.jpg') }}" alt="New Work Business Award – Gold" class="award-logo">
-            </div>
-            <p class="award-caption mt-3 mb-0">Playful Impact: Transformative Kraft des Spielens – Wandel aus dem Inneren bewirken</p>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm h-100 text-center p-3">
-            <div class="award-logo-frame">
-              <img src="{{ url_for('static', filename='img/newwork_silber_web.jpg') }}" alt="New Work Business Award – Silber" class="award-logo">
-            </div>
-            <p class="award-caption mt-3 mb-0">Playful Collaboration: Potenziale entfalten, Vertrauen stärken und gemeinsam wachsen</p>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm h-100 text-center p-3">
-            <div class="award-logo-frame">
-              <img src="{{ url_for('static', filename='img/bdvt_web.png') }}" alt="Europäischer Trainingspreis (BDVT)" class="award-logo">
-            </div>
-            <p class="award-caption mt-3 mb-0">Prozess der Lösungsfindung - Agiler Ansatz, der die Gruppendynamik nachhaltig beeinflusst</p>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card shadow-sm h-100 text-center p-3">
-            <div class="award-logo-frame">
-              <img src="{{ url_for('static', filename='img/bbgm_web.png') }}" alt="Innovationspreis Bundesverband BGM" class="award-logo">
-            </div>
-            <p class="award-caption mt-3 mb-0">Beeindruckende und inspirierende Inspiration im BGM - neue Maßstäbe gesetzt</p>
-          </div>
-        </div>
-      </div>
-  {% endcall %}
-  {% with sections=sections_in_slot[2] %}
+  {% with sections=sections_in_slot[5] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
@@ -184,7 +251,7 @@
             </div>
             <div class="col">
               <div class="card-sm text-center">
-                <p class="mb-0">Mehr als<span class="stat-inline">130 </span> zertifizierte Spiele Coaches in DACH</p>
+                <p class="mb-0">Mehr als<span class="stat-inline">140 </span> zertifizierte Spiele Coaches in DACH</p>
               </div>
             </div>
             <div class="col">
@@ -197,68 +264,7 @@
             <h3 class="h4 mb-0">MENSCH DENK AN DICH<sup>®</sup> ist der Lösungsweg, der alle abholt <br />und Unternehmen resilient macht.</h3>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[3] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  {# Slot 4 lag hinter "Neue Wege gehen" (jetzt auf der Beratungs-Seite).
-     Er bleibt erhalten, damit dort eingereihte Sektionen ihren Platz
-     behalten; er folgt jetzt direkt auf Slot 3. #}
-  {% with sections=sections_in_slot[4] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- FAQS -->
-  {% call m.section_card("Hinterfragt", "Fragen und Antworten") %}
-          <p>plus CTA</p>
-  {% endcall %}
-  {% with sections=sections_in_slot[5] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- WISSENSCHAFT -->
-  {% call m.section_card("Wissenschaftlich fundiert", "Messbarer Vorsprung") %}
-          <p class="fs-5 mb-4">MENSCH DENK AN DICH<sup>&reg;</sup> wird wissenschaftlich begleitet und in Kooperation mit Hochschulen und Krankenkassen kontinuierlich weiterentwickelt.</p>
-          <div class="row row-cols-1 row-cols-md-3 g-3">
-            <div class="col">
-              <div class="card-sm h-100 text-center">
-                <i class="bi bi-mortarboard-fill fs-2 text-purple mb-2"></i>
-                <h3 class="h6 mb-1">Freie Universität Berlin</h3>
-                <p class="small text-muted mb-0">Erste wissenschaftliche Evaluation des Spiels, abgeschlossen 2022.</p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100 text-center">
-                <i class="bi bi-heart-pulse-fill fs-2 text-purple mb-2"></i>
-                <h3 class="h6 mb-1">BARMER</h3>
-                <p class="small text-muted mb-0">Laufende Kooperationsstudie zur Wirksamkeit von MENSCH DENK AN DICH<sup>&reg;</sup>.</p>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100 text-center">
-                <i class="bi bi-journal-richtext fs-2 text-purple mb-2"></i>
-                <h3 class="h6 mb-1">Hochschule Zittau</h3>
-                <p class="small text-muted mb-0">Fortlaufende wissenschaftliche Kooperation zur methodischen Weiterentwicklung.</p>
-              </div>
-            </div>
-          </div>
-  {% endcall %}
   {% with sections=sections_in_slot[6] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- BEKANNT -->
-  {% call m.section_card() %}
-          <div class="row g-4 align-items-center">
-            <div class="col-12 col-md-6">
-              <img src="{{ url_for('static', filename='img/bekannt-aus-logo-1.webp') }}" alt="Bekannt aus: Human Resources Manager, Coaching Magazin, StartupValley.news, Praxis Kommunikation" class="img-fluid w-100">
-            </div>
-            <div class="col-12 col-md-6">
-              <img src="{{ url_for('static', filename='img/bekannt-aus-logo-2.webp') }}" alt="Bekannt aus: gmbhchef, KU Gesundheitsmanagement, Betriebliche Prävention, Health&amp;Care Management, health@work, rbb" class="img-fluid w-100">
-            </div>
-          </div>
-  {% endcall %}
-  {% with sections=sections_in_slot[7] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
@@ -310,7 +316,7 @@
 
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[8] %}
+  {% with sections=sections_in_slot[7] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
@@ -347,7 +353,7 @@
             </div>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[9] %}
+  {% with sections=sections_in_slot[8] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 

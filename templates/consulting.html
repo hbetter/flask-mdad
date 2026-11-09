@@ -30,19 +30,20 @@
               <div class="row g-3 mb-4">
                 <div class="col-sm-6">
                   <a href="#geschaeftsfuehrung" class="card-sm entry-card d-block text-reset text-decoration-none">
-                    <h2 class="h6 mb-0">Für Geschäftsführende und Führungskräfte</h2>
+                    <h2 class="h6 mb-0">Angebot für Geschäftsführende und Führungskräfte</h2>
                   </a>
                 </div>
                 <div class="col-sm-6">
                   <a href="#personal-und-gesundheit" class="card-sm entry-card d-block text-reset text-decoration-none">
-                    <h2 class="h6 mb-0">Für Personal- und Gesundheitsverantwortliche</h2>
+                    <h2 class="h6 mb-0">Angebot für Personal- und Gesundheitsverantwortliche</h2>
                   </a>
                 </div>
               </div>
             </div>
             <div class="col-lg-6 d-flex justify-content-center align-items-center">
-              <figure class="content-figure mb-0" style="max-width: 440px;">
-                <img src="{{ url_for('static', filename='img/resilienz-ebenen.webp') }}" alt="Grafik: Resilienz auf drei Ebenen – individuelle Resilienz (Stress- und Krisenbewältigung), kollektive Resilienz (Verbundenheit und Problemlösung) und organisationale Resilienz (Flexibilität und Anpassungsfähigkeit)" width="900" height="1106">
+              {# Web-Fassung von static/img/brettspielrunde.png (1280x960, WebP) #}
+              <figure class="content-figure mb-0">
+                <img src="{{ url_for('static', filename='img/brettspielrunde.webp') }}" alt="Sieben Personen spielen MENSCH DENK AN DICH® an einem Tisch in einem hellen Raum und tauschen sich lebhaft aus" width="1280" height="960">
               </figure>
             </div>
           </div>
@@ -267,7 +268,6 @@
             <div class="d-flex flex-wrap justify-content-center gap-3">
               <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" data-bs-toggle="modal" data-bs-target="#bookingModal" class="btn btn-maroon btn-lg">Beratungsgespräch</a>
               <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Gratis spielen</button>
-              <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum</button>
               <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter</button>
             </div>
           </div>

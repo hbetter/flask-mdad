@@ -94,9 +94,11 @@ Sektionen gibt es nur auf drei Seiten:
 
 | Seite | Anzahl Slots |
 | --- | --- |
-| Indexseite (`/`) | 10 |
+| Indexseite (`/`) | 8 |
 | Beratung (`/consulting`) | 5 |
-| Akademie (`/academy`) | 6 |
+| Akademie (`/academy`) | 11 |
+
+**Nummerierung:** Die Slots einer Seite sind immer von oben nach unten durchnummeriert (Slot 1 hinter dem Kopfbereich usw.). Wird eine feste Sektion verschoben, eingefügt oder entfernt, werden die Slots der Seite neu nummeriert und `PAGE_SLOT_COUNT` in `views.py` angepasst; bereits platzierte Datenbank-Sektionen werden dabei bewusst nicht mitgeführt und müssen gegebenenfalls neu platziert werden.
 
 **So funktionieren Slots:** Slot 1 liegt zwischen dem 1. und 2. festen Abschnitt der Seite, Slot 2 zwischen dem 2. und 3. und so weiter. Ist ein Slot leer, gibt es in der Auswahl nur „Slot 3“. Stehen dort schon Sektionen, bietet die Auswahl jede mögliche Einfügeposition an: „Slot 3a“ (davor), „Slot 3b“ (dahinter) usw. Beim Speichern werden die Positionen im Slot lückenlos neu durchnummeriert.
 
@@ -111,13 +113,17 @@ In der Administration zeigt jede Sektionskachel, wo sie steht, z. B. „Indexsei
 
 Anders als Beiträge haben Sektionen kein Banner, keine Erfolgsgeschichten-Seite und keine Spaltenbreite.
 
-**Angebotsübersicht der Indexseite:** In der Sektion „Termine“ (direkt nach dem Kopfbereich) listet die Indexseite alle Angebote als Kacheln mit kurzer Einleitung und Button: Kostenfreies Beratungsgespräch (Terminbuchung), Kostenfreie Teilnahme an einem Spiele Event (Spiele-Event-Formular, mit Terminen), Probespielraum anfragen (Spielraum-Formular), Newsletter bestellen (Newsletter-Formular) und Spiele Coach werden (Spiele-Coach-Formular und Link zur Akademie, mit Terminen). Texte und Reihenfolge stehen direkt in `templates/index.html`.
+**Angebote auf der Indexseite:** Direkt nach dem Kopfbereich stehen zwei Sektionen mit Angebotskacheln, jeweils mit kurzer Einleitung und Button. „Kostenfreies Angebot – Risikofrei starten“ (Sprungmarke `#events`): Kostenfreies Beratungsgespräch (Terminbuchung), Kostenfreie Teilnahme an einem Spiele Event (Spiele-Event-Formular, mit Terminen) und Newsletter bestellen (Newsletter-Formular). „Kostenpflichtiges Angebot – Starte durch“ (`#starte-durch`): „Hole das Spiel in dein Unternehmen“ (Buttons „Unser Angebot“ zur Beratungs-Seite und „Probespielraum anfragen“ für das Spielraum-Formular) und „Werde Spiele Coach“ (mit Terminen; Buttons „Unser Angebot“ zur Akademie-Seite und „Platz sichern“ für das Spiele-Coach-Formular). Texte und Reihenfolge stehen direkt in `templates/index.html`, die Terminanzeige im Makro `offer_dates` am Anfang der Datei.
 
-**Archiv für feste Abschnitte (`/archive`):** Feste Abschnitte, die von einer Seite genommen werden, landen in `templates/archive.html`, damit Text und Gestaltung erhalten bleiben – derzeit „Der Methodenkoffer“ und „Die Methode“ aus der Akademie. Die Seite ist nirgends verlinkt, steht nicht in der Sitemap und ist per `noindex` für Suchmaschinen gesperrt; sie ist aber für jeden mit der Adresse erreichbar. Sie hat keine Slots. Wird ein Abschnitt zurückgeholt, ihn samt Kommentar in die Zielseite kopieren, dort den Slot-Include danach ergänzen und `PAGE_SLOT_COUNT` in `views.py` sowie gegebenenfalls das Aufklappmenü in `base.html` anpassen. Umgekehrt beim Archivieren: Abschnitt hierher verschieben, Slots der Seite neu durchnummerieren, `PAGE_SLOT_COUNT` verringern, Menüeintrag entfernen. Achtung: Durch das Neunummerieren rutschen bereits eingereihte Datenbank-Sektionen dieser Seite gegebenenfalls an eine andere Stelle.
+**Video im Kopfbereich der Indexseite:** Links läuft das quadratische Video „Das Spiel spricht selbst“ (`static/video/twiggy-spricht.mp4`, 1080 × 1080, 40 s, ohne Ton) stumm in Schleife und mit Bedienelementen; es füllt die Spaltenbreite. Rechts stehen Kicker, Hauptüberschrift und Einleitung; auf schmalen Bildschirmen steht der Text oben, das Video (höchstens 480 px breit) darunter. Bis zum Start zeigt das Video das Standbild `static/img/twiggy-quadrat-poster.webp`. Wer im Betriebssystem „Bewegung reduzieren“ eingestellt hat, bekommt es nicht automatisch abgespielt (Skript in `base.html`). Die Videodatei ist für schnelles Starten im Browser umgepackt (Metadaten am Dateianfang, „faststart“, ohne Neukodierung).
+
+**Awards der Indexseite:** Die Auszeichnungen erscheinen als Logo-Leiste auf einer gemeinsamen Sektionskarte (wie „Bekannt aus“), ohne eigene Kachel je Logo und ohne sichtbaren Text. Der kurze Text zu jeder Auszeichnung öffnet sich als kleines Fenster (Bootstrap-Popover) unter dem Logo, sobald man mit der Maus darüberfährt, die Kachel per Tab-Taste erreicht oder sie antippt; Titel des Fensters ist der Name der Auszeichnung. Texte und Namen stehen in `templates/index.html` in den Attributen `data-bs-title`/`data-bs-content` (für Screenreader zusätzlich unsichtbar in der Kachel). Alle Elemente mit `data-bs-toggle="popover"` werden in `base.html` initialisiert; das Aussehen regelt `.info-popover` in `custom.css`.
+
+**Archiv für feste Abschnitte (`/archive`):** Feste Abschnitte, die von einer Seite genommen werden, landen in `templates/archive.html`, damit Text und Gestaltung erhalten bleiben – derzeit „Der Methodenkoffer“ und „Die Methode“ aus der Akademie sowie, seit dem Neubau der Akademie-Seite (Nov. 2026), die Vorgänger-Fassungen von Hero, „Spiele Coach Qualifizierung“, „Für Unternehmen“, „Für Beratung und Training“ und die Kachel „Playfulness statt Gamification“ (deren `id`s im Archiv mit Präfix `archiv-`, damit sie nicht mit den Ankern der Akademie verwechselt werden). Die Seite ist nirgends verlinkt, steht nicht in der Sitemap und ist per `noindex` für Suchmaschinen gesperrt; sie ist aber für jeden mit der Adresse erreichbar. Sie hat keine Slots. Wird ein Abschnitt zurückgeholt, ihn samt Kommentar in die Zielseite kopieren, dort den Slot-Include danach ergänzen und `PAGE_SLOT_COUNT` in `views.py` sowie gegebenenfalls das Aufklappmenü in `base.html` anpassen. Umgekehrt beim Archivieren: Abschnitt hierher verschieben, Slots der Seite neu durchnummerieren, `PAGE_SLOT_COUNT` verringern, Menüeintrag entfernen. Achtung: Durch das Neunummerieren rutschen bereits eingereihte Datenbank-Sektionen dieser Seite gegebenenfalls an eine andere Stelle.
 
 ## A4 Termine
 
-Jeder Termin hat eine Kategorie, die Symbol und Anmeldeformular bestimmt. Auf der Indexseite erscheinen Termine nicht mehr als eigene Kacheln: Die **Angebotsübersicht** in der Sektion „Termine“ zeigt bei „Spiele Event“ und „Spiele Coach werden“ die nächsten drei noch nicht beendeten Termine der Kategorien `trial` bzw. `certification` (Datum und Untertitel); gibt es keinen, steht dort „Neue Termine folgen in Kürze“. Die Termine der Spiele Coach Qualifizierung auf der Akademie-Seite sind dagegen fest im Template eingetragen.
+Jeder Termin hat eine Kategorie, die Symbol und Anmeldeformular bestimmt. Auf der Indexseite erscheinen Termine nicht mehr als eigene Kacheln: Die Angebotskacheln zeigen bei „Spiele Event“ und „Spiele Coach werden“ die nächsten drei noch nicht beendeten Termine der Kategorien `trial` bzw. `certification` (Datum und Untertitel) – als kleines Fenster beim Überfahren des Links „Nächste Termine (Anzahl)“, damit alle Kacheln etwa gleich hoch bleiben; gibt es keinen, steht dort „Neue Termine folgen in Kürze“. Die Akademie-Seite zeigt in der Sektion „Termine & Preise“ (`#termine`) die nächsten (höchstens sechs) noch nicht beendeten Termine der Kategorie `certification` als Karten mit Datum, Titel, Untertitel, Ort und „Platz sichern“ (Spiele-Coach-Formular); ohne Termin steht dort „Neue Termine folgen in Kürze“ mit dem Button „Interesse anmelden“. Dieselben Termine fließen als `CourseInstance` in das `Course`-Schema im Kopf der Seite. Beide Seiten nutzen die Hilfsfunktion `upcoming_events_by_category()` in `views.py`; Termine werden also nur noch in der Administration gepflegt, auf keiner Seite mehr fest im Template. Preis, Dauer, Platzstatus und Inklusivleistungen kennt das Termin-Modell nicht; sie stehen auf den Terminkarten vorerst als TODO-Hinweise.
 
 **Felder:** Titel, Untertitel, Kategorie, Ort (Pflicht), Start und Ende. Mit „ganztägig“ entfallen die Uhrzeiten. Alle Zeiten gelten in deutscher Ortszeit.
 
@@ -231,11 +237,11 @@ Fünf Anmeldeformulare von ActiveCampaign (AC) sind als Fenster in jede Seite ei
 | Newsletter | 14 | `#newsletterModal` |
 | Webinar | 22 | `#webinarModal` |
 
-Die Angebotskacheln der Indexseite (Sektion „Termine“) öffnen Spiele-Event-, Probe-Spielraum-, Newsletter- und Spiele-Coach-Formular sowie die Terminbuchung. Das Probe-Spielraum-Formular öffnen die roten Buttons „Probespielraum anfragen“ in der Sektion „Für Unternehmen“ der Akademie-Seite sowie in drei Sektionen der Beratungs-Seite (Geschäftsführung, Personal/Gesundheit, Referenzen). Am Ende der Referenzen stehen drei Buttons nebeneinander: „Gratis spielen“ (Spiele-Event-Formular), „Beratungsgespräch“ (Terminbuchung) und „Probespielraum“ (Probe-Spielraum-Formular). Das Spiele-Coach-Formular öffnen der Call-to-Action „Spiele Coach werden“ in der Navigationsleiste der Akademie-Seite (für Gäste) und „Jetzt anmelden“ in der Angebotsübersicht der Indexseite; die Akademie-Seite selbst hat keinen eigenen Anmelde-Button. Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
+Die Angebotskacheln der Indexseite (Sektionen „Kostenfreies Angebot“ und „Kostenpflichtiges Angebot“) öffnen Spiele-Event-, Probe-Spielraum-, Newsletter- und Spiele-Coach-Formular sowie die Terminbuchung; „Unser Angebot“ führt zur Beratungs- bzw. Akademie-Seite. Das Probe-Spielraum-Formular öffnen die roten Buttons „Probespielraum anfragen“ im Block „Für Unternehmen“ (Sektion „Für wen ist das?“) der Akademie-Seite sowie in drei Sektionen der Beratungs-Seite (Geschäftsführung, Personal/Gesundheit, Referenzen). Am Ende der Referenzen stehen drei Buttons nebeneinander: „Gratis spielen“ (Spiele-Event-Formular), „Beratungsgespräch“ (Terminbuchung) und „Probespielraum“ (Probe-Spielraum-Formular). Das Spiele-Coach-Formular öffnen der Call-to-Action „Spiele Coach werden“ in der Navigationsleiste der Akademie-Seite (für Gäste), „Platz sichern“ in der Sektion „Kostenpflichtiges Angebot“ der Indexseite sowie „Platz sichern“ auf den Terminkarten der Akademie-Seite. Auf der Akademie-Seite steht außerdem ein wiederkehrender Haupt-Button „Jetzt Spiele Coach werden“ (Hero, Qualifizierung, Block „Für Beratung und Training“, Abschluss-CTA); er springt zu den Terminen (`#termine`) statt direkt das Formular zu öffnen. Die Formularinhalte selbst werden in ActiveCampaign gepflegt, nicht im CMS.
 
 ### Terminbuchung Beratungsgespräch
 
-Alle Buttons zum kostenfreien Beratungsgespräch (Navigationsleiste der Beratungs-Seite, Ende der Referenzen auf der Beratungs-Seite, auf der Indexseite „Termin wählen“ in der Angebotsübersicht) öffnen das Fenster `#bookingModal` in `base.html`. Es zeigt die Microsoft-Bookings-Seite von SMEO in einem eingebetteten Rahmen (iframe), auf dem Smartphone bildschirmfüllend; die Seite wird erst beim ersten Öffnen geladen. Darunter führt ein Link „Buchungsseite in neuem Tab öffnen“ zur Seite selbst, ebenso die Buttons, falls JavaScript fehlt. Die Adresse steht als `BOOKING_URL` in `views.py` und ist in allen Templates als `{{ BOOKING_URL }}` verfügbar.
+Alle Buttons zum kostenfreien Beratungsgespräch (Navigationsleiste der Beratungs-Seite, Ende der Referenzen auf der Beratungs-Seite, auf der Indexseite „Termin wählen“ in der Sektion „Kostenfreies Angebot“) öffnen das Fenster `#bookingModal` in `base.html`. Es zeigt die Microsoft-Bookings-Seite von SMEO in einem eingebetteten Rahmen (iframe), auf dem Smartphone bildschirmfüllend; die Seite wird erst beim ersten Öffnen geladen. Darunter führt ein Link „Buchungsseite in neuem Tab öffnen“ zur Seite selbst, ebenso die Buttons, falls JavaScript fehlt. Die Adresse steht als `BOOKING_URL` in `views.py` und ist in allen Templates als `{{ BOOKING_URL }}` verfügbar.
 
 ### Begriffe verständlich erklärt (Lexikon, `/lexicon`)
 
@@ -405,8 +411,33 @@ Nach dem Login leitet `home_for(user)` Admins nach `/dashboard`, Mitglieder nach
 | `visible_profiles_query()` | `members.py` | Profile für die Community: aktives Konto und Foto |
 | `apply_profile_form(profile, user, form, email=None)` | `members.py` | Validiert und übernimmt Profilfelder; genutzt von Profil, Einladung und Admin |
 | `slot_options`, `place_section_in_slot`, `sections_by_slot` | `views.py` | Slot-Logik der Sektionen |
+| `upcoming_events_by_category` | `views.py` | Nächste noch nicht beendete Termine je Kategorie (Indexseite, Akademie) |
 | `images.save_article_image` | `images.py` | Beitragsbild speichern und `image_fit` bestimmen |
 | `mailer.send_mail`, `mailer.is_configured` | `mailer.py` | Mailversand (missing\_settings nennt fehlende Angaben), wirft `MailError` |
+
+### Aufbau der Akademie-Seite (`academy.html`)
+
+Neubau im November 2026 nach der Benchmark-Anleitung `academy-restructure.md` (Vergleich mit Anbietern von LEGO®-SERIOUS-PLAY®-Facilitator-Ausbildungen). Reihenfolge der festen Sektionen, jeweils mit einem Slot danach (`PAGE_SLOT_COUNT["academy"] = 11`):
+
+| # | Sektion (Kicker) | Anker | Inhalt |
+| --- | --- | --- | --- |
+| 1 | Akademie (Hero) | – | H1 „Werde zertifizierter Spiele Coach“, Subline, Text, Buttons „Jetzt Spiele Coach werden“ und „Spielebox ansehen“, Kennzahlen |
+| 2 | Warum play2change© | `#vergleich` | „Playfulness statt Gamification“ und Vergleichstabelle mit klassischen Serious-Play-Methoden |
+| 3 | Spiele Coach Qualifizierung | `#qualifizierung` | Beschreibung und „Ablauf in Schritten“ (`.step-list`) |
+| 4 | Termine & Preise | `#termine` | Terminkarten aus der Administration (Kategorie `certification`) |
+| 5 | Trainerin | `#trainerin` | Kurzprofil Dr. Irene Preußner |
+| 6 | Für wen ist das? | `#zielgruppen` | Blöcke „Für Unternehmen“ (`#fuer-unternehmen`) und „Für Beratung und Training“ (`#fuer-beratung-und-training`) |
+| 7 | Einsatzmöglichkeiten | `#einsatz` | Themen-Chips und Formatkacheln |
+| 8 | Wissenschaftlich fundiert | `#wirksamkeit` | FU-Berlin-Studie und Wirkfaktoren (Anker vorher `#wissenschaft`) |
+| 9 | FAQ | `#faq` | Zehn Fragen als `h3` |
+| 10 | Stimmen aus der Praxis | `#stimmen` | Platzhalter für Testimonials |
+| 11 | Spiele Coach werden (Abschluss) | `#anmelden` | Abschluss-CTA und „Fragen? Schreib uns“ (`#contact`) |
+
+Danach folgen wie bisher die Beitragskarten mit Häkchen „Akademie“. Die Kapitel 2–10 stehen im Aufklappmenü (`academy_chapters` in `base.html`). Durch den Neubau sind die Slots neu durchnummeriert; bereits auf der Akademie eingereihte Datenbank-Sektionen stehen daher gegebenenfalls an einer anderen Stelle und sollten in der Administration geprüft werden.
+
+**Strukturierte Daten:** Im Block `head_extra` stehen ein `Course`-Schema (Anbieter: SMEO GmbH, Termine als `CourseInstance`) und ein `FAQPage`-Schema. Die FAQ-Fragen und -Antworten stehen einmal als Liste `faq_items` oben in `academy.html`; daraus entstehen sowohl die sichtbare FAQ als auch das Schema. Eine fehlende Antwort (`answer: None`) erscheint auf der Seite als TODO-Hinweis und im Schema als „TODO: Antwort folgt“. Den Canonical-Link setzt weiterhin `base.html`.
+
+**Offene Inhalte** (Preise, Dauer, Zertifizierungskriterien, Trainer:innen, Testimonials, FAQ-Antworten, Quellen in der Vergleichstabelle, Ziel des Buttons „Spielebox ansehen“) sind bewusst als sichtbare TODO-Hinweise (`m.todo(...)`) auf der Seite markiert und nicht ausgeblendet.
 
 ### Jinja-Filter und Konstanten in `views.py`
 
@@ -426,7 +457,7 @@ Alle Seiten erben von `templates/base.html`; die Listen auf den öffentlichen Se
 | `archive.html` | Archiv ausrangierter fester Abschnitte (nicht verlinkt, ohne Slots) |
 | `_articles_list.html`, `_article_tile.html` | Beitragsraster und Kachel inkl. „Weiterlesen“-Fenster (Text vor `##`) |
 | `_sections_list.html` | Sektionen eines Slots |
-| `_macros.html` | Makros, u. a. `lexicon_link` für Lexikon-Verweise im Text |
+| `_macros.html` | Makros, u. a. `lexicon_link` für Lexikon-Verweise im Text und `todo` für sichtbare Platzhalter fehlender Inhalte (gelb markiert, `.todo-marker` in `custom.css`) |
 | `_flashes.html`, `_password_fields.html`, `_profile_form.html` | Gemeinsame Bausteine des Nutzerbereichs; die Passwortfelder zeigen den Hinweis der Richtlinie, das Profilformular teilen sich Profil, Einladung und Admin-Seiten |
 | `dashboard.html`, `add_*/edit_*.html` | Administration und Formulare für Beiträge, Sektionen, Termine; Export-/Import-Fenster |
 | `account/` | `profile.html`, `password.html`, `_nav.html` |
@@ -480,6 +511,7 @@ Danach die geänderten Seiten unter http://127.0.0.1:5001 ansehen, auch in schma
 - [ ] Flask im Produktionsmodus (gunicorn) statt Debug-Modus betreiben, sobald der Server fertig ist.
 - [ ] Bei mehr als einem gunicorn-Worker den Rate-Limit-Speicher von `memory://` auf Redis umstellen.
 - [ ] Regelmäßige Sicherung von Datenbank-Dump **und** `data/uploads` einrichten; Export-ZIPs wegen der Passwort-Hashes geschützt ablegen.
+- [ ] Alle sichtbaren TODO-Hinweise (`m.todo(` in den Templates) durch echte Inhalte ersetzen oder entfernen, insbesondere auf der Akademie-Seite; danach auch das FAQPage-Schema prüfen.
 - [ ] Automatisierte Tests für Login, Einladung, Passwort-Richtlinie, Sichtbarkeit und Slot-Logik ergänzen.
 
 TLS übernimmt Nginx; die App selbst spricht nur HTTP.

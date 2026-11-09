@@ -370,9 +370,9 @@ def eventdaterange(item):
 # und (i+1). Element auf der Seite, unabhaengig davon, was dort steht.
 # Bewusst simpel gehalten, damit das auf andere Projekte uebertragbar bleibt.
 PAGE_SLOT_COUNT = {
-    "index": 10,
+    "index": 8,
     "consulting": 5,
-    "academy": 6,
+    "academy": 11,
 }
 
 PAGE_LABELS = {"index": "Indexseite", "consulting": "Beratung", "academy": "Akademie"}
@@ -519,6 +519,28 @@ def home_for(user):
     return url_for("dashboard") if user.is_admin else url_for("members.profile")
 
 
+def upcoming_events_by_category(limit=3):
+    # Naechste (noch nicht beendete) Termine je Kategorie, chronologisch und
+    # hoechstens `limit` pro Kategorie, ohne Filterung nach user_id (die
+    # Seiten sind oeffentlich). Genutzt von der Angebotsuebersicht der
+    # Indexseite und der Sektion "Termine" der Akademie-Seite, damit
+    # Termine nur in der Administration gepflegt werden. Gespeichert wird in
+    # UTC ohne Zeitzonenangabe, daher "naive" UTC-Zeit vergleichen.
+    now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+    events = (
+        Event.query
+        .filter(Event.ends_at >= now_utc)
+        .order_by(Event.starts_at.asc(), Event.id.asc())
+        .all()
+    )
+    upcoming = {}
+    for event in events:
+        bucket = upcoming.setdefault(event.category, [])
+        if len(bucket) < limit:
+            bucket.append(event)
+    return upcoming
+
+
 @app.route("/")
 def index():
     banner = get_banner_text()
@@ -529,24 +551,7 @@ def index():
         .all()
     )
     sections_in_slot = sections_by_slot("index")
-    # Alle Termine chronologisch, ohne Filterung nach user_id (die Indexseite
-    # ist oeffentlich); daraus die naechsten Termine je Kategorie fuer die
-    # Angebotskacheln in der Sektion "Termine".
-    events = (
-        Event.query
-        .order_by(Event.starts_at.asc(), Event.id.asc())
-        .all()
-    )
-    # Fuer die Angebotsuebersicht im Kopfbereich: je Kategorie die naechsten
-    # (noch nicht beendeten) Termine, hoechstens drei. Gespeichert wird in
-    # UTC ohne Zeitzonenangabe, daher "naive" UTC-Zeit vergleichen.
-    now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
-    upcoming_by_category = {}
-    for event in events:
-        if event.ends_at >= now_utc:
-            upcoming_by_category.setdefault(event.category, [])
-            if len(upcoming_by_category[event.category]) < 3:
-                upcoming_by_category[event.category].append(event)
+    upcoming_by_category = upcoming_events_by_category()
     return render_template(
         "index.html",
         articles=articles,
@@ -600,10 +605,14 @@ def academy():
         .all()
     )
     sections_in_slot = sections_by_slot("academy")
+    # Termine der Spiele Coach Qualifizierung (Kategorie "certification")
+    # fuer die Sektion "Termine" und das Course-Schema im Kopf der Seite.
+    certification_events = upcoming_events_by_category(limit=6).get("certification", [])
     return render_template(
         "academy.html",
         articles=articles,
         sections_in_slot=sections_in_slot,
+        certification_events=certification_events,
         banner=banner,
     )
 

@@ -811,6 +811,31 @@ footer.site-footer .sustainability-badge-link:hover {
     display: block;
 }
 
+/* Quadratisches Video im Kopfbereich der Startseite (index.html): fuellt
+   die Spaltenbreite (1:1), abgerundet wie die Bilder. Auf schmalen
+   Bildschirmen hoechstens 480px breit und zentriert. */
+.hero-video {
+    width: 100%;
+}
+
+.hero-video video {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: .6rem;
+    box-shadow: 0 6px 20px rgba(40, 19, 81, .12);
+    background: #f6f2ef;
+}
+
+@media (max-width: 991.98px) {
+    .hero-video {
+        max-width: 480px;
+        margin-inline: auto;
+    }
+}
+
 /* Portraetfoto im Kopfbereich der Startseite: rechteckiges Hochformat (3:4),
    hoechstens 420px breit, damit das Bild neben dem Text nicht zu dominant
    wird. Die Bildunterschrift steht hochkant am rechten Bildrand, von unten
@@ -857,10 +882,34 @@ footer.site-footer .sustainability-badge-link:hover {
     height: 130px;
 }
 
-.award-caption {
-    font-size: .85rem;
-    line-height: 1.45;
-    color: var(--sm-ink);
+/* Award-Kacheln und Termine in den Angebotskacheln: Text erscheint als
+   kleines Fenster (Popover, index.html, Initialisierung in base.html) */
+.award-card {
+    cursor: help;
+    border-radius: .6rem;
+}
+
+.award-card:focus-visible {
+    outline: 3px solid rgba(156, 14, 23, .35);
+    outline-offset: 2px;
+}
+
+.info-popover {
+    --bs-popover-max-width: 260px;
+    --bs-popover-border-color: var(--sm-line);
+    --bs-popover-header-bg: #fff;
+    --bs-popover-header-color: var(--sm-maroon);
+    --bs-popover-header-font-size: .85rem;
+    --bs-popover-body-color: var(--sm-ink);
+    --bs-popover-font-size: .85rem;
+    --bs-popover-border-radius: .6rem;
+    box-shadow: 0 8px 24px rgba(40, 19, 81, .15);
+    font-weight: 400;
+}
+
+.info-popover .popover-header {
+    font-weight: 700;
+    border-bottom-color: var(--sm-line);
 }
 
 .award-logo {
@@ -1722,4 +1771,113 @@ h1, h2, h3, h4, h5, h6,
         height: auto;
         min-height: 100%;
     }
+}
+
+
+/* =========================================================
+   Akademie-Neubau (Nov. 2026): TODO-Hinweise, Ablauf-Schritte,
+   Vergleichstabelle, FAQ
+   ========================================================= */
+
+/* Sichtbarer Platzhalter fuer fehlende Inhalte (Makro m.todo) */
+.todo-marker {
+    display: inline;
+    background: #fff3cd;
+    border: 1px dashed #d4a017;
+    border-radius: .3rem;
+    padding: .05rem .4rem;
+    color: #6b4e00;
+    font-size: .85em;
+    font-weight: 600;
+    font-style: normal;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+/* Nummerierte Schritte (Akademie, "Ablauf in Schritten") */
+.step-list {
+    list-style: none;
+    counter-reset: step;
+    padding-left: 0;
+}
+
+.step-list li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 3.25rem;
+    margin-bottom: 1.25rem;
+    min-height: 2.25rem;
+}
+
+.step-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--sm-purple);
+    color: #fff;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-list h4 {
+    color: var(--sm-dark);
+    font-weight: 800;
+}
+
+/* Vergleichstabelle (Akademie, "Warum play2change©"). Auf schmalen
+   Bildschirmen scrollt sie seitlich (.table-responsive im Template). */
+.compare-table {
+    min-width: 560px;
+    --bs-table-bg: transparent;
+}
+
+.compare-table thead th {
+    color: var(--sm-dark);
+    font-weight: 800;
+    border-bottom: 2px solid var(--sm-purple);
+}
+
+.compare-table tbody th {
+    color: var(--sm-dark);
+    font-weight: 700;
+    width: 26%;
+}
+
+.compare-table td:nth-child(2) {
+    background: #fff;
+}
+
+/* FAQ (Akademie): Fragen als h3, durch Linien getrennt */
+.faq-item {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--sm-line);
+}
+
+.faq-item:first-child {
+    padding-top: 0;
+}
+
+.faq-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.offer-dates-toggle {
+    color: var(--sm-dark);
+    font-weight: 600;
+    text-decoration: underline dotted;
+    text-decoration-color: var(--sm-maroon);
+    text-underline-offset: .2em;
+    cursor: help;
+}
+
+.offer-dates-toggle:hover,
+.offer-dates-toggle:focus-visible {
+    color: var(--sm-maroon);
 }

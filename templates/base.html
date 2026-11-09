@@ -65,11 +65,15 @@
                         ("referenzen", "Referenzen"),
                     ] %}
                     {% set academy_chapters = [
+                        ("vergleich", "Warum play2change©"),
                         ("qualifizierung", "Spiele Coach Qualifizierung"),
-                        ("fuer-unternehmen", "Für Unternehmen"),
-                        ("fuer-beratung-und-training", "Für Beratung und Training"),
+                        ("termine", "Termine & Preise"),
+                        ("trainerin", "Trainerin"),
+                        ("zielgruppen", "Für wen ist das?"),
                         ("einsatz", "Einsatzmöglichkeiten"),
-                        ("wissenschaft", "Wissenschaftlich fundiert"),
+                        ("wirksamkeit", "Wissenschaftlich fundiert"),
+                        ("faq", "FAQ"),
+                        ("stimmen", "Stimmen aus der Praxis"),
                     ] %}
                     {# Beratung und Akademie: Der Menuepunkt selbst fuehrt zur Seite
                        (nach oben), das Aufklappmenue mit den Kapiteln oeffnet beim
@@ -97,7 +101,7 @@
                     </li>
                     <li class="nav-item"><a class="nav-link{% if request.endpoint == 'stories' %} active{% endif %}" href="{{ url_for('stories') }}"{% if request.endpoint == 'stories' %} aria-current="page"{% endif %}>Erfolgsgeschichten</a></li>
                     {% set community_active = request.endpoint in ('members.community', 'members.community_detail') %}
-                    <li class="nav-item"><a class="nav-link{% if community_active %} active{% endif %}" href="{{ url_for('members.community') }}"{% if request.endpoint == 'members.community' %} aria-current="page"{% endif %}>Community</a></li>
+                    <li class="nav-item"><a class="nav-link{% if community_active %} active{% endif %}" href="{{ url_for('members.community') }}"{% if request.endpoint == 'members.community' %} aria-current="page"{% endif %}>Über uns</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contact">Kontakt</a></li>
                 </ul>
                 {{ user_menu.user_menu_mobile() }}
@@ -362,6 +366,23 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        // Videos mit autoplay (z. B. Indexseite) bei "Bewegung reduzieren"
+        // im Betriebssystem nicht automatisch abspielen.
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            document.querySelectorAll("video[autoplay]").forEach(function (video) {
+                video.removeAttribute("autoplay");
+                video.pause();
+            });
+        }
+    </script>
+    <script>
+        // Popover (kleine Fenster beim Ueberfahren/Fokus), z. B. Texte der
+        // Award-Kacheln auf der Indexseite: alle [data-bs-toggle="popover"].
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
+            bootstrap.Popover.getOrCreateInstance(el);
+        });
+    </script>
     <script>
         // Navigation Beratung/Akademie (.nav-hover): Mit Maus oeffnet das
         // Kapitelmenue per CSS beim Ueberfahren. Ohne Hover (Touch) oder bei
