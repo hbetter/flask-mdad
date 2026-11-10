@@ -2,7 +2,33 @@
 {% import "_macros.html" as m %}
 {% block title %}MENSCH DENK AN DICH® – Playful Future{% endblock %}
 {% block meta_description %}MENSCH DENK AN DICH® – das preisgekrönte Resilienz-Spiel, ausgezeichnet mit dem Europäischen Trainingspreis (BDVT). Zeit, auch an dich selbst zu denken.{% endblock %}
+{% block head_extra %}
+{# Twiggy-Animation im Kopfbereich #}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/twiggy.css') }}">
+{% endblock %}
+
 {% block content %}
+
+{# Gesicht von Twiggy fuer die Animation im Kopfbereich (SVG ueber dem
+   Bild twiggy-body.webp): Augen mit Blinzeln, beim Sprechen geoeffneter
+   Mund. Zweimal benoetigt (grosser Twiggy im Foto, kleiner Twiggy auf
+   schmalen Bildschirmen). #}
+{% macro twiggy_face(hidden) %}
+<svg viewBox="0 0 260 481"{% if hidden %} aria-hidden="true"{% endif %}>
+  <g class="tw-pupils">
+    <ellipse class="tw-eye" cx="102.2" cy="55.1" rx="7.2" ry="12.8" fill="#16100e"/>
+    <ellipse class="tw-eye" cx="159" cy="57" rx="8.8" ry="12" fill="#16100e"/>
+    <ellipse class="tw-eye-glint" cx="100.6" cy="49" rx="2.4" ry="3.6" fill="#fff"/>
+    <ellipse class="tw-eye-glint" cx="157.2" cy="51" rx="2.8" ry="3.6" fill="#fff"/>
+  </g>
+  <g class="tw-mouth-open">
+    <ellipse cx="131" cy="137" rx="46" ry="24" fill="#37080c"/>
+    <ellipse cx="131" cy="152" rx="24" ry="9" fill="#cd373c"/>
+  </g>
+  <path d="M66.2 98.6 Q131 146.3 195.8 98.6" fill="none" stroke="#16100e"
+        stroke-width="8.3" stroke-linecap="round"/>
+</svg>
+{% endmacro %}
 
 {# Termine einer Kategorie fuer die Angebotskacheln (Sektionen "Kostenfreies
    Angebot" und "Kostenpflichtiges Angebot"): die naechsten drei noch nicht
@@ -26,28 +52,14 @@
 
 <div class="page-main">
 
-  <!-- HERO: links das quadratische Video "Das Spiel spricht selbst", rechts
-       Kicker, Hauptueberschrift und Einleitung. Auf schmalen Bildschirmen
-       steht der Text oben, das Video darunter. Kicker und Ueberschrift sind
-       hier direkt gesetzt (section_card ohne kicker/heading), damit sie in
-       der rechten Spalte stehen. -->
+  <!-- HERO: oben ueber die gesamte Breite Kicker, Hauptueberschrift und
+       Einleitung, darunter zentriert die Twiggy-Animation "Das Spiel spricht
+       selbst" (sie hat selbst Bild und Textfeld nebeneinander und braucht
+       die Breite, damit ihre Saetze lesbar bleiben). Kicker und Ueberschrift
+       sind hier direkt gesetzt (section_card ohne kicker/heading). -->
   {% call m.section_card() %}
-          <div class="row g-4 g-lg-5 align-items-center">
-            <div class="col-lg-5 order-2 order-lg-1">
-              {# Video (1080x1080, 40 s, ohne Ton): laeuft stumm in Schleife,
-                 mit Bedienelementen, fuellt die Spaltenbreite. Bei "Bewegung
-                 reduzieren" im Betriebssystem startet es nicht von selbst
-                 (Skript in base.html). Bis zum Start zeigt es das Standbild. #}
-              <figure class="hero-video mb-0">
-                <video autoplay muted loop playsinline controls preload="metadata"
-                       poster="{{ url_for('static', filename='img/twiggy-quadrat-poster.webp') }}"
-                       width="1080" height="1080"
-                       aria-label="Video: Twiggy, die Spielfigur von MENSCH DENK AN DICH®, nennt Gründe für das Spiel – Das Spiel spricht selbst">
-                  <source src="{{ url_for('static', filename='video/twiggy-spricht.mp4') }}" type="video/mp4">
-                </video>
-              </figure>
-            </div>
-            <div class="col-lg-7 order-1 order-lg-2">
+          <div class="row g-4 g-lg-5">
+            <div class="col-12">
               <p class="kicker mb-2">Der Hebel für resiliente Unternehmen</p>
               <h1 class="display-3 mb-3">Zukunft spielend gestalten</h1>
               <p class="fs-4 mb-4">90 Minuten, die einen Unterschied machen</p>
@@ -56,6 +68,78 @@
                 in jedem Unternehmen. Mit dem mehrfach ausgezeichneten {{ m.lexicon_link("resilienz-spiele", "Resilienzspiel") }}
                 {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} - evidenzbasiert und skalierbar.
               </p>
+            </div>
+            <div class="col-12">
+              {# Twiggy-Animation (ersetzt das Video): HTML/CSS/JS statt Film,
+                 Gestaltung in static/css/twiggy.css, Ablauf in
+                 static/js/twiggy.js, Bilder in static/img/twiggy/.
+                 Startet, sobald sie ins Bild kommt; bei "Bewegung reduzieren"
+                 stehen alle sieben Saetze sofort da.
+                 Einstellungen am <section>: data-ratio (Seitenverhaeltnis ab
+                 768 px, leer = Hoehe nach Inhalt), data-intro / data-slot /
+                 data-outro (Millisekunden), data-loop="true" (Endlosschleife). #}
+              <section class="mdad-twiggy" data-ratio="" data-intro="3600" data-slot="4400" data-outro="8000"
+                       aria-label="Das Spiel spricht selbst – 7 Gründe">
+                <div class="row g-0">
+                  {# Foto mit Twiggy (ab 768 px links, darunter ausgeblendet) #}
+                  <div class="col-md-6 order-2 order-md-1 d-none d-md-flex">
+                    <div class="tw-photo">
+                      <div class="tw-scene">
+                        <div class="tw-shadow"></div>
+                        <div class="tw-figure">
+                          <img src="{{ url_for('static', filename='img/twiggy/twiggy-body.webp') }}" alt="Twiggy, die Spielfigur von MENSCH DENK AN DICH®" width="260" height="481">
+                          {{ twiggy_face(true) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {# Textseite (ab 768 px rechts) #}
+                  <div class="col-md-6 order-1 order-md-2 tw-panel">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <div class="tw-kicker">Das Spiel spricht selbst</div>
+                        <div class="tw-dots" aria-hidden="true"></div>
+                      </div>
+                      <img class="tw-logo-sm" src="{{ url_for('static', filename='img/twiggy/twiggy-logo.webp') }}" alt="MENSCH DENK AN DICH®" width="130" height="48">
+                    </div>
+
+                    <div class="tw-stage">
+                      <h2 class="tw-title">Das Spiel<br><span class="accent">spricht selbst.</span>
+                        <small>7 Gründe – in seinen eigenen Worten</small></h2>
+                      <div class="tw-bubble" aria-hidden="true">
+                        <span class="tw-num">1</span>
+                        <span class="tw-bubble-text"></span>
+                      </div>
+                      {# kleiner Twiggy unter der Sprechblase (nur unter 768 px) #}
+                      <div class="tw-mini" aria-hidden="true">
+                        <img src="{{ url_for('static', filename='img/twiggy/twiggy-body.webp') }}" alt="" width="260" height="481">
+                        {{ twiggy_face(false) }}
+                      </div>
+                    </div>
+
+                    {# Die sieben Saetze als echter Text (Suchmaschinen,
+                       Screenreader); das Skript blendet sie nacheinander ein. #}
+                    <ol class="tw-list">
+                      <li><div><span class="tw-n">1</span><span class="tw-t">Ich unterbreche festgefahrenes Denken.</span></div></li>
+                      <li><div><span class="tw-n">2</span><span class="tw-t">Ich bringe euch aus euren gewohnten Rollen.</span></div></li>
+                      <li><div><span class="tw-n">3</span><span class="tw-t">Ich mache eure eigenen Ressourcen (wieder) sichtbar.</span></div></li>
+                      <li><div><span class="tw-n">4</span><span class="tw-t">Ich schaffe einen sicheren Raum für das, was unausgesprochen bleibt.</span></div></li>
+                      <li><div><span class="tw-n">5</span><span class="tw-t">Ich ermögliche euch soziale Verbundenheit.</span></div></li>
+                      <li><div><span class="tw-n">6</span><span class="tw-t">Ich verwandle Probleme in tragfähige Lösungen.</span></div></li>
+                      <li><div><span class="tw-n">7</span><span class="tw-t">Ich gebe einen kleinen Anstoß, um wirklich etwas verändern zu wollen.</span></div></li>
+                    </ol>
+
+                    {# Schlussbild: nur das Textfeld verschwimmt #}
+                    <div class="tw-outro">
+                      <p class="h3">Spielt mit mir.</p>
+                      <img src="{{ url_for('static', filename='img/twiggy/twiggy-logo.webp') }}" alt="MENSCH DENK AN DICH®" width="768" height="286">
+                      <button type="button" class="btn btn-outline-danger btn-sm tw-replay">Noch einmal abspielen</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <script src="{{ url_for('static', filename='js/twiggy.js') }}" defer></script>
             </div>
           </div>
   {% endcall %}
@@ -196,10 +280,10 @@
   {% endwith %}
 
   <!-- KOSTENPFLICHTIGES ANGEBOT: STARTE DURCH - links Probespielraum im
-       Unternehmen ("Probespielraum anfragen" -> Spielraum-Formular, "Unser
-       Angebot" -> Beratungs-Seite), rechts Spiele Coach
+       Unternehmen ("Probespielraum anfragen" -> Spielraum-Formular,
+       "Weitere Informationen" -> Beratungs-Seite), rechts Spiele Coach
        Qualifizierung mit Terminen ("Platz sichern" -> Spiele-Coach-Formular,
-       "Unser Angebot" -> Akademie-Seite). -->
+       "Weitere Informationen" -> Akademie-Seite). -->
   {% call m.section_card("Kostenpflichtiges Angebot", "Starte durch", id="starte-durch") %}
           <div class="row row-cols-1 row-cols-md-2 g-3 offer-grid">
             <div class="col">
@@ -208,8 +292,8 @@
                 <h3 class="h5 mt-2 mb-2">Hole das Spiel in dein Unternehmen</h3>
                 <p class="small mb-3">In einem firmeninternen Probespielraum erlebt dein Team, wie das Spiel bei euch wirkt.</p>
                 <div class="d-flex flex-wrap gap-2 mt-auto">
-                  <a href="{{ url_for('consulting') }}" class="btn btn-maroon">Unser Angebot</a>
                   <button type="button" class="btn btn-maroon" data-bs-toggle="modal" data-bs-target="#spielraumModal">Probespielraum anfragen</button>
+                  <a href="{{ url_for('consulting') }}" class="btn btn-maroon">Weitere Informationen</a>
                 </div>
               </div>
             </div>
@@ -220,8 +304,8 @@
                 <p class="small mb-3">In der zweitägigen Qualifizierung lernst du, das Spiel selbst anzuleiten, und setzt {{ m.lexicon_link("play2change", "play2change©") }} in deinen Prozessen ein.</p>
                 {{ offer_dates("certification") }}
                 <div class="d-flex flex-wrap gap-2 mt-auto">
-                  <a href="{{ url_for('academy') }}" class="btn btn-maroon">Unser Angebot</a>
                   <button type="button" class="btn btn-maroon" data-bs-toggle="modal" data-bs-target="#spieleCoachModal">Platz sichern</button>
+                  <a href="{{ url_for('academy') }}" class="btn btn-maroon">Weitere Informationen</a>
                 </div>
               </div>
             </div>
@@ -320,36 +404,26 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- SHORTS -->
-  {% call m.section_card("Shorts", "Einblicke") %}
+  <!-- EINBLICKE -->
+  {% call m.section_card("Einblicke", "Im Gespräch") %}
           <div class="row g-3">
             <div class="col-lg-4">
-              <h3 class="fw-semibold mb-2 video-title">Platzhalter-Videotitel 1</h3>
+              <h3 class="fw-semibold mb-2 video-title">Glaube nicht alles, was du denkst!</h3>
               <div class="ratio ratio-16x9 video-embed">
-                <iframe src="https://www.youtube.com/embed/ahOtrOiwfzI" title="Platzhalter-Videotitel 1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+                <iframe width="339" height="603" src="https://www.youtube.com/embed/mKH_ignou-U" title="Glaube nicht alles, was du denkst!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
               </div>
             </div>
             <div class="col-lg-4">
-              <a href="https://www.youtube.com/watch?v=PLATZHALTER2" target="_blank" rel="noopener" class="text-decoration-none text-reset video-card">
-                <h3 class="fw-semibold mb-2 video-title">Platzhalter-Videotitel 2</h3>
-                <div class="placeholder-media video-placeholder">
-                  <div>
-                    <i class="bi bi-play-circle-fill"></i>
-                    Video-Standbild 2
-                  </div>
-                </div>
-              </a>
+              <h3 class="fw-semibold mb-2 video-title">Interview Melanie Scharf</h3>
+              <div class="ratio ratio-16x9 video-embed">
+                <iframe src="https://www.youtube.com/embed/ZSG1eSPqVNM" title="Interview Melanie Scharf – Von der ersten Begegnung bis zum Organisationskulturprozess" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+              </div>
             </div>
             <div class="col-lg-4">
-              <a href="https://www.youtube.com/watch?v=PLATZHALTER3" target="_blank" rel="noopener" class="text-decoration-none text-reset video-card">
-                <h3 class="fw-semibold mb-2 video-title">Platzhalter-Videotitel 3</h3>
-                <div class="placeholder-media video-placeholder">
-                  <div>
-                    <i class="bi bi-play-circle-fill"></i>
-                    Video-Standbild 3
-                  </div>
-                </div>
-              </a>
+              <h3 class="fw-semibold mb-2 video-title">Interview Margot Dietz-Wittstock</h3>
+              <div class="ratio ratio-16x9 video-embed">
+                <iframe src="https://www.youtube.com/embed/AUxEF4iAeME" title="MENSCH DENK AN DICH® Spiele Coach im Interview – Margot Dietz-Wittstock" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+              </div>
             </div>
           </div>
   {% endcall %}

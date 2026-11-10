@@ -1,0 +1,418 @@
+/* ============================================================
+   MENSCH DENK AN DICH® – „Das Spiel spricht selbst“
+   Twiggy-Animation als HTML/CSS (ersetzt das Video)
+   Benötigt: Bootstrap 5 (Grid + Utilities). Eingebunden im Kopfbereich
+   der Indexseite (templates/index.html); Bilder in static/img/twiggy/.
+   Schrift: die der Seite (Open Sans) statt der ursprünglich
+   vorgesehenen Poppins.
+   ============================================================ */
+
+.mdad-twiggy {
+  --tw-red: #e43028;
+  --tw-ink: #2b2d34;
+  --tw-muted: #6e6e76;
+  --tw-panel: #faf6f2;
+  --tw-off: #e1d4d0;
+  font-family: inherit;
+  color: var(--tw-ink);
+  background: var(--tw-panel);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---------- Einstellbares Seitenverhältnis (ab 768 px) ----------
+   data-ratio="1/1" | "4/3" | "16/9" … am <section>; ohne Angabe
+   richtet sich die Höhe nach dem Inhalt. */
+/* Groesse begrenzen: ab 768 px hoechstens 820 px breit (zentriert) und
+   so schmal, dass der Block (Seitenverhaeltnis ohne data-ratio etwa 3:2)
+   samt Navigationsleiste in die Fensterhoehe passt. */
+@media (min-width: 768px) {
+  .mdad-twiggy {
+    max-width: min(820px, calc((100svh - 7rem) * 1.5));
+    margin-inline: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .mdad-twiggy.has-ratio { aspect-ratio: var(--tw-ratio); }
+  .mdad-twiggy.has-ratio > .row { height: 100%; }
+}
+
+/* ---------- Fotoseite mit Twiggy ---------- */
+.mdad-twiggy .tw-photo {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #2c313d 50%, #da3833 50%);
+}
+/* weich gezeichnete Füllung für Flächen, die das Foto nicht abdeckt */
+.mdad-twiggy .tw-photo::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  background: url("../img/twiggy/twiggy-bg.webp") center / cover no-repeat;
+  filter: blur(22px);
+}
+/* Szene im Seitenverhältnis des Originalfotos – Twiggy sitzt darin */
+.mdad-twiggy .tw-scene {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 100%;
+  aspect-ratio: 960 / 1080;
+}
+/* scharfes Foto, oben und unten über die Szene hinaus verlängert */
+.mdad-twiggy .tw-scene::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0; right: 0;
+  top: -42.593%;
+  height: 185.185%;
+  background: url("../img/twiggy/twiggy-bg.webp") center / 100% 100% no-repeat;
+}
+@media (min-width: 768px) {
+  /* feste Höhe: Szene passt sich ein, damit Twiggy nie angeschnitten wird */
+  .mdad-twiggy.has-ratio .tw-photo { container-type: size; }
+  .mdad-twiggy.has-ratio .tw-scene { width: min(100cqw, 88.889cqh); }
+}
+/* weicher Übergang vom Foto ins helle Textfeld */
+.mdad-twiggy .tw-photo::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, transparent 85%, var(--tw-panel));
+}
+@media (min-width: 768px) {
+  .mdad-twiggy .tw-photo::after {
+    background: linear-gradient(to right, transparent 84%, var(--tw-panel));
+  }
+}
+
+/* Twiggy: Lage und Größe in Prozent des Fotos */
+.mdad-twiggy .tw-figure {
+  position: absolute;
+  left: 48.333%;
+  top: 20.278%;
+  width: 27.083%;
+  height: 44.537%;
+  transform-origin: 50% 98.75%;          /* Drehpunkt = Standfläche */
+  animation: tw-sway 2.8s ease-in-out infinite;
+}
+.mdad-twiggy .tw-figure img,
+.mdad-twiggy .tw-figure svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.mdad-twiggy .tw-shadow {
+  position: absolute;
+  left: 49%;
+  top: 63.2%;
+  width: 25%;
+  height: 3%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(80, 10, 10, .45), transparent);
+  animation: tw-shadow 2.8s ease-in-out infinite;
+}
+@keyframes tw-sway {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(6deg); }
+}
+@keyframes tw-shadow {
+  0%, 100% { transform: translateX(-4%); }
+  50%      { transform: translateX(4%); }
+}
+
+/* Gesicht (SVG) */
+.mdad-twiggy .tw-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tw-blink 4.6s infinite;
+}
+.mdad-twiggy .tw-eye-glint { animation: tw-glint 4.6s infinite; }
+@keyframes tw-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(.1); }
+}
+@keyframes tw-glint {
+  0%, 92%, 100% { opacity: .65; }
+  94%, 97%      { opacity: 0; }
+}
+.mdad-twiggy .tw-mouth-open {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+  transition: transform .15s ease;
+}
+.mdad-twiggy.is-talking .tw-mouth-open {
+  animation: tw-talk .9s ease-in-out infinite;
+}
+@keyframes tw-talk {
+  0%   { transform: scaleY(.25); }
+  20%  { transform: scaleY(1); }
+  40%  { transform: scaleY(.45); }
+  60%  { transform: scaleY(.9); }
+  80%  { transform: scaleY(.3); }
+  100% { transform: scaleY(.25); }
+}
+/* Twiggy schaut beim Sprechen leicht zum Text */
+.mdad-twiggy .tw-pupils { transition: transform .4s ease; }
+.mdad-twiggy.is-talking .tw-pupils { transform: translateX(3px); }
+
+/* ---------- Textseite ----------
+   Alle Größen hängen an --u (= 1 % der Textfeldbreite bzw. bei festem
+   Seitenverhältnis an Breite UND Höhe), damit der Inhalt mitskaliert. */
+.mdad-twiggy .tw-panel {
+  position: relative;
+  container-name: twpanel;
+  container-type: inline-size;
+  padding: clamp(1.1rem, 3vw, 2.5rem);
+}
+/* --u wird an den Kindern festgelegt, damit cqw/cqh sich auf das Textfeld beziehen */
+.mdad-twiggy .tw-panel > * { --u: 1.35cqw; }
+@media (min-width: 768px) {
+  .mdad-twiggy.has-ratio .tw-panel {
+    container-type: size;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;     /* Inhalt mittig, wenn Platz übrig ist */
+  }
+  /* bei fester Höhe: so klein, dass auch die einspaltige Liste passt */
+  .mdad-twiggy.has-ratio .tw-panel > * { --u: min(1.35cqw, 1.02cqh); }
+}
+/* zweispaltige Liste braucht weniger Höhe */
+@container twpanel (min-width: 500px) {
+  .mdad-twiggy.has-ratio .tw-panel > * { --u: min(1.35cqw, 1.35cqh); }
+}
+.mdad-twiggy .tw-kicker {
+  color: var(--tw-red);
+  font-weight: 700;
+  font-size: clamp(.62rem, calc(var(--u) * 2.2), .95rem);
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.mdad-twiggy .tw-dots { display: flex; gap: calc(var(--u) * 1.1); margin-top: calc(var(--u) * 1); }
+.mdad-twiggy .tw-dots span {
+  width: clamp(.45rem, calc(var(--u) * 1.6), .75rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tw-off);
+  transition: background .3s;
+}
+.mdad-twiggy .tw-dots span.on { background: var(--tw-red); }
+.mdad-twiggy .tw-logo-sm { width: clamp(70px, calc(var(--u) * 20), 140px); height: auto; }
+
+/* Bühne für Titel bzw. aktuelle Sprechblase */
+.mdad-twiggy .tw-stage {
+  position: relative;
+  min-height: calc(var(--u) * 28);
+  margin: calc(var(--u) * 3.5) 0 calc(var(--u) * 3);
+}
+.mdad-twiggy .tw-title {
+  font-weight: 700;
+  font-size: clamp(1.2rem, calc(var(--u) * 9), 3.4rem);
+  line-height: 1.12;
+  margin: 0;
+  transition: opacity .5s, transform .5s;
+}
+.mdad-twiggy .tw-title .accent { color: var(--tw-red); }
+.mdad-twiggy .tw-title small {
+  display: block;
+  margin-top: calc(var(--u) * 1.8);
+  font-weight: 400;
+  font-size: clamp(.8rem, calc(var(--u) * 2.7), 1.25rem);
+  color: var(--tw-muted);
+}
+.mdad-twiggy.is-running .tw-title { opacity: 0; transform: translateY(-12px); pointer-events: none; }
+
+.mdad-twiggy .tw-bubble {
+  position: absolute;
+  inset: 0 0 auto 0;
+  background: #fff;
+  border-radius: calc(var(--u) * 4.2);
+  padding: calc(var(--u) * 3.4) calc(var(--u) * 4);
+  font-size: clamp(.8rem, calc(var(--u) * 4), 1.75rem);
+  line-height: 1.35;
+  box-shadow: 0 14px 34px rgba(60, 20, 20, .14);
+  opacity: 0;
+  transform: scale(.6);
+  transform-origin: 50% 110%;
+}
+/* Zipfel: mobil nach unten (Twiggy steht unter dem Text) */
+.mdad-twiggy .tw-bubble::before {
+  content: "";
+  position: absolute;
+  left: 55%;
+  bottom: -21px;
+  border: 14px solid transparent;
+  border-top: 22px solid #fff;
+  border-bottom: 0;
+}
+@media (min-width: 768px) {
+  .mdad-twiggy .tw-bubble { transform-origin: -10% 45%; }
+  /* Desktop: Zipfel nach links zu Twiggys Kopf */
+  .mdad-twiggy .tw-bubble::before {
+    left: -26px; top: 42%; bottom: auto;
+    border: 14px solid transparent;
+    border-right: 28px solid #fff;
+    border-left: 0;
+  }
+}
+.mdad-twiggy .tw-bubble .tw-num {
+  position: absolute;
+  top: calc(var(--u) * -2.2); right: calc(var(--u) * -1.4);
+  width: clamp(1.7rem, calc(var(--u) * 6), 2.8rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tw-red);
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(.85rem, calc(var(--u) * 2.9), 1.3rem);
+  display: grid; place-items: center;
+}
+.mdad-twiggy .tw-bubble.is-in  { animation: tw-pop .45s cubic-bezier(.34, 1.56, .64, 1) forwards; }
+.mdad-twiggy .tw-bubble.is-out { animation: tw-away .4s ease-in forwards; }
+@keyframes tw-pop  { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes tw-away { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.85) translateY(20px); } }
+
+/* Liste der bereits gesagten Gründe – Platz ist von Anfang an reserviert */
+.mdad-twiggy .tw-list {
+  list-style: none; padding: 0; margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(.3rem, calc(var(--u) * 1.2), .6rem);
+}
+/* zwei Spalten, sobald das Textfeld breit genug ist */
+@container twpanel (min-width: 500px) {
+  .mdad-twiggy .tw-list { grid-template-columns: 1fr 1fr; }
+}
+.mdad-twiggy .tw-list li > div {
+  height: 100%;
+  display: flex; gap: calc(var(--u) * 1.4); align-items: flex-start;
+  background: #fff;
+  border-radius: calc(var(--u) * 2.2);
+  padding: calc(var(--u) * 1.3) calc(var(--u) * 1.8);
+  font-size: clamp(.75rem, calc(var(--u) * 2.2), .95rem);   /* mind. 12 px, lesbar */
+  line-height: 1.35;
+  box-shadow: 0 4px 12px rgba(60, 20, 20, .08);
+}
+.mdad-twiggy .tw-list .tw-n {
+  flex: 0 0 auto;
+  width: clamp(1rem, calc(var(--u) * 3.4), 1.6rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tw-red);
+  color: #fff; font-weight: 700;
+  font-size: clamp(.65rem, calc(var(--u) * 1.8), .8rem);
+  display: grid; place-items: center;
+}
+.mdad-twiggy.js-ready .tw-list li {
+  opacity: 0;
+  transform: translateY(-14px);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.mdad-twiggy.js-ready .tw-list li.shown { opacity: 1; transform: none; }
+
+/* ---------- Schmale Bildschirme: kleiner Twiggy direkt unter der Sprechblase ---------- */
+.mdad-twiggy .tw-mini { display: none; }
+@media (max-width: 767.98px) {
+  /* kleiner Twiggy waechst mit der Bildschirmhoehe, damit der ganze Block
+     auch auf kleinen Smartphones in die Hoehe passt */
+  .mdad-twiggy { --tw-mini-h: clamp(70px, 11svh, 120px); }
+  /* Liste kompakter, damit der Block nicht hoeher als der Bildschirm wird
+     (geprueft: 360x740, 375x667, 390x844) */
+  .mdad-twiggy .tw-list { gap: .25rem; }
+  .mdad-twiggy .tw-list li > div {
+    font-size: .6875rem;
+    line-height: 1.25;
+    padding: .3rem .55rem;
+  }
+  .mdad-twiggy .tw-stage {
+    min-height: calc(var(--u) * 34 + var(--tw-mini-h) + 1.5rem);
+  }
+  /* Sprechblase sitzt unten auf Twiggys Kopf auf */
+  .mdad-twiggy .tw-bubble {
+    inset: auto 0 calc(var(--tw-mini-h) + 1.4rem) 0;
+  }
+  .mdad-twiggy .tw-bubble::before { left: calc(50% - 12px); }
+  .mdad-twiggy .tw-mini {
+    display: block;
+    position: absolute;
+    bottom: .4rem;
+    left: 50%;
+    width: calc(var(--tw-mini-h) * 260 / 481);
+    height: var(--tw-mini-h);
+    margin-left: calc(var(--tw-mini-h) * -130 / 481);
+    transform-origin: 50% 98.75%;
+    animation: tw-sway 2.8s ease-in-out infinite;
+  }
+  .mdad-twiggy .tw-mini img,
+  .mdad-twiggy .tw-mini svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* weicher Schatten unter dem kleinen Twiggy */
+  .mdad-twiggy .tw-stage::after {
+    content: "";
+    position: absolute;
+    left: 50%; bottom: 0;
+    width: calc(var(--tw-mini-h) * .5);
+    height: 12px;
+    margin-left: calc(var(--tw-mini-h) * -.25);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(80, 10, 10, .28), transparent);
+  }
+  /* Titel am Anfang steht über Twiggy */
+  .mdad-twiggy .tw-title { padding-bottom: calc(var(--tw-mini-h) + 1rem); }
+  /* Schlussbild: Twiggy bleibt scharf stehen, Schriftzug darunter */
+  .mdad-twiggy .tw-mini { z-index: 5; }
+  .mdad-twiggy .tw-panel .tw-outro { justify-content: flex-end; padding-bottom: 2rem; }
+}
+
+/* ---------- Schlussbild: nur das Textfeld verschwimmt ---------- */
+.mdad-twiggy .tw-outro {
+  position: absolute;
+  inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  gap: calc(var(--u) * 3.5);
+  padding: 1.5rem;
+  background: rgba(250, 246, 242, .55);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease, visibility 0s 1s;
+}
+.mdad-twiggy.is-outro .tw-outro { opacity: 1; visibility: visible; transition: opacity 1s ease; }
+.mdad-twiggy .tw-outro .h3 {
+  font-weight: 700;
+  font-size: clamp(1.4rem, calc(var(--u) * 7.5), 3.4rem);
+  margin: 0;
+}
+.mdad-twiggy .tw-outro img { width: min(80%, calc(var(--u) * 62), 420px); height: auto; }
+.mdad-twiggy .tw-replay {
+  font-size: .9rem;
+  border-radius: 2rem;
+  color: var(--tw-red);
+  border-color: var(--tw-red);
+}
+.mdad-twiggy .tw-replay:hover { background: var(--tw-red); color: #fff; }
+
+/* ---------- Bewegung reduzieren, wenn gewünscht ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .mdad-twiggy .tw-figure,
+  .mdad-twiggy .tw-shadow,
+  .mdad-twiggy .tw-mini,
+  .mdad-twiggy .tw-eye,
+  .mdad-twiggy .tw-eye-glint,
+  .mdad-twiggy.is-talking .tw-mouth-open { animation: none !important; }
+  .mdad-twiggy .tw-list li { opacity: 1 !important; transform: none !important; }
+}

@@ -811,31 +811,6 @@ footer.site-footer .sustainability-badge-link:hover {
     display: block;
 }
 
-/* Quadratisches Video im Kopfbereich der Startseite (index.html): fuellt
-   die Spaltenbreite (1:1), abgerundet wie die Bilder. Auf schmalen
-   Bildschirmen hoechstens 480px breit und zentriert. */
-.hero-video {
-    width: 100%;
-}
-
-.hero-video video {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: .6rem;
-    box-shadow: 0 6px 20px rgba(40, 19, 81, .12);
-    background: #f6f2ef;
-}
-
-@media (max-width: 991.98px) {
-    .hero-video {
-        max-width: 480px;
-        margin-inline: auto;
-    }
-}
-
 /* Portraetfoto im Kopfbereich der Startseite: rechteckiges Hochformat (3:4),
    hoechstens 420px breit, damit das Bild neben dem Text nicht zu dominant
    wird. Die Bildunterschrift steht hochkant am rechten Bildrand, von unten

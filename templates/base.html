@@ -76,7 +76,9 @@
                         ("stimmen", "Stimmen aus der Praxis"),
                     ] %}
                     {# Beratung und Akademie: Der Menuepunkt selbst fuehrt zur Seite
-                       (nach oben), das Aufklappmenue mit den Kapiteln oeffnet beim
+                       (nach oben). Weil das nicht jedem klar ist, steht im
+                       Aufklappmenue zusaetzlich "Überblick" (Seitenanfang),
+                       durch eine Linie von den Kapiteln getrennt. Das Menue oeffnet beim
                        Ueberfahren mit der Maus bzw. per Tastatur-Fokus (CSS
                        .nav-hover in custom.css). Auf Touch-Geraeten oeffnet der
                        erste Tipp das Menue, der zweite die Seite (Skript unten). #}
@@ -84,6 +86,8 @@
                     <li class="nav-item dropdown nav-hover">
                         <a class="nav-link dropdown-toggle{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}" aria-haspopup="true" aria-expanded="false"{% if request.endpoint == 'consulting' %} aria-current="page"{% endif %}>Beratung</a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item{% if request.endpoint == 'consulting' %} active{% endif %}" href="{{ url_for('consulting') }}"{% if request.endpoint == 'consulting' %} aria-current="page"{% endif %}>Überblick</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             {% for anchor, label in consulting_chapters %}
                             <li><a class="dropdown-item" href="{{ url_for('consulting') }}#{{ anchor }}">{{ label }}</a></li>
                             {% endfor %}
@@ -92,6 +96,8 @@
                     <li class="nav-item dropdown nav-hover">
                         <a class="nav-link dropdown-toggle{% if academy_active %} active{% endif %}" href="{{ url_for('academy') }}" aria-haspopup="true" aria-expanded="false"{% if request.endpoint == 'academy' %} aria-current="page"{% endif %}>Akademie</a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item{% if request.endpoint == 'academy' %} active{% endif %}" href="{{ url_for('academy') }}"{% if request.endpoint == 'academy' %} aria-current="page"{% endif %}>Überblick</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             {% for anchor, label in academy_chapters %}
                             <li><a class="dropdown-item" href="{{ url_for('academy') }}#{{ anchor }}">{{ label }}</a></li>
                             {% endfor %}
