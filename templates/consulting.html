@@ -234,37 +234,53 @@
 
   <!-- REFERENZEN: PROJEKTE MIT MENSCH DENK AN DICH (Praesentation "Spiele Event", Okt. 2026);
        am Ende die kostenfreien Angebote als Buttons -->
-  {% call m.section_card("Referenzen", "Projekte mit MENSCH DENK AN DICH®", id="referenzen") %}
-          <div class="row g-4">
-            <div class="col-lg-6">
-              <div class="card-sm h-100">
-                <h3 class="h5 mb-3">Entwicklungs- und Veränderungsprozesse</h3>
-                <ul class="reference-list mb-0">
-                  <li>Johannesstift Diakonie <span class="text-muted">– BGM</span></li>
-                  <li>Sana Paulinenkrankenhaus <span class="text-muted">– psychische Gefährdungsbeurteilung</span></li>
-                  <li>Takeda Pharma <span class="text-muted">– BGM</span></li>
-                  <li>BKH Landshut <span class="text-muted">– Kulturwandel</span></li>
-                  <li>BG Kliniken <span class="text-muted">– Frankfurt, Bad Reichenhall, Bochum</span></li>
-                  <li>MENSCH-PFLEGE! <span class="text-muted">– dreijähriges Modellvorhaben mit der BARMER</span></li>
-                  <li>Diakonie München <span class="text-muted">– Werteprozess</span></li>
-                </ul>
+  {% call m.section_card("Projektpartner", id="referenzen") %}
+          {# Referenz-Logos: alle in einer Reihe, bricht responsiv um.
+             w/h = Anzeigegroesse fuer gleich wirkende Logo-Flaeche,
+             Dateien in static/img/referenzen/ #}
+          {% set references = [
+  {"file": "johannesstift-diakonie", "name": "Johannesstift Diakonie", "topic": "BGM · Gesundheitstag", "w": 140, "h": 32},
+  {"file": "sana", "name": "Sana Paulinenkrankenhaus", "topic": "Psych. Gefährdungs&shy;beurteilung", "w": 39, "h": 60},
+  {"file": "takeda", "name": "Takeda Pharma", "topic": "BGM", "w": 129, "h": 43},
+  {"file": "bkh-landshut", "name": "BKH Landshut", "topic": "Kulturwandel", "w": 136, "h": 41},
+  {"file": "bg-kliniken", "name": "BG Kliniken", "topic": "Frankfurt, Bad Reichenhall, Bochum", "w": 140, "h": 21},
+  {"file": "barmer", "name": "BARMER", "topic": "MENSCH-PFLEGE! – Modellvorhaben", "w": 132, "h": 42},
+  {"file": "diakonie-muenchen", "name": "Diakonie München", "topic": "Werteprozess", "w": 140, "h": 24},
+  {"file": "vdek", "name": "vdek", "topic": "Resilienzförderung", "w": 130, "h": 43},
+  {"file": "mehrwert-pflege", "name": "MEHRWERT:PFLEGE", "topic": "Resilienzförderung", "w": 118, "h": 34},
+  {"file": "mkk", "name": "mkk – meine krankenkasse", "topic": "Resilienzförderung", "w": 103, "h": 54},
+  {"file": "sparkasse", "name": "Sparkasse", "topic": "Gesunde Führung", "w": 46, "h": 60},
+  {"file": "potsdam", "name": "Landeshauptstadt Potsdam", "topic": "Gesunde Führung", "w": 118, "h": 60},
+  {"file": "stromnetz-berlin", "name": "Stromnetz Berlin", "topic": "Führung · Teamentwicklung", "w": 138, "h": 41},
+  {"file": "bgw", "name": "BGW", "topic": "Teamentwicklung", "w": 125, "h": 45},
+  {"file": "bsr", "name": "BSR", "topic": "Teamentwicklung", "w": 60, "h": 60},
+  {"file": "viadrina", "name": "Europa-Universität Viadrina", "topic": "Gesundheitstag", "w": 111, "h": 51},
+  {"file": "mdc", "name": "Max Delbrück Center", "topic": "Gesundheitstag", "w": 99, "h": 57},
+  {"file": "tu-berlin", "name": "TU Berlin", "topic": "Gesundheitstag", "w": 80, "h": 60},
+  {"file": "autostadt", "name": "VW Autostadt", "topic": "Training", "w": 104, "h": 54},
+  {"file": "bvg", "name": "BVG", "topic": "Training", "w": 66, "h": 60}
+          ] %}
+          <ul class="ref-wall">
+            {% for r in references %}
+            <li class="ref-item">
+              <div class="ref-logo-frame">
+                <img src="{{ url_for('static', filename='img/referenzen/' ~ r.file ~ '.webp') }}" alt="{{ r.name }}" width="{{ r.w }}" height="{{ r.h }}" class="ref-logo{% if r.file == 'mehrwert-pflege' %} ref-logo--plate{% endif %}" loading="lazy">
               </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="card-sm h-100">
-                <h3 class="h5 mb-3">Einzelprojekte</h3>
-                <ul class="reference-list mb-0">
-                  <li><strong>Resilienzförderung:</strong> vdek MehrWert:Pflege, mkk – meine krankenkasse</li>
-                  <li><strong>Gesunde Führung:</strong> Sparkasse, Stadt Potsdam, Stromnetz</li>
-                  <li><strong>Teamentwicklung:</strong> BAD, BGW, Stromnetz, BSR</li>
-                  <li><strong>Gesundheitstage:</strong> Viadrina, Max Delbrück, TU Berlin, Proclusio</li>
-                  <li><strong>Trainings:</strong> VW Autostadt, BVG, diverse KMU</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="text-center mt-5">
-            <h3 class="h4 mb-4">Lass uns über dein Vorhaben sprechen und nutze eines unserer kostenfreien Angebote:</h3>
+              <p class="ref-topic">{{ r.topic|safe }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+  {% endcall %}
+  {% with sections=sections_in_slot[5] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- KOSTENFREIE ANGEBOTE: eigene Sektion ohne Kicker und Titel unter den
+       Projektpartnern, mit den drei Buttons Beratungsgespraech, Gratis spielen
+       und Newsletter. -->
+  {% call m.section_card(id="kostenfreie-angebote") %}
+          <div class="text-center">
+            <h2 class="h4 mb-4">Lass uns über dein Vorhaben sprechen und nutze eines unserer kostenfreien Angebote:</h2>
             <div class="d-flex flex-wrap justify-content-center gap-3">
               <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" data-bs-toggle="modal" data-bs-target="#bookingModal" class="btn btn-maroon btn-lg">Beratungsgespräch</a>
               <button type="button" class="btn btn-maroon btn-lg" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Gratis spielen</button>
@@ -272,7 +288,7 @@
             </div>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[5] %}
+  {% with sections=sections_in_slot[6] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 

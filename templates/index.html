@@ -153,10 +153,10 @@
        (Initialisierung in base.html, Aussehen .info-popover in custom.css).
        Fuer Screenreader steht der Text zusaetzlich unsichtbar beim Logo.
        Alle Logos stehen gemeinsam auf einer Sektionskarte. -->
-  {% call m.section_card() %}
+  {% call m.section_card("Awards") %}
           {# Logos ohne eigene Kachel direkt auf dem Hintergrund der
              Sektionskarte, wie die "Bekannt aus"-Logos #}
-          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 g-lg-4 align-items-center">
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 g-lg-4 align-items-center mt-3">
         <div class="col">
           <div class="text-center award-card" tabindex="0"
                data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom"
@@ -229,62 +229,12 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- KOSTENFREIES ANGEBOT: RISIKOFREI STARTEN - Beratungsgespraech, Spiele
-       Event und Newsletter als Kacheln mit kurzer Einleitung und Button. -->
-  {% call m.section_card("Kostenfreies Angebot", "Risikofrei starten", id="events") %}
-          <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 offer-grid">
-            <div class="col">
-              <div class="card-sm h-100 d-flex flex-column">
-                <i class="bi bi-chat-dots fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Kostenfreies Beratungsgespräch</h3>
-                <p class="small mb-3">Du willst wissen, was das Spiel in deinem Unternehmen bewirken kann? In einem persönlichen Gespräch klären wir dein Anliegen – unverbindlich und kostenfrei.</p>
-                <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" data-bs-toggle="modal" data-bs-target="#bookingModal" class="btn btn-maroon mt-auto align-self-start">Termin wählen</a>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100 d-flex flex-column">
-                <i class="bi bi-dice-5 fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Kostenfreie Teilnahme an einem Spiele Event</h3>
-                <p class="small mb-3">Erlebe {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} selbst am Spieltisch und spüre, was das Spiel in 90 Minuten bewegt.</p>
-                {{ offer_dates("trial") }}
-                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Platz sichern</button>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card-sm h-100 d-flex flex-column">
-                <i class="bi bi-envelope-paper fs-2 text-purple"></i>
-                <h3 class="h5 mt-2 mb-2">Newsletter abonieren</h3>
-                <p class="small mb-3">Neuigkeiten, Termine und Impulse rund um spielerische Veränderung – direkt in dein Postfach.</p>
-                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter abonieren</button>
-              </div>
-            </div>
-          </div>
-  {% endcall %}
-  {% with sections=sections_in_slot[3] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- BEKANNT -->
-  {% call m.section_card() %}
-          <div class="row g-4 align-items-center">
-            <div class="col-12 col-md-6">
-              <img src="{{ url_for('static', filename='img/bekannt-aus-logo-1.webp') }}" alt="Bekannt aus: Human Resources Manager, Coaching Magazin, StartupValley.news, Praxis Kommunikation" class="img-fluid w-100">
-            </div>
-            <div class="col-12 col-md-6">
-              <img src="{{ url_for('static', filename='img/bekannt-aus-logo-2.webp') }}" alt="Bekannt aus: gmbhchef, KU Gesundheitsmanagement, Betriebliche Prävention, Health&amp;Care Management, health@work, rbb" class="img-fluid w-100">
-            </div>
-          </div>
-  {% endcall %}
-  {% with sections=sections_in_slot[4] %}
-  {% include "_sections_list.html" %}
-  {% endwith %}
-
-  <!-- KOSTENPFLICHTIGES ANGEBOT: STARTE DURCH - links Probespielraum im
+  <!-- KOSTENPFLICHTIGES ANGEBOT: DURCHSTARTEN - links Probespielraum im
        Unternehmen ("Probespielraum anfragen" -> Spielraum-Formular,
        "Weitere Informationen" -> Beratungs-Seite), rechts Spiele Coach
        Qualifizierung mit Terminen ("Platz sichern" -> Spiele-Coach-Formular,
        "Weitere Informationen" -> Akademie-Seite). -->
-  {% call m.section_card("Kostenpflichtiges Angebot", "Starte durch", id="starte-durch") %}
+  {% call m.section_card("Kostenpflichtiges Angebot", "Durchstarten", id="durchstarten") %}
           <div class="row row-cols-1 row-cols-md-2 g-3 offer-grid">
             <div class="col">
               <div class="card-sm h-100 d-flex flex-column">
@@ -311,7 +261,7 @@
             </div>
           </div>
   {% endcall %}
-  {% with sections=sections_in_slot[5] %}
+  {% with sections=sections_in_slot[3] %}
   {% include "_sections_list.html" %}
   {% endwith %}
 
@@ -346,6 +296,56 @@
           </div>
           <div class="text-center mt-5">
             <h3 class="h4 mb-0">MENSCH DENK AN DICH<sup>®</sup> ist der Lösungsweg, der alle abholt <br />und Unternehmen resilient macht.</h3>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[4] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- KOSTENFREIES ANGEBOT: RISIKOFREI STARTEN - Beratungsgespraech, Spiele
+       Event und Newsletter als Kacheln mit kurzer Einleitung und Button. -->
+  {% call m.section_card("Kostenfreies Angebot", "Risikofrei starten", id="events") %}
+          <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 offer-grid">
+            <div class="col">
+              <div class="card-sm h-100 d-flex flex-column">
+                <i class="bi bi-chat-dots fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Kostenfreies Beratungsgespräch</h3>
+                <p class="small mb-3">Du willst wissen, was das Spiel in deinem Unternehmen bewirken kann? In einem persönlichen Gespräch klären wir dein Anliegen – unverbindlich und kostenfrei.</p>
+                <a href="{{ BOOKING_URL }}" target="_blank" rel="noopener" data-bs-toggle="modal" data-bs-target="#bookingModal" class="btn btn-maroon mt-auto align-self-start">Termin wählen</a>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100 d-flex flex-column">
+                <i class="bi bi-dice-5 fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Kostenfreie Teilnahme an einem Spiele Event</h3>
+                <p class="small mb-3">Erlebe {{ m.lexicon_link("mdad", "MENSCH DENK AN DICH®") }} selbst am Spieltisch und spüre, was das Spiel in 90 Minuten bewegt.</p>
+                {{ offer_dates("trial") }}
+                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#spieleEventModal">Platz sichern</button>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card-sm h-100 d-flex flex-column">
+                <i class="bi bi-envelope-paper fs-2 text-purple"></i>
+                <h3 class="h5 mt-2 mb-2">Newsletter abonieren</h3>
+                <p class="small mb-3">Neuigkeiten, Termine und Impulse rund um spielerische Veränderung – direkt in dein Postfach.</p>
+                <button type="button" class="btn btn-maroon mt-auto align-self-start" data-bs-toggle="modal" data-bs-target="#newsletterModal">Newsletter abonieren</button>
+              </div>
+            </div>
+          </div>
+  {% endcall %}
+  {% with sections=sections_in_slot[5] %}
+  {% include "_sections_list.html" %}
+  {% endwith %}
+
+  <!-- BEKANNT -->
+  {% call m.section_card("Bekannt aus") %}
+          <div class="row g-4 align-items-center mt-3">
+            <div class="col-12 col-md-6">
+              <img src="{{ url_for('static', filename='img/bekannt-aus-logo-1.webp') }}" alt="Bekannt aus: Human Resources Manager, Coaching Magazin, StartupValley.news, Praxis Kommunikation" class="img-fluid w-100">
+            </div>
+            <div class="col-12 col-md-6">
+              <img src="{{ url_for('static', filename='img/bekannt-aus-logo-2.webp') }}" alt="Bekannt aus: gmbhchef, KU Gesundheitsmanagement, Betriebliche Prävention, Health&amp;Care Management, health@work, rbb" class="img-fluid w-100">
+            </div>
           </div>
   {% endcall %}
   {% with sections=sections_in_slot[6] %}
@@ -404,25 +404,50 @@
   {% include "_sections_list.html" %}
   {% endwith %}
 
-  <!-- EINBLICKE -->
-  {% call m.section_card("Einblicke", "Im Gespräch") %}
-          <div class="row g-3">
+  <!-- EINBLICKE: drei Videos nebeneinander (unter 992 px untereinander),
+       alle als eigene Videodateien in static/video/ -->
+  {% call m.section_card("Einblicke", "Spielend vorankommen") %}
+          <div class="row g-3 g-lg-4">
             <div class="col-lg-4">
-              <h3 class="fw-semibold mb-2 video-title">Glaube nicht alles, was du denkst!</h3>
+              <h3 class="fw-semibold mb-2 video-title">Intro der Spieleerfinderin</h3>
+              {# Eigenes Video (static/video/bewerbungsfilm.mp4, 1280x720, 2:13 min,
+                 fuers Web verkleinert aus Berwerbungsfilm.mp4). Laedt erst beim
+                 Abspielen (preload="none"), bis dahin das Standbild. #}
               <div class="ratio ratio-16x9 video-embed">
-                <iframe width="339" height="603" src="https://www.youtube.com/embed/mKH_ignou-U" title="Glaube nicht alles, was du denkst!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <video controls playsinline preload="none"
+                       poster="{{ url_for('static', filename='img/bewerbungsfilm-poster.webp') }}"
+                       width="1280" height="720"
+                       aria-label="Video: MENSCH DENK AN DICH® – Dr. Irene Preußner-Moritz stellt das Spiel vor, Spielrunden in Aktion">
+                  <source src="{{ url_for('static', filename='video/bewerbungsfilm.mp4') }}" type="video/mp4">
+                </video>
               </div>
             </div>
             <div class="col-lg-4">
-              <h3 class="fw-semibold mb-2 video-title">Interview Melanie Scharf</h3>
+              <h3 class="fw-semibold mb-2 video-title">Werte ins Spiel bringen</h3>
+              {# Eigenes Video (static/video/melanie-scharf.mp4, 640x360, 1:36 min,
+                 aus Melanie_Scharf.mp4 nur fuer schnellen Start umgepackt).
+                 Laedt erst beim Abspielen, bis dahin das Standbild. #}
               <div class="ratio ratio-16x9 video-embed">
-                <iframe src="https://www.youtube.com/embed/ZSG1eSPqVNM" title="Interview Melanie Scharf – Von der ersten Begegnung bis zum Organisationskulturprozess" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+                <video controls playsinline preload="none"
+                       poster="{{ url_for('static', filename='img/melanie-scharf-poster.webp') }}"
+                       width="640" height="360"
+                       aria-label="Video: Interview mit Melanie Scharf, Personalentwicklung Diakonie München und Oberbayern – von der ersten Begegnung bis zum Organisationskulturprozess">
+                  <source src="{{ url_for('static', filename='video/melanie-scharf.mp4') }}" type="video/mp4">
+                </video>
               </div>
             </div>
             <div class="col-lg-4">
-              <h3 class="fw-semibold mb-2 video-title">Interview Margot Dietz-Wittstock</h3>
+              <h3 class="fw-semibold mb-2 video-title">Spiele Coach Begeisterung</h3>
+              {# Eigenes Video (static/video/interview-margot-dietz.mp4, 1280x720,
+                 2:30 min, fuers Web verkleinert aus Margot-Dietz.mp4).
+                 Laedt erst beim Abspielen, bis dahin das Standbild. #}
               <div class="ratio ratio-16x9 video-embed">
-                <iframe src="https://www.youtube.com/embed/AUxEF4iAeME" title="MENSCH DENK AN DICH® Spiele Coach im Interview – Margot Dietz-Wittstock" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+                <video controls playsinline preload="none"
+                       poster="{{ url_for('static', filename='img/interview-margot-dietz-poster.webp') }}"
+                       width="1280" height="720"
+                       aria-label="Video: MENSCH DENK AN DICH® Spiele Coach im Interview – Margot Dietz-Wittstock, Leitung Notaufnahme, über die Zertifizierung">
+                  <source src="{{ url_for('static', filename='video/interview-margot-dietz.mp4') }}" type="video/mp4">
+                </video>
               </div>
             </div>
           </div>
