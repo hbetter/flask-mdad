@@ -235,38 +235,57 @@
   <!-- REFERENZEN: PROJEKTE MIT MENSCH DENK AN DICH (Praesentation "Spiele Event", Okt. 2026);
        am Ende die kostenfreien Angebote als Buttons -->
   {% call m.section_card("Projektpartner", id="referenzen") %}
-          {# Referenz-Logos: alle in einer Reihe, bricht responsiv um.
-             w/h = Anzeigegroesse fuer gleich wirkende Logo-Flaeche,
-             Dateien in static/img/referenzen/ #}
+          {# Projektpartner-Logos: alle in einer Reihe, bricht responsiv um,
+             ohne Untertitel. w/h = Anzeigegroesse fuer gleich wirkende
+             Logo-Flaeche, Dateien in static/img/referenzen/ #}
           {% set references = [
-  {"file": "johannesstift-diakonie", "name": "Johannesstift Diakonie", "topic": "BGM · Gesundheitstag", "w": 140, "h": 32},
-  {"file": "sana", "name": "Sana Paulinenkrankenhaus", "topic": "Psych. Gefährdungs&shy;beurteilung", "w": 39, "h": 60},
-  {"file": "takeda", "name": "Takeda Pharma", "topic": "BGM", "w": 129, "h": 43},
-  {"file": "bkh-landshut", "name": "BKH Landshut", "topic": "Kulturwandel", "w": 136, "h": 41},
-  {"file": "bg-kliniken", "name": "BG Kliniken", "topic": "Frankfurt, Bad Reichenhall, Bochum", "w": 140, "h": 21},
-  {"file": "barmer", "name": "BARMER", "topic": "MENSCH-PFLEGE! – Modellvorhaben", "w": 132, "h": 42},
-  {"file": "diakonie-muenchen", "name": "Diakonie München", "topic": "Werteprozess", "w": 140, "h": 24},
-  {"file": "vdek", "name": "vdek", "topic": "Resilienzförderung", "w": 130, "h": 43},
-  {"file": "mehrwert-pflege", "name": "MEHRWERT:PFLEGE", "topic": "Resilienzförderung", "w": 118, "h": 34},
-  {"file": "mkk", "name": "mkk – meine krankenkasse", "topic": "Resilienzförderung", "w": 103, "h": 54},
-  {"file": "sparkasse", "name": "Sparkasse", "topic": "Gesunde Führung", "w": 46, "h": 60},
-  {"file": "potsdam", "name": "Landeshauptstadt Potsdam", "topic": "Gesunde Führung", "w": 118, "h": 60},
-  {"file": "stromnetz-berlin", "name": "Stromnetz Berlin", "topic": "Führung · Teamentwicklung", "w": 138, "h": 41},
-  {"file": "bgw", "name": "BGW", "topic": "Teamentwicklung", "w": 125, "h": 45},
-  {"file": "bsr", "name": "BSR", "topic": "Teamentwicklung", "w": 60, "h": 60},
-  {"file": "viadrina", "name": "Europa-Universität Viadrina", "topic": "Gesundheitstag", "w": 111, "h": 51},
-  {"file": "mdc", "name": "Max Delbrück Center", "topic": "Gesundheitstag", "w": 99, "h": 57},
-  {"file": "tu-berlin", "name": "TU Berlin", "topic": "Gesundheitstag", "w": 80, "h": 60},
-  {"file": "autostadt", "name": "VW Autostadt", "topic": "Training", "w": 104, "h": 54},
-  {"file": "bvg", "name": "BVG", "topic": "Training", "w": 66, "h": 60}
+            {"file": "johannesstift-diakonie", "name": "Johannesstift Diakonie", "w": 128, "h": 29},
+            {"file": "sana", "name": "Sana Paulinenkrankenhaus", "w": 128, "h": 26},
+            {"file": "takeda", "name": "Takeda Pharma", "w": 122, "h": 41},
+            {"file": "bkh-landshut", "name": "BKH Landshut", "w": 128, "h": 39},
+            {"file": "bg-kliniken", "name": "BG Kliniken", "w": 128, "h": 19},
+            {"file": "barmer", "name": "BARMER", "w": 125, "h": 40},
+            {"file": "mensch-pflege", "name": "MENSCH PFLEGE!", "w": 66, "h": 66},
+            {"file": "diakonie-muenchen", "name": "Diakonie München und Oberbayern", "w": 128, "h": 22},
+            {"file": "vdek", "name": "vdek", "w": 123, "h": 41},
+            {"file": "mkk", "name": "mkk – meine krankenkasse", "w": 97, "h": 51},
+            {"file": "sparkasse", "name": "Sparkasse", "w": 45, "h": 58},
+            {"file": "potsdam", "name": "Landeshauptstadt Potsdam", "w": 114, "h": 58},
+            {"file": "stromnetz-berlin", "name": "Stromnetz Berlin", "w": 128, "h": 38},
+            {"file": "bgw", "name": "BGW", "w": 108, "h": 46},
+            {"file": "bsr", "name": "BSR", "w": 58, "h": 58},
+            {"file": "viadrina", "name": "Europa-Universität Viadrina", "w": 105, "h": 48},
+            {"file": "mdc", "name": "Max Delbrück Center", "w": 93, "h": 54},
+            {"file": "tu-berlin", "name": "TU Berlin", "w": 78, "h": 58},
+            {"file": "autostadt", "name": "Autostadt", "w": 128, "h": 15},
+            {"file": "bvg", "name": "BVG", "w": 64, "h": 58},
+            {"file": "aok-plus", "name": "AOK PLUS", "w": 128, "h": 22},
+            {"file": "whz-gpw", "name": "WHZ Fakultät Gesundheits- und Pflegewissenschaften", "w": 128, "h": 34},
+            {"file": "stiftung-nagelschneider", "name": "Stiftung Nagelschneider", "w": 111, "h": 45},
+            {"file": "tuev-rheinland", "name": "TÜV Rheinland", "w": 128, "h": 32},
+            {"file": "agaplesion", "name": "Agaplesion Diakonieklinikum Hamburg", "w": 128, "h": 23},
+            {"file": "nado", "name": "nado", "w": 108, "h": 46},
+            {"file": "netfonds", "name": "Netfonds", "w": 128, "h": 32},
+            {"file": "oberhavel-kliniken", "name": "Oberhavel Kliniken", "w": 80, "h": 58},
+            {"file": "aruna", "name": "aruna Versicherungsservice", "w": 128, "h": 36},
+            {"file": "mecklenburgische", "name": "Mecklenburgische Versicherungsgruppe", "w": 128, "h": 31},
+            {"file": "tk", "name": "Techniker Krankenkasse", "w": 58, "h": 58},
+            {"file": "hafenapotheke-foehr", "name": "Hafen Apotheke Föhr", "w": 66, "h": 66},
+            {"file": "vb-select", "name": "vb select", "w": 115, "h": 43},
+            {"file": "vivantes", "name": "Vivantes", "w": 120, "h": 42},
+            {"file": "vetter", "name": "Vetter", "w": 66, "h": 58},
+            {"file": "haus-hoheneck", "name": "Haus Hoheneck", "w": 65, "h": 58},
+            {"file": "waldburg-zeil-kliniken", "name": "Waldburg-Zeil Kliniken", "w": 128, "h": 30},
+            {"file": "atb", "name": "ATB Chemnitz", "w": 111, "h": 45},
+            {"file": "k-plus-s", "name": "K+S", "w": 121, "h": 41},
+            {"file": "tom-mutters-schule", "name": "Tom-Mutters-Schule", "w": 50, "h": 70}
           ] %}
           <ul class="ref-wall">
             {% for r in references %}
             <li class="ref-item">
               <div class="ref-logo-frame">
-                <img src="{{ url_for('static', filename='img/referenzen/' ~ r.file ~ '.webp') }}" alt="{{ r.name }}" width="{{ r.w }}" height="{{ r.h }}" class="ref-logo{% if r.file == 'mehrwert-pflege' %} ref-logo--plate{% endif %}" loading="lazy">
+                <img src="{{ url_for('static', filename='img/referenzen/' ~ r.file ~ '.webp') }}" alt="{{ r.name }}" width="{{ r.w }}" height="{{ r.h }}" class="ref-logo" loading="lazy">
               </div>
-              <p class="ref-topic">{{ r.topic|safe }}</p>
             </li>
             {% endfor %}
           </ul>
